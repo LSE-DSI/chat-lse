@@ -1,4 +1,4 @@
-Title: BSc Politics and Data Science - LSE 
+Title: BSc Politics and Data Science - LSE
 Text: What are the risks posed by AI? What role does social media play in our democracy? What can be done about online hate speech? Data and digital technologies have changed the face of politics – creating a demand for graduates who can navigate these challenges. This programme will equip you with those skills. You’ll study how governments and policymakers acquire and use big data and how politicians draw on data to reach voters online. You’ll also look at the potential risks posed by AI to our political systems – and how AI can be used to benefit society. This
 degree will equip you with the statistical and programming skills needed for a
 future career in politics and data science. As you progress, you’ll draw on

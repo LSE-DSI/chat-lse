@@ -11,6 +11,7 @@ class MySpider(scrapy.Spider):
         # Extract data from the current page
         for box in response.css("a.component__link"):
             yield {
+                'Origin URL': self.start_urls[0],
                 'Title': box.css("h2.component__title ::text").get().strip(),
                 'Text': ' '.join(box.css(".component__details ::text").getall()).strip(),
                 'URL': box.attrib['href']
@@ -23,8 +24,9 @@ class MySpider(scrapy.Spider):
     def parse_linked_page(self, response):
         # Extract data from the linked page
         page = {
-            'Title': response.css('title::text').get(),
-            'Text': ' '.join(response.css('p::text').getall()),
+            'Origin URL': self.start_urls[0],
+            'Title': (response.css('title::text').get()).strip(),
+            'Text': ' '.join(response.css('p::text').getall()).strip(),
             'URL': response.url
         }
         
@@ -34,6 +36,7 @@ class MySpider(scrapy.Spider):
         
         filename = f"{folder_name}/Linked_DSI_Page_{response.url.split('/')[-1]}.txt"
         with open(filename, 'w', encoding='utf-8') as f:
+            
             f.write(f"Title: {page['Title']}\n")
             f.write(f"Text: {page['Text']}\n")
             f.write(f"URL: {page['URL']}\n")
