@@ -12,9 +12,9 @@ class MySpider(scrapy.Spider):
         for box in response.css("a.component__link"):
             yield {
                 'Origin URL': self.start_urls[0],
+                'URL': box.attrib['href'],
                 'Title': box.css("h2.component__title ::text").get().strip(),
                 'Text': ' '.join(box.css(".component__details ::text").getall()).strip(),
-                'URL': box.attrib['href']
             }
 
         # Follow links found on the current page
@@ -25,9 +25,9 @@ class MySpider(scrapy.Spider):
         # Extract data from the linked page
         page = {
             'Origin URL': self.start_urls[0],
+            'URL': response.url,
             'Title': (response.css('title::text').get()).strip(),
-            'Text': ' '.join(response.css('p::text').getall()).strip(),
-            'URL': response.url
+            'Text': ' '.join(response.css('p::text').getall()).strip()
         }
         
         # Create a folder if it doesn't exist
