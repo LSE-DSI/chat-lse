@@ -1,7 +1,8 @@
-import scrapy
 import os 
+import scrapy
 
-class MySpider(scrapy.Spider):
+
+class SpiderDSI(scrapy.Spider):
     name = 'dsi_crawler'
     start_urls = [
         'https://www.lse.ac.uk/DSI',
