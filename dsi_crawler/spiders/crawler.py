@@ -1,6 +1,6 @@
-import os 
 import scrapy
 
+from dsi_crawler.items import DSIPagesScraperItem
 
 class SpiderDSI(scrapy.Spider):
     name = 'dsi_crawler'
@@ -11,12 +11,16 @@ class SpiderDSI(scrapy.Spider):
     def parse(self, response):
         # Extract data from the current page
         for box in response.css("a.component__link"):
-            yield {
-                'Origin URL': self.start_urls[0],
-                'URL': box.attrib['href'],
-                'Title': box.css("h2.component__title ::text").get().strip(),
-                'Text': ' '.join(box.css(".component__details ::text").getall()).strip(),
-            }
+
+            # TODO: Create a 'BoxScraperItem' item instead of 'DSIPagesScraperItem' for this
+            item = DSIPagesScraperItem()
+            item['origin_url'] = self.start_urls[0]
+            item['url'] = box.attrib['href']
+            item['title'] = box.css("h2.component__title ::text").get().strip()
+            item['html'] = '\n'.join([element for element in box.css(".component__details").extract()])
+            item['date_scraped'] = response.headers['Date'].decode()
+
+            yield item
 
         # Follow links found on the current page
         for next_page_url in response.css("a.component__link::attr(href)").extract():
@@ -24,11 +28,11 @@ class SpiderDSI(scrapy.Spider):
 
     def parse_linked_page(self, response):
         # Extract data from the linked page
-        page = {
-            'Origin URL': self.start_urls[0],
-            'URL': response.url,
-            'Title': (response.css('title::text').get()).strip(),
-            'Text': ' '.join(response.css('p::text').getall()).strip()
-        }
 
-        yield page
+        item = DSIPagesScraperItem()
+        item['origin_url'] = self.start_urls[0]
+        item['url'] = response.url
+        item['title'] = response.css('title::text').get().strip()
+        item['html'] = response.text
+        item['date_scraped'] = response.headers['Date'].decode()
+        yield item
