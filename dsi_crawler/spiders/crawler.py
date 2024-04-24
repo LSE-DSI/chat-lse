@@ -29,18 +29,5 @@ class MySpider(scrapy.Spider):
             'Title': (response.css('title::text').get()).strip(),
             'Text': ' '.join(response.css('p::text').getall()).strip()
         }
-        
-        # Create a folder if it doesn't exist
-        folder_name = 'linked_pages'
-        os.makedirs(folder_name, exist_ok=True)
-        
-        filename = f"{folder_name}/Linked_DSI_Page_{response.url.split('/')[-1]}.txt"
-        with open(filename, 'w', encoding='utf-8') as f:
-            
-            f.write(f"Title: {page['Title']}\n")
-            f.write(f"Text: {page['Text']}\n")
-            f.write(f"URL: {page['URL']}\n")
-        
-        self.log(f"Saved file {filename}")
 
         yield page

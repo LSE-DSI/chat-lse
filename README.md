@@ -41,3 +41,13 @@ which pip
 ```bash
 pip install -r requirements.txt
 ```
+
+## Running the crawler
+
+1. First, ensure you have activated the `poc-lse-search` conda environment.
+
+2. Run the following command from the root of the project to save the scraped data to a JSON file:
+
+```bash
+scrapy crawl dsi_crawler -o data/all_pages.json
+```
