@@ -2,7 +2,7 @@ import scrapy
 import os 
 
 class MySpider(scrapy.Spider):
-    name = 'dsi_scraper'
+    name = 'dsi_crawler'
     start_urls = [
         'https://www.lse.ac.uk/DSI',
     ]
@@ -42,5 +42,5 @@ class MySpider(scrapy.Spider):
             f.write(f"URL: {page['URL']}\n")
         
         self.log(f"Saved file {filename}")
-        
+
         yield page
