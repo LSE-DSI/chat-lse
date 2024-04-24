@@ -1,0 +1,4 @@
+# data collection
+scrapy
+
+pandas>=2
