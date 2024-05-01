@@ -4,10 +4,10 @@
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
 from scrapy.exporters import JsonLinesItemExporter
-from itemadapter import ItemAdapter   
-from bs4 import BeautifulSoup
+from itemadapter import ItemAdapter 
 from datetime import datetime
 from scrapy import signals 
+import scrapy   
 import sqlite3
 import logging
 
@@ -131,8 +131,7 @@ class ItemToSQLitePipeline:
             webpage_id = self.cursor.lastrowid  
             
             # Extract links from HTML
-            soup = BeautifulSoup(adapter['html'], 'html.parser')
-            links = [a['href'] for a in soup.find_all('a', href=True)]
+            links = scrapy.Selector(text=adapter['html']).css('a::attr(href)').extract()
             
             # Insert data into Links table
             for link in links:
