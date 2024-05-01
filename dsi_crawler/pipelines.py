@@ -5,6 +5,8 @@
 
 from scrapy.exporters import JsonLinesItemExporter
 from itemadapter import ItemAdapter   
+from bs4 import BeautifulSoup
+from datetime import datetime
 from scrapy import signals 
 import sqlite3
 import logging
@@ -124,6 +126,26 @@ class ItemToSQLitePipeline:
                 VALUES (?, ?, ?, ?, ?)
             ''', (adapter['origin_url'], adapter['url'], adapter['title'], 
                   adapter['html'], adapter['date_scraped']))
+            
+            # Retrieve the inserted webpage_id
+            webpage_id = self.cursor.lastrowid  
+            
+            # Extract links from HTML
+            soup = BeautifulSoup(adapter['html'], 'html.parser')
+            links = [a['href'] for a in soup.find_all('a', href=True)]
+            
+            # Insert data into Links table
+            for link in links:
+                self.cursor.execute('''
+                    INSERT INTO Links (webpage_id, link)
+                    VALUES (?, ?)
+                ''', (webpage_id, link))
+                
+            # Insert crawler metadata into CrawlerMetadata table
+            self.cursor.execute('''
+                INSERT INTO CrawlerMetadata (webpage_id, crawled_at)
+                VALUES (?, ?)
+            ''', (webpage_id, datetime.now()))
 
         elif item_name == 'boxes':
             # Insert data into Box table
