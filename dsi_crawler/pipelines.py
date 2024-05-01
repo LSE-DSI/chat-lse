@@ -131,8 +131,8 @@ class ItemToSQLitePipeline:
             webpage_id = self.cursor.lastrowid  
             
             # Extract links from HTML
-            html_text = adapter['html']
-            links = scrapy.Selector(text=html_text).css('a::attr(href)').extract()
+            selector = scrapy.Selector(text=adapter['html'])
+            links = selector.css('a::attr(href)').extract()
             
             # Insert data into Links table
             for link in links:
