@@ -1,7 +1,5 @@
 import scrapy
 import os
-from scrapy.utils.project import get_project_settings
-
 
 class FileDownloaderSpider(scrapy.Spider):
     name = 'file_downloader'
@@ -10,7 +8,6 @@ class FileDownloaderSpider(scrapy.Spider):
          ]
     
     def parse(self, response):
-        # Look for links to files
         for file_link in response.css("a::attr(href)").extract():
             if file_link.endswith(('.pdf', '.doc', '.docx', '.ppt', '.pptx')):
                 yield scrapy.Request(response.urljoin(file_link), callback=self.save_file)

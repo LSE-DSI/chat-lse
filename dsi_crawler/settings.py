@@ -64,7 +64,7 @@ ROBOTSTXT_OBEY = True
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {'dsi_crawler.pipelines.ItemExporter': 300, 
                   'dsi_crawler.pipelines.ItemToSQLitePipeline': 500,
-                  'dsi_crawler.pipelines.FilesDownloaderPipeline': 700,
+                  #'dsi_crawler.pipelines.FilesDownloaderPipeline': 700,
                   }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
