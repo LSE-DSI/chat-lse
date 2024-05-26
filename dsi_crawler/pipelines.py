@@ -4,6 +4,7 @@
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
 from scrapy.exporters import JsonLinesItemExporter
+from scrapy.pipelines.files import FilesPipeline
 from itemadapter import ItemAdapter 
 from datetime import datetime
 from scrapy import signals 
@@ -163,3 +164,9 @@ class ItemToSQLitePipeline:
         self.conn.close()       
         logging.info('SQLite Connection closed')
 
+class FilesDownloaderPipeline(FilesPipeline):
+    def get_media_requests(self, item):
+        yield scrapy.Request(item['file_url'])
+
+    def file_path(self, request, *, item=None):
+        return request.url.split('/')[-1]
