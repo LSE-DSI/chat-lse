@@ -1,4 +1,4 @@
-# ChatLSE
+# 💬 ChatLSE
 
 In this project, we will gather all public LSE documents and webpages into a database (LSE Crawler) and then develop a chat interface using an LLM mediated by the [langchain](https://python.langchain.com/v0.2/docs/introduction/) package. Think of it as a ChatGPT meant to be particularly knowledgeable of LSE documents.
 
@@ -6,13 +6,19 @@ Since we intend to release this product to LSE staff and possibly students, we w
 
 ## Benefits of this project
 
-By the end of Summer 2024, we want to be able to say:
+By the end of Summer 2024, we want to be proud to say:
 
 1) we have created a valuable service to the LSE staff community,
 2) we have written a short report (2-3 pages) to demonstrate our methodology of an open-source RAG solution, and
 3) we have tested the capabilities of DSI's new on-premises cloud infrastructure.
 
-## Setup
+## 🔗 Links
+
+- 🗂️ [Sharepoint folder](https://lsecloud.sharepoint.com/:f:/r/sites/TEAM_DSI-Executive/Shared%20Documents/Computing/ChatLSE?csf=1&web=1&e=pRgfW9): for interactive documents (MS Word documents) or academic papers (PDFs).
+- ☁️ [CodeOcean](#): Where we will keep the data
+
+
+## ⚙️ Setup
 
 ### Requirements
 
@@ -43,7 +49,7 @@ conda activate chat-lse # or the equivalent for your OS
 which pip
 ```
 
-    this should output something like `/home/your-username/miniconda3/envs/poc-lse-search/bin/pip`
+    this should output something like `/home/your-username/miniconda3/envs/chat-lse/bin/pip`
 
 6. Assuming you've fixed the `pip` path, install the required packages:
 
