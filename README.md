@@ -1,7 +1,16 @@
-# Crawler for LSE pages
+# ChatLSE
 
-A proof of concept of a full data pipeline to index data from LSE websites and make /search available as an API endpoint 
+In this project, we will gather all public LSE documents and webpages into a database (LSE Crawler) and then develop a chat interface using an LLM mediated by the [langchain](https://python.langchain.com/v0.2/docs/introduction/) package. Think of it as a ChatGPT meant to be particularly knowledgeable of LSE documents.
 
+Since we intend to release this product to LSE staff and possibly students, we will treat this as a software development project, setting deadlines for an alpha and a beta launch. We will initially target a small group of early adopters and later expand to a larger audience. In addition to developing the ChatLSE server and UI, we will also create a database structure to track user engagement with the tool, with the potential for performing Reinforcement Learning from Human Feedback (I doubt we’ll have the time, but one can hope…).
+
+## Benefits of this project
+
+By the end of Summer 2024, we want to be able to say:
+
+1) we have created a valuable service to the LSE staff community,
+2) we have written a short report (2-3 pages) to demonstrate our methodology of an open-source RAG solution, and
+3) we have tested the capabilities of DSI's new on-premises cloud infrastructure.
 
 ## Setup
 
@@ -24,8 +33,8 @@ A proof of concept of a full data pipeline to index data from LSE websites and m
 4. Open the terminal in VSCode by clicking on 'Terminal' -> 'New Terminal' and run the following commands to create a conda environment:
 
 ```bash
-conda create -n poc-lse-search python=3.11 ipython
-conda activate poc-lse-search # or the equivalent for your OS
+conda create -n chat-lse python=3.11 ipython
+conda activate chat-lse # or the equivalent for your OS
 ```
 
 5. (Important) Ensure that `pip` refers to the pip inside the conda environment we just created:
