@@ -1,72 +1,75 @@
-<<<<<<< HEAD
-<!doctype html>
-<html lang="en">
+<<<<<<< HEAD <!doctype html>
+    <html lang="en">
+
     <head>
         <meta charset="UTF-8" />
         <link rel="icon" type="image/x-icon" href="/favicon.ico" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>GPT + Enterprise data | Sample</title>
     </head>
+
     <body>
         <div id="root"></div>
         <script type="module" src="/src/index.tsx"></script>
     </body>
-=======
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Document Search</title>
-</head>
-<body>
-    <h1>Document Search</h1>
-    <form id="search-form">
-        <label for="keyword">Keyword:</label>
-        <input type="text" id="keyword" name="keyword" required>
-        <br><br>
-        <button type="submit">Search</button>
-    </form>
-    <h2>Results</h2>
-    <div id="results"></div>
+    =======
+    <!DOCTYPE html>
+    <html lang="en">
 
-    <script>
-        document.getElementById('search-form').addEventListener('submit', async function(event) {
-            event.preventDefault();
+    <head>
+        <meta charset="UTF-8">
+        <title>Document Search</title>
+    </head>
 
-            const keyword = document.getElementById('keyword').value;
+    <body>
+        <h1>Document Search</h1>
+        <form id="search-form">
+            <label for="keyword">Keyword:</label>
+            <input type="text" id="keyword" name="keyword" required>
+            <br><br>
+            <button type="submit">Search</button>
+        </form>
+        <h2>Results</h2>
+        <div id="results"></div>
 
-            // Convert the keyword to a query vector
-            const vectorResponse = await fetch('http://localhost:8001/convert-to-vector', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ text: keyword })
+        <script>
+            document.getElementById('search-form').addEventListener('submit', async function (event) {
+                event.preventDefault();
+
+                const keyword = document.getElementById('keyword').value;
+
+                // Convert the keyword to a query vector
+                const vectorResponse = await fetch('http://localhost:8001/convert-to-vector', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ text: keyword })
+                });
+
+                const vectorResult = await vectorResponse.json();
+                const queryVector = vectorResult.query_vector;
+
+                // Perform the search with the query vector
+                const response = await fetch('http://localhost:8001/search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ keyword, query_vector: queryVector })
+                });
+
+                const results = await response.json();
+                const resultsDiv = document.getElementById('results');
+                resultsDiv.innerHTML = '';
+
+                results.forEach(result => {
+                    const resultElement = document.createElement('div');
+                    resultElement.innerHTML = `<p><strong>Title:</strong> ${result[1]}</p><p><strong>Content:</strong> ${result[2]}</p>`;
+                    resultsDiv.appendChild(resultElement);
+                });
             });
+        </script>
+    </body>
 
-            const vectorResult = await vectorResponse.json();
-            const queryVector = vectorResult.query_vector;
-
-            // Perform the search with the query vector
-            const response = await fetch('http://localhost:8001/search', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ keyword, query_vector: queryVector })
-            });
-
-            const results = await response.json();
-            const resultsDiv = document.getElementById('results');
-            resultsDiv.innerHTML = '';
-
-            results.forEach(result => {
-                const resultElement = document.createElement('div');
-                resultElement.innerHTML = `<p><strong>Title:</strong> ${result[1]}</p><p><strong>Content:</strong> ${result[2]}</p>`;
-                resultsDiv.appendChild(resultElement);
-            });
-        });
-    </script>
-</body>
->>>>>>> 39300e21 (Create preliminary frontend page and clean up backend)
-</html>
+    </html>
