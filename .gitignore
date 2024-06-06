@@ -165,3 +165,7 @@ data/*
 !data/
 !data/NB02 - Fix parse_boxes() issue.ipynb
 node_modules
+
+
+# npm
+node_modules
