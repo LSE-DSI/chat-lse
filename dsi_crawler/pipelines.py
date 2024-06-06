@@ -164,16 +164,3 @@ class ItemToSQLitePipeline:
         self.conn.close()       
         logging.info('SQLite Connection closed')
 
-class FilesDownloaderPipeline(FilesPipeline):
-    def get_media_requests(self, item):
-        yield scrapy.Request(item['file_url'])
-
-    def file_path(self, request, *, item=None):
-        return request.url.split('/')[-1]
-    
-# class FilesDownloaderPipeline(FilesPipeline):
-#     def get_media_requests(self, item):
-#         yield scrapy.Request(item['file_url'])
-
-#     def file_path(self, request, *, item=None):
-#         return os.path.join('data/', request.meta['file_name'])
