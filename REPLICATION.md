@@ -47,7 +47,7 @@ OPENAICOM_KEY=YOUR-OPENAI-API-KEY # Replace this value
 2. Start the Postgres docker container.
 
 ```bash
-$ docker run -itd --name chatlse-postgres -p 5432:5432 -e POSTGRES_PASSWORD=chatlse -e POSTGRES_USER=chatlse -e POSTGRES_DB=chatlse -d pgvector/pgvector:0.7.1-pg16
+$ docker run -itd --name chatlse-postgres --restart unless-stopped -p 5432:5432 -e POSTGRES_PASSWORD=chatlse -e POSTGRES_USER=chatlse -e POSTGRES_DB=chatlse -d pgvector/pgvector:0.7.1-pg16
 ```
 
 3. Setup the Fastapi app and initialize database by running the setup script:
