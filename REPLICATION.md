@@ -46,11 +46,18 @@ OPENAICOM_KEY=YOUR-OPENAI-API-KEY # Replace this value
 ...
 ```
 
-2. Start the Postgres docker container.
+2. Start the Postgres docker container and verify the container is running. The STATUS of the container shoule be something like "Up 2 seconds".
 
 ```bash
 $ docker run -itd --name chatlse-postgres --restart unless-stopped -p 5432:5432 -e POSTGRES_PASSWORD=chatlse -e POSTGRES_USER=chatlse -e POSTGRES_DB=chatlse -d pgvector/pgvector:0.7.1-pg16
+
+# To verify the container is up and running:
+$ docker ps -a
+
+CONTAINER ID   IMAGE                          COMMAND                  CREATED         STATUS         PORTS                                       NAMES
+45d7301f5ef8   pgvector/pgvector:0.7.1-pg16   "docker-entrypoint.s…"   2 seconds ago   Up 2 seconds   0.0.0.0:5432->5432/tcp, :::5432->5432/tcp   chatlse-postgres
 ```
+
 
 3. Setup the Fastapi app and initialize database by running the setup script:
 
