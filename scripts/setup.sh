@@ -1,4 +1,4 @@
-#!/bin/bash
+source .venv/bin/activate#!/bin/bash
 set -e
 
 # Install dependencies
