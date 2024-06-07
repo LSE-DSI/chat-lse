@@ -12,6 +12,8 @@ Modifications:
 
 ### Requirements
 
+Make sure the following are properly installed on your OS: 
+
 - [VSCode](https://code.visualstudio.com/)
 - [Docker](https://docs.docker.com/engine/install/)
 - [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
@@ -64,6 +66,17 @@ $ cd frontend # Go to chat-lse/frontend folder
 $ npm install
 ```
 
+You might see the following warning. We can ignore it for now.
+
+```bash
+1 moderate severity vulnerability
+
+To address all issues, run:
+  npm audit fix
+
+Run `npm audit` for details.
+```
+
 ### Runing the code
 
 1. Start the fastapi app:
@@ -73,9 +86,39 @@ $ cd chat-lse # Make sure in the project root directory
 $ sh ./scripts/start_fastapi_app.sh
 ```
 
+You should see something like:
+
+```bash
+INFO:     Will watch for changes in these directories: ['<your-path-to>/chat-lse']
+INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
+INFO:     Started reloader process [7609] using WatchFiles
+WARNING:  ASGI app factory detected. Using it, but please consider setting the --factory flag explicitly.
+INFO:     Started server process [7611]
+INFO:     Waiting for application startup.
+INFO:ragapp:Authenticating to PostgreSQL using password...
+INFO:ragapp:Authenticating to OpenAI using OpenAI.com API key...
+INFO:     Application startup complete.
+```
+
 2. Start the frontend. Open a new terminal and run:
 
 ```bash
 $ cd frontend # Go to chat-lse/frontend folder
 $ npm run dev
 ```
+
+You should see something like:
+
+```bash
+> frontend@0.0.0 dev
+> vite
+
+
+  VITE v4.5.2  ready in 309 ms
+
+  ➜  Local:   http://localhost:5173/
+  ➜  Network: use --host to expose
+  ➜  press h to show help
+```
+
+3. Open http://localhost:5173/ in your web browser to try the app.
