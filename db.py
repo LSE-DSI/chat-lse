@@ -3,14 +3,21 @@ import os
 import PyPDF2
 from sentence_transformers import SentenceTransformer
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
 
 # Define FastAPI app
 app = FastAPI()
 
-# Check and print current working directory
-print(f"Current Working Directory: {os.getcwd()}")
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allow all origins for testing, adjust in production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Define database file path
 db_path = 'mydb.duckdb'
@@ -66,17 +73,9 @@ def extract_text_from_pdf(pdf_path):
 exam_procedures_path = '/Users/akshsabherwal/Desktop/Exam-Procedures-for-Candidates.pdf'
 exam_timetable_path = '/Users/akshsabherwal/Desktop/Spring-Exam-Timetable-2024-Final.pdf'
 
-# Print paths for verification
-print(f"Exam Procedures Path: {exam_procedures_path}")
-print(f"Spring Exam Timetable Path: {exam_timetable_path}")
-
 # Extract text from the provided PDFs using relative paths
 exam_procedures_text = extract_text_from_pdf(exam_procedures_path)
 exam_timetable_text = extract_text_from_pdf(exam_timetable_path)
-
-# Verify extraction
-print(f"Exam Procedures Text: {exam_procedures_text[:500]}")  # Print first 500 characters
-print(f"Spring Exam Timetable Text: {exam_timetable_text[:500]}")  # Print first 500 characters
 
 # Convert text to embeddings
 model = SentenceTransformer('all-MiniLM-L6-v2')
@@ -145,21 +144,13 @@ def unified_search(keyword, query_vector):
     keyword_results = keyword_search(keyword)
     vector_results = vector_search(query_vector)
 
-    # Convert results to a dictionary for easier combination and elimination of duplicates
     results_dict = {result[0]: result for result in keyword_results}
     for result in vector_results:
         if result[0] not in results_dict:
             results_dict[result[0]] = result
 
-    # Combine and sort results (you can choose your own sorting strategy)
     combined_results = list(results_dict.values())
     combined_results.sort(key=lambda x: x[3] if len(x) > 3 else float('inf'))
 
     return combined_results
 
-# Example usage
-keyword = "exam"
-query_vector = model.encode("exam procedures").tolist()  # Replace with the actual query vector
-results = unified_search(keyword, query_vector)
-for result in results:
-    print(result)
