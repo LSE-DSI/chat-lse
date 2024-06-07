@@ -34,27 +34,48 @@ $ python3 -m venv .venv
 $ source .venv/bin/activate
 ```
 
-### Runing the code
+### Setup the environments
 
-1. Copy `.env.sample` into a `.env` file and replace *YOUR-OPENAI-API-KEY* with your openai api key
+1. **[IMPORTANT]** Copy `.env.sample` into a `.env` file and replace *YOUR-OPENAI-API-KEY* with your openai api key. Do not change other configs unless you know what you are doing.
 
-2. Run the setup script to install dependencies and start postgres in a docker container
+```
+# Needed for OpenAI.com:
+OPENAICOM_KEY=YOUR-OPENAI-API-KEY # Replace this value
+...
+```
+
+2. Start the Postgres docker container.
+
+```bash
+$ docker run -itd --name chatlse-postgres -p 5432:5432 -e POSTGRES_PASSWORD=chatlse -e POSTGRES_USER=chatlse -e POSTGRES_DB=chatlse -d pgvector/pgvector:0.7.1-pg16
+```
+
+3. Setup the Fastapi app and initialize database by running the setup script:
 
 ```bash
 $ cd chat-lse # Make sure in the project root directory
 $ sh ./scripts/setup.sh
 ```
 
-3. Start the fastapi app
+4. Setup the frontend app:
+
+```bash
+$ cd frontend # Go to chat-lse/frontend folder
+$ npm install
+```
+
+### Runing the code
+
+1. Start the fastapi app:
 
 ```bash
 $ cd chat-lse # Make sure in the project root directory
 $ sh ./scripts/start_fastapi_app.sh
 ```
 
-4. Start the frontend. Open a new terminal and run:
+2. Start the frontend. Open a new terminal and run:
 
 ```bash
-$ cd chat-lse # Make sure in the project root directory
-$ sh ./scripts/start_frontend.sh
+$ cd frontend # Go to chat-lse/frontend folder
+$ npm run dev
 ```
