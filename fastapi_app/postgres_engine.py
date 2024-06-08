@@ -1,22 +1,34 @@
 import logging
 import os
 
+from sqlalchemy import URL
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
 logger = logging.getLogger("ragapp")
 
 
-async def create_postgres_engine(*, host, username, database, password, sslmode) -> AsyncEngine:
+async def create_postgres_engine(*, host, username, database, password, sslmode, port=5432) -> AsyncEngine:
     
     logger.info("Authenticating to PostgreSQL using password...")
 
-    DATABASE_URI = f"postgresql+asyncpg://{username}:{password}@{host}/{database}"
-    # Specify SSL mode if needed
+    # DATABASE_URI = f"postgresql+asyncpg://{username}:{password}@{host}/{database}"
+
+    query = {}
     if sslmode:
-        DATABASE_URI += f"?ssl={sslmode}"
+        query["ssl"]=sslmode
+
+    url_object = URL.create(
+        "postgresql+asyncpg",
+        username=username,
+        password=password,
+        host=host,
+        port=port,
+        database=database,
+        query=query
+    )
 
     engine = create_async_engine(
-        DATABASE_URI,
+        url_object,
         echo=False,
     )
 
@@ -30,7 +42,8 @@ async def create_postgres_engine_from_env() -> AsyncEngine:
         username=os.environ["POSTGRES_USERNAME"],
         database=os.environ["POSTGRES_DATABASE"],
         password=os.environ["POSTGRES_PASSWORD"],
-        sslmode=os.environ.get("POSTGRES_SSL")
+        sslmode=os.environ.get("POSTGRES_SSL"),
+        port=os.getenv("POSTGRES_PORT", 5432),
     )
 
     return engine
@@ -44,6 +57,7 @@ async def create_postgres_engine_from_args(args) -> AsyncEngine:
         database=args.database,
         password=args.password,
         sslmode=args.sslmode,
+        port=args.port
     )
 
     return engine
