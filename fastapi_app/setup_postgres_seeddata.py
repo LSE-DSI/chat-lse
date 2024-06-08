@@ -35,16 +35,20 @@ async def seed_data(engine):
         with open(os.path.join(current_dir, "seed_lse_data.json")) as f:
             catalog_items = json.load(f)
             for catalog_item in catalog_items:
-                item = await session.execute(select(Item).filter(Item.id == catalog_item["Id"]))
+    # Convert ID from string to integer
+                item_id = int(catalog_item["Id"])
+                item = await session.execute(select(Item).filter(Item.id == item_id))
                 if item.scalars().first():
                     continue
                 item = Item(
-                    id=catalog_item["Id"],
+                    id=item_id,  # Ensure this is an integer
                     name=catalog_item["Name"],
                     description=catalog_item["Description"],
                     embedding=catalog_item["Embedding"],
+                    link=catalog_item["Link"]
                 )
                 session.add(item)
+
             try:
                 await session.commit()
             except sqlalchemy.exc.IntegrityError:
