@@ -46,6 +46,8 @@ async def seed_data(engine):
                     id=item_id,
                     name=catalog_item["Name"],
                     description=catalog_item["Description"],
+                    type = catalog_item["Type"],
+                    link = catalog_item["Link"],
                     embedding= catalog_item["Embedding"]
                 )
                 session.add(item)
