@@ -4,6 +4,7 @@
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
 from scrapy.exporters import JsonLinesItemExporter
+from scrapy.pipelines.files import FilesPipeline
 from itemadapter import ItemAdapter 
 from datetime import datetime
 from scrapy import signals 
