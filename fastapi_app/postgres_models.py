@@ -15,11 +15,8 @@ class Base(DeclarativeBase, MappedAsDataclass):
 class Item(Base):
     __tablename__ = "items"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    type: Mapped[str] = mapped_column(nullable= True)
-    brand: Mapped[str] = mapped_column(nullable= True)
     name: Mapped[str] = mapped_column()
     description: Mapped[str] = mapped_column()
-    price: Mapped[float] = mapped_column(nullable= True)
     embedding: Mapped[Vector] = mapped_column(Vector(1536))   # ada-002
 
     def to_dict(self, include_embedding: bool = False):
