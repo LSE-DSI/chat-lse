@@ -15,9 +15,11 @@ class Base(DeclarativeBase, MappedAsDataclass):
 class Item(Base):
     __tablename__ = "items"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    type: Mapped[str] = mapped_column()
     name: Mapped[str] = mapped_column()
     description: Mapped[str] = mapped_column()
     embedding: Mapped[Vector] = mapped_column(Vector(1536))   # ada-002
+    link: Mapped[str] = mapped_column()
 
     def to_dict(self, include_embedding: bool = False):
         model_dict = asdict(self)
@@ -27,7 +29,7 @@ class Item(Base):
             del model_dict["embedding"]
         return model_dict
     def to_str_for_rag(self):
-        return f"Name:{self.name} Description:{self.description} Price:{self.price} Brand:{self.brand} Type:{self.type}"
+        return f"Name:{self.name} Description:{self.description} Type:{self.type} Link:{self.link}" 
 
     def to_str_for_embedding(self):
         return f"Name: {self.name} Description: {self.description} Type: {self.type}"

@@ -2,6 +2,7 @@
     {
         "Id": 1,
         "Name": "Exam Procedures for Candidates",
+        "Type": "PDF",
         "Description": "Outlines essential procedures for LSE's in-person exams for the 2023/24 academic year. It details candidate responsibilities, exam conduct rules, permitted materials, use of electronic devices, and protocols for e-Exams, including equipment requirements and emergency procedures, to ensure fairness and integrity during the examination process.",
         "Link": "https://info.lse.ac.uk/current-students/services/assets/documents/Exam-Procedures-for-Candidates.pdf",
         "Embedding": [
@@ -1546,6 +1547,7 @@
     {
         "Id": 2,
         "Name": "Spring Exam Timetable 2024",
+        "Type": "PDF",
         "Description": "Detailed exam schedule for LSE's Spring 2024 session, including dates, times, and courses.",
         "Link": "https://info.lse.ac.uk/current-students/services/assets/documents/Spring-Exam-Timetable-2024-Final.pdf",
         "Embedding": [
@@ -3090,6 +3092,7 @@
     {
         "Id": 3,
         "Name": "Studnet Guidance on Deferrals",
+        "Type": "PDF",
         "Description": "Outlines policies and procedures for students considering deferring exams or coursework. It covers eligibility, application steps, academic impacts, and available support resources to help students navigate the deferral process effectively.",
         "Link": "https://info.lse.ac.uk/current-students/services/assets/documents/Student-Guidance-Deferral.pdf",
         "Embedding": [
@@ -4634,6 +4637,7 @@
     {
         "Id": 4,
         "Name": "Academic Appeals Regulation",
+        "Type": "PDF",
         "Description": "This LSE document details the academic appeals procedures for undergraduate and master's students, specifying eligibility, the process, and grounds for appeals, which include procedural errors and new exceptional circumstances",
         "Link": "https://info.lse.ac.uk/current-students/services/assets/documents/Appeals-Regulations.pdf",
         "Embedding": [
@@ -6178,6 +6182,7 @@
     {
         "Id": 5,
         "Name": "Three Year Classification Scheme For BA/BSc Degrees",
+        "Type": "PDF",
         "Description": "Outlines the classification scheme for BA and BSc degrees starting from the 2018/19 academic year. It details the criteria for awarding marks, eligibility for degree awards, and the specifics of calculating final degree classifications, including considerations for exceptional circumstances and penalties for unredeemed failures.",
         "Link": "https://info.lse.ac.uk/staff/divisions/academic-registrars-division/Teaching-Quality-Assurance-and-Review-Office/Assets/Documents/Calendar/BA-BSc-Three-Year-scheme-for-students-from-2018.19.pdf",
         "Embedding": [
@@ -7722,6 +7727,7 @@
     {
         "Id": 6,
         "Name": " In-Course Financial Support Application Guide",
+        "Type": "PDF",
         "Description": "Guide for students applying for in-course financial support. It includes instructions for completing the application form, eligibility criteria, required documentation, and assessment procedures. The guide covers various aspects of financial aid, including allowances for dependents, disability-related costs, and emergency financial needs, aiming to assist students experiencing financial difficulties during their studies.",
         "Link": "https://info.lse.ac.uk/current-students/financial-support/assets/documents/In-Course-Financial-Support.pdf",
         "Embedding": [
@@ -9266,6 +9272,7 @@
     {
         "Id": 7,
         "Name": "Interruption of Studies Policy",
+        "Type": "PDF",
         "Description": "Outlines policy for students needing a temporary break from their studies due to personal, professional, or health reasons. It details the conditions under which interruptions are granted, the process for applying, and the implications on academic standing, visa status, and financial commitments. It also covers the return to studies, emphasizing the need for careful planning and communication with academic mentors and departmental staff.",
         "Link": "https://info.lse.ac.uk/Staff/Divisions/Academic-Registrars-Division/Teaching-Quality-Assurance-and-Review-Office/Assets/Documents/Calendar/InterruptionPolicy.pdf",
         "Embedding": [
@@ -10810,6 +10817,7 @@
     {
         "Id": 8,
         "Name": "Student Complaints Procedure",
+        "Type": "PDF",
         "Description": "Outlines the procedures for handling student complaints, providing a structured approach for lodging and resolving issues related to academic or administrative services. It details the stages of complaint resolution, including early resolution, formal complaint submission, and review processes, ensuring a fair and systematic approach to addressing student grievances.",
         "Link": "https://info.lse.ac.uk/staff/services/Policies-and-procedures/Assets/Documents/comPro.pdf",
         "Embedding": [
