@@ -4,31 +4,48 @@ from dsi_crawler.items import DSIPagesScraperItem, BoxScraperItem
 class SpiderDSI(scrapy.Spider):
     name = 'lse_crawler'
     start_urls = [
-        'https://info.lse.ac.uk/Staff/Departments-and-Institutes'
+        'http://www.lse.ac.uk/accounting/Home.aspx?_gl=1*1yc154t*_gcl_au*MTg3NjU2MTkwMS4xNzE0NTY2MDE0*_ga*MTMxNzAyMzQyNC4xNzE0NTY2MDE0*_ga_LWTEVFESYX*MTcxODAwNTgxOC4yNC4xLjE3MTgwMDU4MjIuNTYuMC4w',
+        'http://www.lse.ac.uk/anthropology/home.aspx',
+        'https://www.lse.ac.uk/dsi',
+        'http://www.lse.ac.uk/economics/home.aspx',
+        'http://www.lse.ac.uk/Economic-History',
+        'http://www.lse.ac.uk/european-institute',
+        'http://www.lse.ac.uk/Finance',
+        'https://www.lse.ac.uk/africa',
+        'http://www.lse.ac.uk/Gender',
+        'http://www.lse.ac.uk/Geography-and-Environment',
+        'http://www.lse.ac.uk/government/home.aspx',
+        'http://www.lse.ac.uk/health-policy',
+        'http://www.lse.ac.uk/international-development',
+        'http://www.lse.ac.uk/International-History',
+        'http://www.lse.ac.uk/International-Inequalities',
+        'http://www.lse.ac.uk/International-Relations',
+        'http://www.lse.ac.uk/language-centre',
+        'https://www.lse.ac.uk/law',
+        'http://www.lse.ac.uk/management/home.aspx',
+        'http://www.lse.ac.uk/Marshall-Institute',
+        'http://www.lse.ac.uk/Mathematics',
+        'http://www.lse.ac.uk/media-and-communications',
+        'http://www.lse.ac.uk/methodology',
+        'http://www.lse.ac.uk/philosophy/',
+        'http://www.lse.ac.uk/PBS',
+        'http://www.lse.ac.uk/school-of-public-policy',
+        'http://www.lse.ac.uk/social-policy',
+        'http://www.lse.ac.uk/sociology/Home.aspx',
+        'http://www.lse.ac.uk/statistics/home.aspx'
     ]
     max_depth = 3
 
     def parse(self, response):
-        # Extract department URLs from the main page using class names
-        department_links = response.css('a.sys_16.external::attr(href)').extract()
-        for department_link in department_links:
-            yield scrapy.Request(
-                response.urljoin(department_link),
-                callback=self.parse_department_page,
-                meta={'origin_url': response.urljoin(department_link)},
-                errback=self.handle_error
-            )
-
-    def parse_department_page(self, response):
-        # Extract box data from the department page
+        # Extract box data from the current page
         self.parse_boxes(response)
         
-        # Follow links found on the department page
+        # Follow links found on the current page
         for next_page_url in response.css("a.component__link::attr(href)").extract():
             yield scrapy.Request(
                 response.urljoin(next_page_url),
                 callback=self.parse_linked_page,
-                meta={'depth': 1, 'origin_url': response.meta['origin_url']},
+                meta={'depth': 1, 'origin_url': response.url},
                 errback=self.handle_error
             )
 
@@ -69,7 +86,9 @@ class SpiderDSI(scrapy.Spider):
             item['image_alt_text'] = box.css(".component__img img::attr(alt)").get()
 
             yield item
+            
 
     def handle_error(self, failure):
         self.logger.error(repr(failure))
         self.logger.error('Failed URL: %s', failure.request.url)
+        print("Error:", repr(failure), "Failed URL:", failure.request.url) 
