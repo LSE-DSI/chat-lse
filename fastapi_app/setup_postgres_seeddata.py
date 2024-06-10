@@ -46,10 +46,7 @@ async def seed_data(engine):
                     id=item_id,
                     name=catalog_item["Name"],
                     description=catalog_item["Description"],
-                    embedding= catalog_item["Embedding"],
-                    brand = None,
-                    price = None,               
-                    type = None
+                    embedding= catalog_item["Embedding"]
                 )
                 session.add(item)
 
