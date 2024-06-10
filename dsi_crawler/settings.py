@@ -1,3 +1,5 @@
+import logging
+
 # Scrapy settings for dsi_crawler project
 #
 # For simplicity, this file contains only settings considered important or
@@ -91,3 +93,7 @@ REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
 TWISTED_REACTOR = "twisted.internet.asyncioreactor.AsyncioSelectorReactor"
 FEED_EXPORT_ENCODING = "utf-8"
 FEED_FORMAT = 'jsonlines'
+
+LOG_ENABLED = True
+LOG_LEVEL = logging.ERROR  
+LOG_FILE = 'scrapy_errors.log' 
