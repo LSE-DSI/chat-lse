@@ -4,7 +4,7 @@ from dsi_crawler.items import DSIPagesScraperItem, BoxScraperItem
 class SpiderDSI(scrapy.Spider):
     name = 'lse_crawler'
     start_urls = [
-        'http://www.lse.ac.uk/accounting/Home.aspx?_gl=1*1yc154t*_gcl_au*MTg3NjU2MTkwMS4xNzE0NTY2MDE0*_ga*MTMxNzAyMzQyNC4xNzE0NTY2MDE0*_ga_LWTEVFESYX*MTcxODAwNTgxOC4yNC4xLjE3MTgwMDU4MjIuNTYuMC4w',
+        'http://www.lse.ac.uk/accounting/Home.aspx',
         'http://www.lse.ac.uk/anthropology/home.aspx',
         'https://www.lse.ac.uk/dsi',
         'http://www.lse.ac.uk/economics/home.aspx',
