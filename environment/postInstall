@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+set -e
+
+
+if code-server --disable-telemetry --version; then
+if [ ! -d "/.vscode/extensions" ]
+    then
+       echo "Directory /.vscode/extensions DOES NOT exists."
+       mkdir -p /.vscode/extensions/
+       fi
+       
+       code-server --disable-telemetry --extensions-dir=/.vscode/extensions --install-extension ms-python.python --install-extension ms-pyright.pyright
+       else
+          echo "code-server not found"
+       fi

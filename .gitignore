@@ -165,3 +165,5 @@ data/
 
 # npm
 node_modules
+
+.vscode
