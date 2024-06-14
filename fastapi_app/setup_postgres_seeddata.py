@@ -32,7 +32,7 @@ async def seed_data(engine):
 
         # Insert the items from the JSON file into the database
         current_dir = os.path.dirname(os.path.realpath(__file__))
-        with open(os.path.join(current_dir, "seed_data.json")) as f:
+        with open(os.path.join(current_dir, "seed_data_lse.json")) as f:
             catalog_items = json.load(f)
             for catalog_item in catalog_items:
                 item = await session.execute(select(Item).filter(Item.id == catalog_item["Id"]))
@@ -41,10 +41,9 @@ async def seed_data(engine):
                 item = Item(
                     id=catalog_item["Id"],
                     type=catalog_item["Type"],
-                    brand=catalog_item["Brand"],
                     name=catalog_item["Name"],
                     description=catalog_item["Description"],
-                    price=catalog_item["Price"],
+                    link=catalog_item["Link"],
                     embedding=catalog_item["Embedding"],
                 )
                 session.add(item)

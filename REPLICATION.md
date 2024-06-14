@@ -58,15 +58,21 @@ CONTAINER ID   IMAGE                          COMMAND                  CREATED  
 45d7301f5ef8   pgvector/pgvector:0.7.1-pg16   "docker-entrypoint.s…"   2 seconds ago   Up 2 seconds   0.0.0.0:5432->5432/tcp, :::5432->5432/tcp   chatlse-postgres
 ```
 
+3. Generate sample LSE seed data by running: 
 
-3. Setup the Fastapi app and initialize database by running the setup script:
+```bash
+$ python fastapi_app/setup_seeddata_lse.py 
+```
+(use python or python3 depend on your set up)
+
+4. Setup the Fastapi app and initialize database by running the setup script:
 
 ```bash
 $ cd chat-lse # Make sure in the project root directory
 $ sh ./scripts/setup.sh
 ```
 
-4. Setup the frontend app:
+5. Setup the frontend app:
 
 ```bash
 $ cd frontend # Go to chat-lse/frontend folder

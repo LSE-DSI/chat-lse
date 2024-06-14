@@ -55,10 +55,7 @@ class SimpleRAGChat:
         if vector_search:
             vector = await compute_text_embedding(
                 original_user_query,
-                self.openai_embed_client,
-                self.embed_model,
-                self.embed_deployment,
-                self.embed_dimensions,
+                self.embed_model
             )
         if text_search:
             query_text = original_user_query

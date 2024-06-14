@@ -24,10 +24,8 @@ async def lifespan(app: FastAPI):
     global_storage.openai_chat_client = openai_chat_client
     global_storage.openai_chat_model = openai_chat_model
 
-    openai_embed_client, openai_embed_model, openai_embed_dimensions = await create_openai_embed_client()
-    global_storage.openai_embed_client = openai_embed_client
+    openai_embed_model = await create_openai_embed_client()
     global_storage.openai_embed_model = openai_embed_model
-    global_storage.openai_embed_dimensions = openai_embed_dimensions
 
     yield
 

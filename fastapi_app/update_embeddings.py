@@ -21,9 +21,7 @@ async def update_embeddings():
             for item in items:
                 item.embedding = await compute_text_embedding(
                     item.to_str_for_embedding(),
-                    openai_client=openai_embed_client,
-                    embed_model=openai_embed_model,
-                    embedding_dimensions=openai_embed_dimensions,
+                    embed_model=openai_embed_model
                 )
 
             await session.commit()
