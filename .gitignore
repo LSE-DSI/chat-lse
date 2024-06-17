@@ -161,5 +161,7 @@ cython_debug/
 
 ##### CUSTOM #####
 
-data/
+data/*
+!data/
+!data/NB02 - Fix parse_boxes() issue.ipynb
 node_modules
