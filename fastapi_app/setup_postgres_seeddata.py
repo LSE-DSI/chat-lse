@@ -6,8 +6,11 @@ import os
 
 import sqlalchemy.exc
 from dotenv import load_dotenv
-from sqlalchemy import select, text
+from sqlalchemy import select, text, delete
+from sqlalchemy import cast, Integer
 from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.dialects.postgresql import JSONB
+
 
 from fastapi_app.postgres_engine import create_postgres_engine_from_args, create_postgres_engine_from_env
 from fastapi_app.postgres_models import Item
@@ -29,25 +32,26 @@ async def seed_data(engine):
             return
 
     async with async_sessionmaker(engine, expire_on_commit=False)() as session:
-
-        # Insert the items from the JSON file into the database
+        await session.execute(delete(Item))
+        await session.commit()
         current_dir = os.path.dirname(os.path.realpath(__file__))
-        with open(os.path.join(current_dir, "seed_data.json")) as f:
+        with open(os.path.join(current_dir, "seed_lse_data.json")) as f:
             catalog_items = json.load(f)
             for catalog_item in catalog_items:
-                item = await session.execute(select(Item).filter(Item.id == catalog_item["Id"]))
+                item_id = int(catalog_item["Id"])
+                item = await session.execute(select(Item).filter(cast(Item.id, Integer) == item_id))
                 if item.scalars().first():
                     continue
                 item = Item(
-                    id=catalog_item["Id"],
-                    type=catalog_item["Type"],
-                    brand=catalog_item["Brand"],
+                    id=item_id,
                     name=catalog_item["Name"],
                     description=catalog_item["Description"],
-                    price=catalog_item["Price"],
-                    embedding=catalog_item["Embedding"],
+                    type = catalog_item["Type"],
+                    link = catalog_item["Link"],
+                    embedding= catalog_item["Embedding"]
                 )
                 session.add(item)
+
             try:
                 await session.commit()
             except sqlalchemy.exc.IntegrityError:
