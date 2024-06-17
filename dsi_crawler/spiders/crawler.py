@@ -3,24 +3,28 @@ import scrapy
 from dsi_crawler.items import DSIPagesScraperItem
 from dsi_crawler.items import BoxScraperItem
 
+
 class SpiderDSI(scrapy.Spider):
     name = 'dsi_crawler'
     start_urls = [
         'https://www.lse.ac.uk/DSI',
     ]
-    
+
     def parse(self, response):
         # Extract data from the current page
         for box in response.css("a.component__link"):
-            
+
             item = BoxScraperItem()
             item['origin_url'] = self.start_urls[0]
             item['url'] = box.attrib['href']
             item['title'] = box.css("h2.component__title ::text").get().strip()
-            item['html'] = '\n'.join([element for element in box.css(".component__details").extract()])
+            item['html'] = '\n'.join(
+                [element for element in box.css(".component__details").extract()])
             item['date_scraped'] = response.headers['Date'].decode()
-            item['image_src'] = box.css("div.component__img img::attr(src)").get()
-            item['image_alt_text'] =  box.css(".component__img img::attr(alt)").get()
+            item['image_src'] = box.css(
+                "div.component__img img::attr(src)").get()
+            item['image_alt_text'] = box.css(
+                ".component__img img::attr(alt)").get()
 
             yield item
 
@@ -37,5 +41,5 @@ class SpiderDSI(scrapy.Spider):
         item['title'] = response.css('title::text').get().strip()
         item['html'] = response.text
         item['date_scraped'] = response.headers['Date'].decode()
-        
+
         yield item
