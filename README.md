@@ -49,7 +49,7 @@ conda activate chat-lse # or the equivalent for your OS
 which pip
 ```
 
-    this should output something like `/home/your-username/miniconda3/envs/chat-lse/bin/pip`
+ this should output something like `/home/your-username/miniconda3/envs/chat-lse/bin/pip`
 
 6. Assuming you've fixed the `pip` path, install the required packages:
 
@@ -59,7 +59,7 @@ pip install -r requirements.txt
 
 ## Running the crawler
 
-1. First, ensure you have activated the `poc-lse-search` conda environment.
+1. First, ensure you have activated the `chat-lse` conda environment.
 
 2. Run the following command from the root of the project to save the scraped data to a JSON file:
 
