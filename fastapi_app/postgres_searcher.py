@@ -33,13 +33,28 @@ class PostgresSearcher:
 
         filter_clause_where, filter_clause_and = self.build_filter_clause(filters)
 
-        vector_query = f"""
-            SELECT id, RANK () OVER (ORDER BY embedding <=> :embedding) AS rank
+        vector_query = vector_query = f"""
+            WITH expanded_items AS (
+                SELECT id, jsonb_array_elements(embeddings) as embedding
                 FROM items
-                {filter_clause_where}
-                ORDER BY embedding <=> :embedding
-                LIMIT 20
+            ),
+            ranked_items AS (
+                SELECT
+                    id,
+                    embedding,
+                    RANK() OVER (PARTITION BY id ORDER BY embedding <=> :embedding) AS rank
+                FROM expanded_items
+            )
+            SELECT
+                id,
+                MIN(rank) as best_rank
+            FROM ranked_items
+            WHERE rank = 1  -- Only consider the best rank per item
+            GROUP BY id
+            ORDER BY best_rank
+            LIMIT 20
             """
+
 
         fulltext_query = f"""
             SELECT id, RANK () OVER (ORDER BY ts_rank_cd(to_tsvector('english', description), query) DESC)
