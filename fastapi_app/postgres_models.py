@@ -17,26 +17,30 @@ from sqlalchemy.orm import declarative_base, relationship, Mapped, mapped_column
 from sqlalchemy.dialects.postgresql import ARRAY
 from sqlalchemy.types import JSON
 
-
 Base = declarative_base()
 
+class PDF(Base):
+    __tablename__ = 'pdfs'
+    id: Mapped[int] = Column(Integer, primary_key=True, autoincrement=True)
+    name: Mapped[str] = Column(String)
+    description: Mapped[str] = Column(String)
+    link: Mapped[str] = Column(String)
+
+    # Relationship to link PDFs to their chunks
+    items: Mapped[list['Item']] = relationship("Item", back_populates="pdf")
+
+
 class Item(Base):
-    __tablename__ = 'items'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    type = Column(String)
-    name = Column(String)
-    description = Column(String)
-    link = Column(String)
-    # Relationship to embeddings
-    embeddings = relationship("Embedding", back_populates="item")
+    __tablename__ = "items"
+    id: Mapped[int] = Column(Integer, primary_key=True, autoincrement=True)
+    type: Mapped[str] = Column(String)
+    name: Mapped[str] = Column(String)
+    description: Mapped[str] = Column(String)
+    embedding: Mapped[Vector] = Column(Vector(1024))
 
-class Embedding(Base):
-    __tablename__ = 'embeddings'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    item_id = Column(Integer, ForeignKey('items.id'))
-    vector = Column(Vector)  # pgvector type for efficient vector operations
-    item = relationship("Item", back_populates="embeddings")
-
+    # Foreign Key to reference the PDF table
+    pdf_id: Mapped[int] = Column(Integer, ForeignKey('pdfs.id'))
+    pdf: Mapped[PDF] = relationship("PDF", back_populates="items")
     
     def to_str_for_rag(self):
         return f"Name:{self.name} Description:{self.description} Type:{self.type} Link:{self.link}" 
