@@ -2,7 +2,7 @@ import asyncio
 import json
 from dotenv import load_dotenv
 from fastapi_app.embeddings import compute_text_embedding  # Ensure correct imports
-from fastapi_app.openai_clients import create_openai_embed_client  # Import OpenAI client creation function
+from fastapi_app.clients import create_embed_client  # Import OpenAI client creation function
 
 async def generate_json_entry(doc_id, type, doc_name, description, link, embed_model):
     try:
@@ -25,7 +25,7 @@ async def generate_json_entry(doc_id, type, doc_name, description, link, embed_m
 async def main():
     load_dotenv(override=True)
 
-    embed_model = await create_openai_embed_client()
+    embed_model = await create_embed_client()
 
     # Manually defined descriptions and links for each document
     documents = [

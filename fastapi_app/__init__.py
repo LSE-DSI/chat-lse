@@ -7,7 +7,7 @@ from environs import Env
 from fastapi import FastAPI
 
 from .globals import global_storage
-from .openai_clients import create_openai_chat_client, create_openai_embed_client
+from .clients import create_chat_client, create_embed_client
 from .postgres_engine import create_postgres_engine_from_env
 
 logger = logging.getLogger("ragapp")
@@ -20,12 +20,12 @@ async def lifespan(app: FastAPI):
     engine = await create_postgres_engine_from_env()
     global_storage.engine = engine
 
-    openai_chat_client, openai_chat_model = await create_openai_chat_client()
-    global_storage.openai_chat_client = openai_chat_client
-    global_storage.openai_chat_model = openai_chat_model
+    chat_client, chat_model = await create_chat_client()
+    global_storage.chat_client = chat_client
+    global_storage.chat_model = chat_model
 
-    openai_embed_model = await create_openai_embed_client()
-    global_storage.openai_embed_model = openai_embed_model
+    embed_model = await create_embed_client()
+    global_storage.embed_model = embed_model
 
     yield
 

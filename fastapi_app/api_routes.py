@@ -12,13 +12,13 @@ router = fastapi.APIRouter()
 async def chat_handler(chat_request: ChatRequest):
     ragchat = SimpleRAGChat(
         searcher=PostgresSearcher(global_storage.engine),
-        openai_chat_client=global_storage.openai_chat_client,
-        chat_model=global_storage.openai_chat_model,
-        chat_deployment=global_storage.openai_chat_deployment,
-        openai_embed_client=global_storage.openai_embed_client,
-        embed_deployment=global_storage.openai_embed_deployment,
-        embed_model=global_storage.openai_embed_model,
-        embed_dimensions=global_storage.openai_embed_dimensions,
+        chat_client=global_storage.chat_client,
+        chat_model=global_storage.chat_model,
+        chat_deployment=global_storage.chat_deployment,
+        embed_client=global_storage.embed_client,
+        embed_deployment=global_storage.embed_deployment,
+        embed_model=global_storage.embed_model,
+        embed_dimensions=global_storage.embed_dimensions,
     )
 
     messages = [message.model_dump() for message in chat_request.messages]
