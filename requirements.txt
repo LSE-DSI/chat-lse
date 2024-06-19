@@ -3,6 +3,10 @@ scrapy
 
 pandas>=2
 
+ollama==0.2.1
+llama-index==0.10.32
+llama-index.embeddings.huggingface
+
 # Copied from rag-on-postgres with Azure components removed
 # uvloop is commented out due to incompatibility on Windows
 

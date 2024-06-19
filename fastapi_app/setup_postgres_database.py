@@ -15,6 +15,8 @@ async def create_db_schema(engine):
     async with engine.begin() as conn:
         logger.info("Enabling the pgvector extension for Postgres...")
         await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
+        logger.info("Dropping existing tables...")
+        await conn.run_sync(Base.metadata.drop_all)
         logger.info("Creating database tables and indexes...")
         await conn.run_sync(Base.metadata.create_all)
 

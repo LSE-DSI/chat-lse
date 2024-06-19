@@ -3,9 +3,9 @@ import { Example } from "./Example";
 import styles from "./Example.module.css";
 
 const DEFAULT_EXAMPLES: string[] = [
-    "Best shoe for hiking?",
-    "Climbing gear cheaper than $30?",
-    "Waterproof camping gear?",
+    "How to defer my exams?",
+    "How does the academic classification work?",
+    "How do I apply for financial support?",
 ];
 
 interface Props {

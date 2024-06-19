@@ -18,19 +18,19 @@ class SimpleRAGChat:
         self,
         *,
         searcher: PostgresSearcher,
-        openai_chat_client: AsyncOpenAI,
+        chat_client: AsyncOpenAI,
         chat_model: str,
         chat_deployment: str | None,  # Not needed for non-Azure OpenAI
-        openai_embed_client: AsyncOpenAI,
+        embed_client: AsyncOpenAI,
         embed_deployment: str | None,  # Not needed for non-Azure OpenAI or for retrieval_mode="text"
         embed_model: str,
         embed_dimensions: int,
     ):
         self.searcher = searcher
-        self.openai_chat_client = openai_chat_client
+        self.chat_client = chat_client
         self.chat_model = chat_model
         self.chat_deployment = chat_deployment
-        self.openai_embed_client = openai_embed_client
+        self.embed_client = embed_client
         self.embed_deployment = embed_deployment
         self.embed_model = embed_model
         self.embed_dimensions = embed_dimensions
@@ -55,10 +55,7 @@ class SimpleRAGChat:
         if vector_search:
             vector = await compute_text_embedding(
                 original_user_query,
-                self.openai_embed_client,
-                self.embed_model,
-                self.embed_deployment,
-                self.embed_dimensions,
+                self.embed_model
             )
         if text_search:
             query_text = original_user_query
@@ -79,7 +76,7 @@ class SimpleRAGChat:
             fallback_to_default=True,
         )
 
-        chat_completion_response = await self.openai_chat_client.chat.completions.create(
+        chat_completion_response = await self.chat_client.chat.completions.create(
             # Azure OpenAI takes the deployment name as the model name
             model=self.chat_deployment if self.chat_deployment else self.chat_model,
             messages=messages,

@@ -27,6 +27,7 @@ async def seed_data(engine):
 
         # Load JSON data
         current_dir = os.path.dirname(os.path.realpath(__file__))
+
         with open(os.path.join(current_dir, "seed_lse_data.json")) as f:
             pdf_data = json.load(f)
 
