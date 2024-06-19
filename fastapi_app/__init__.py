@@ -26,6 +26,7 @@ async def lifespan(app: FastAPI):
 
     embed_model = await create_embed_client()
     global_storage.embed_model = embed_model
+    global_storage.context_window_override = int(os.getenv("CHAT_MODEL_CONTEXT_WINDOW_SIZE"))
 
     yield
 

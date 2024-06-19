@@ -8,6 +8,7 @@ class Global:
         self.embed_dimensions = None
         self.chat_deployment = None
         self.embed_deployment = None
+        self.context_window_override = None 
 
 
 global_storage = Global()

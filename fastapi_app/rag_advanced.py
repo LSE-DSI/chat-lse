@@ -29,6 +29,7 @@ class AdvancedRAGChat:
         embed_deployment: str | None,  # Not needed for non-Azure OpenAI or for retrieval_mode="text"
         embed_model: str,
         embed_dimensions: int,
+        context_window_override: int | None # Context window size (default to 4000 if None)
     ):
         self.searcher = searcher
         self.chat_client = chat_client
@@ -38,7 +39,7 @@ class AdvancedRAGChat:
         self.embed_deployment = embed_deployment
         self.embed_model = embed_model
         self.embed_dimensions = embed_dimensions
-        self.chat_token_limit = get_token_limit(chat_model, default_to_minimum=True)
+        self.chat_token_limit = context_window_override if context_window_override else get_token_limit(chat_model, default_to_minimum=True)
         current_dir = pathlib.Path(__file__).parent
         self.query_prompt_template = open(current_dir / "prompts/query.txt").read()
         self.answer_prompt_template = open(current_dir / "prompts/answer.txt").read()
