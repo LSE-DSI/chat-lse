@@ -35,7 +35,7 @@ async def seed_data(engine):
         await session.execute(delete(Item))
         await session.commit()
         current_dir = os.path.dirname(os.path.realpath(__file__))
-        with open(os.path.join(current_dir, "seed_lse_data.json")) as f:
+        with open(os.path.join(current_dir, "seed_data_lse.json")) as f:
             catalog_items = json.load(f)
             for catalog_item in catalog_items:
                 item_id = int(catalog_item["Id"])
@@ -43,12 +43,12 @@ async def seed_data(engine):
                 if item.scalars().first():
                     continue
                 item = Item(
-                    id=item_id,
+                    id=catalog_item["Id"],
+                    type=catalog_item["Type"],
                     name=catalog_item["Name"],
                     description=catalog_item["Description"],
-                    type = catalog_item["Type"],
-                    link = catalog_item["Link"],
-                    embedding= catalog_item["Embedding"]
+                    link=catalog_item["Link"],
+                    embedding=catalog_item["Embedding"],
                 )
                 session.add(item)
 
