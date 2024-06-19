@@ -32,24 +32,32 @@ class PDF(Base):
 
 class Item(Base):
     __tablename__ = "items"
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    type: Mapped[str] = mapped_column()
-    brand: Mapped[str] = mapped_column()
-    name: Mapped[str] = mapped_column()
-    description: Mapped[str] = mapped_column()
-    price: Mapped[float] = mapped_column()
-    embedding: Mapped[Vector] = mapped_column(Vector(1536))  # ada-002
+    id: Mapped[int] = Column(Integer, primary_key=True, autoincrement=True)
+    type: Mapped[str] = Column(String)
+    name: Mapped[str] = Column(String)
+    description: Mapped[str] = Column(String)
+    embedding: Mapped[Vector] = Column(Vector(1024))
+
+    # Foreign Key to reference the PDF table
+    pdf_id: Mapped[int] = Column(Integer, ForeignKey('pdfs.id'))
+    pdf: Mapped[PDF] = relationship("PDF", back_populates="items")
+    
 
     def to_dict(self, include_embedding: bool = False):
-        model_dict = asdict(self)
+        # Manually construct the dictionary
+        model_dict = {
+            "id": self.id,
+            "type": self.type,
+            "name": self.name,
+            "description": self.description,
+            "pdf_id": self.pdf_id
+        }
         if include_embedding:
-            model_dict["embedding"] = model_dict["embedding"].tolist()
-        else:
-            del model_dict["embedding"]
+            model_dict["embedding"] = self.embedding.tolist()  # assuming embedding is a list or similar structure
         return model_dict
 
     def to_str_for_rag(self):
-        return f"Name:{self.name} Description:{self.description} Price:{self.price} Brand:{self.brand} Type:{self.type}"
+        return f"Name:{self.name} Description:{self.description} Type:{self.type}" 
 
     def to_str_for_embedding(self):
         return f"Name: {self.name} Description: {self.description} Type: {self.type}"
