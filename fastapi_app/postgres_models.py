@@ -52,7 +52,7 @@ class Item(Base):
 # Define HNSW index to support vector similarity search through the vector_cosine_ops access method (cosine distance).
 index = Index(
     "hnsw_index_for_innerproduct_item_embedding",
-    Item.embeddings,
+    Item.embedding,
     postgresql_using="hnsw",
     postgresql_with={"m": 16, "ef_construction": 64},
     postgresql_ops={"embedding": "vector_ip_ops"},
