@@ -28,7 +28,7 @@ class Item(Base):
         else:
             del model_dict["embedding"]
         return model_dict
-
+    
     def to_str_for_rag(self):
         return f"Name:{self.name} Description:{self.description} Link:{self.link} Type:{self.type}"
 
