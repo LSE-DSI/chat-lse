@@ -1,5 +1,2237 @@
 [
     {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC100 - Economics A",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235367090002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC100 - Economics A",
+        "type": "EXAM PAPER",
+        "exam_year": "2017 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235367040002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC100 - Economics A",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235367100002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC100 - Economics A",
+        "type": "EXAM PAPER",
+        "exam_year": "2018 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235367050002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC100 - Economics A",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235367110002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC102 - Economics B",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366390002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC102 - Economics B",
+        "type": "EXAM PAPER",
+        "exam_year": "2017 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366340002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC102 - Economics B",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366400002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC102 - Economics B",
+        "type": "EXAM PAPER",
+        "exam_year": "2018 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366350002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC102 - Economics B",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366410002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC1A1 - Microeconomics I",
+        "type": "EXAM PAPER",
+        "exam_year": "2022",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363570002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC1A3 - Microeconomics I",
+        "type": "EXAM PAPER",
+        "exam_year": "2021 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363530002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC1A3 - Microeconomics I",
+        "type": "EXAM PAPER",
+        "exam_year": "2023 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12253675810002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC1A5 - Microeconomics I",
+        "type": "EXAM PAPER",
+        "exam_year": "2021 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363550002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC1A5 - Microeconomics I",
+        "type": "EXAM PAPER",
+        "exam_year": "2023 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12253675790002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC1B1 - Macroeconomics I",
+        "type": "EXAM PAPER",
+        "exam_year": "2022",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365090002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC1B3 - Macroeconomics I",
+        "type": "EXAM PAPER",
+        "exam_year": "2022",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364860002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC1B5 - Macroeconomics I",
+        "type": "EXAM PAPER",
+        "exam_year": "2022",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364880002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC1C1 - Econometrics I",
+        "type": "EXAM PAPER",
+        "exam_year": "2022",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366130002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC1P1 - Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2021 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364990002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC1P1 - Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2023 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12253675770002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC201 - Microeconomic Principles I",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364080002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC201 - Microeconomic Principles I",
+        "type": "EXAM PAPER",
+        "exam_year": "2017 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364020002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC201 - Microeconomic Principles I",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364090002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC201 - Microeconomic Principles I",
+        "type": "EXAM PAPER",
+        "exam_year": "2018 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364030002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC201 - Microeconomic Principles I",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364100002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC202 - Microeconomic Principles II",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364210002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC202 - Microeconomic Principles II",
+        "type": "EXAM PAPER",
+        "exam_year": "2017 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364150002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC202 - Microeconomic Principles II",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364220002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC202 - Microeconomic Principles II",
+        "type": "EXAM PAPER",
+        "exam_year": "2018 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364160002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC202 - Microeconomic Principles II",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364230002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC210 - Macroeconomic Principles",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365530002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC210 - Macroeconomic Principles",
+        "type": "EXAM PAPER",
+        "exam_year": "2017 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365470002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC210 - Macroeconomic Principles",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365540002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC210 - Macroeconomic Principles",
+        "type": "EXAM PAPER",
+        "exam_year": "2018 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365480002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC210 - Macroeconomic Principles",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365550002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC220 - Introduction to Econometrics",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366770002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC220 - Introduction to Econometrics",
+        "type": "EXAM PAPER",
+        "exam_year": "2017 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366710002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC220 - Introduction to Econometrics",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366780002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC220 - Introduction to Econometrics",
+        "type": "EXAM PAPER",
+        "exam_year": "2018 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366720002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC220 - Introduction to Econometrics",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366790002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC221 - Principles of Econometrics",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366960002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC221 - Principles of Econometrics",
+        "type": "EXAM PAPER",
+        "exam_year": "2017 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366900002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC221 - Principles of Econometrics",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366970002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC221 - Principles of Econometrics",
+        "type": "EXAM PAPER",
+        "exam_year": "2018 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366910002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC221 - Principles of Econometrics",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366980002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC230 - Economics in Public Policy",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363120002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC230 - Economics in Public Policy",
+        "type": "EXAM PAPER",
+        "exam_year": "2017 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363060002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC230 - Economics in Public Policy",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363130002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC230 - Economics in Public Policy",
+        "type": "EXAM PAPER",
+        "exam_year": "2018 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363070002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC230 - Economics in Public Policy",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363140002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC2A5 - Microeconomic Principles II",
+        "type": "EXAM PAPER",
+        "exam_year": "2023 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12254087570002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC2B3 - Macroeconomics II",
+        "type": "OTHER",
+        "exam_year": "2023",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12256267600002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC2C1 - Econometrics II",
+        "type": "EXAM PAPER",
+        "exam_year": "2023 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12254087630002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC2C3 - Econometrics I",
+        "type": "EXAM PAPER",
+        "exam_year": "2023 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12254087600002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC301 - Advanced Economic Analysis",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366460002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC301 - Advanced Economic Analysis",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366470002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC301 - Advanced Economic Analysis",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366480002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC301 - Advanced Economic Analysis",
+        "type": "EXAM PAPER",
+        "exam_year": "2020",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366490002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC301 - Advanced Economic Analysis",
+        "type": "EXAM PAPER",
+        "exam_year": "2021",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366500002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC302 - Political Economy",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366640002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC302 - Political Economy",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366650002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC302 - Political Economy",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366660002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC302 - Political Economy",
+        "type": "EXAM PAPER",
+        "exam_year": "2020",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366670002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC302 - Political Economy",
+        "type": "EXAM PAPER",
+        "exam_year": "2021",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366680002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC307 - Development Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235367260002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC307 - Development Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235367270002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC307 - Development Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235367280002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC307 - Development Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2020",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235367290002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC307 - Development Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2021",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235367300002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC309 - Econometric Theory",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235367340002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC309 - Econometric Theory",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235367350002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC309 - Econometric Theory",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235367360002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC309 - Econometric Theory",
+        "type": "EXAM PAPER",
+        "exam_year": "2020",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235367370002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC309 - Econometric Theory",
+        "type": "EXAM PAPER",
+        "exam_year": "2021",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235367380002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC310 - Behavioural Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235362760002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC310 - Behavioural Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235362770002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC310 - Behavioural Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235362780002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC310 - Behavioural Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2020",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235362790002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC310 - Behavioural Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2021",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235362800002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC311 - History of Economics: How Theories Change",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235362940002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC311 - History of Economics: How Theories Change",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235362950002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC311 - History of Economics: How Theories Change",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235362960002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC311 - History of Economics: How Theories Change",
+        "type": "EXAM PAPER",
+        "exam_year": "2022",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12237706810002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC311 - History of Economics: How Theories Change",
+        "type": "EXAM PAPER",
+        "exam_year": "2023",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12254087550002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC313 - Industrial Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235362990002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC313 - Industrial Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363000002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC313 - Industrial Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363010002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC313 - Industrial Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2020",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363020002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC313 - Industrial Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2021",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363030002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC315 - International Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363390002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC315 - International Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363400002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC315 - International Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363410002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC315 - International Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2020 Pathway 1",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363360002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC315 - International Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2020 Pathway 2",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363370002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC317 - Labour Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363460002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC317 - Labour Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363470002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC317 - Labour Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363480002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC317 - Labour Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2020",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363490002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC317 - Labour Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2021",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363500002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC319 - Games and Economic Behaviour",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363200002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC319 - Games and Economic Behaviour",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363210002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC319 - Games and Economic Behaviour",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363220002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC319 - Games and Economic Behaviour",
+        "type": "EXAM PAPER",
+        "exam_year": "2020",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363230002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC319 - Games and Economic Behaviour",
+        "type": "EXAM PAPER",
+        "exam_year": "2022",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363240002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC321 - Monetary Economics and Aggregate Fluctuations",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363760002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC321 - Monetary Economics and Aggregate Fluctuations",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363770002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC321 - Monetary Economics and Aggregate Fluctuations",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363780002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC321 - Monetary Economics and Aggregate Fluctuations",
+        "type": "EXAM PAPER",
+        "exam_year": "2020",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363790002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC321 - Monetary Economics and Aggregate Fluctuations",
+        "type": "EXAM PAPER",
+        "exam_year": "2021",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363800002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC325 - Public Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364790002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC325 - Public Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364800002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC325 - Public Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364810002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC325 - Public Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2020",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364820002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC325 - Public Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2021",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364830002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC333 - Problems of Applied Econometrics",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365120002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC333 - Problems of Applied Econometrics",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365130002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC333 - Problems of Applied Econometrics",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365140002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC333 - Problems of Applied Econometrics",
+        "type": "EXAM PAPER",
+        "exam_year": "2020",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365150002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC333 - Problems of Applied Econometrics",
+        "type": "EXAM PAPER",
+        "exam_year": "2021",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365160002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC402 - Econometrics",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364720002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC402 - Econometrics",
+        "type": "EXAM PAPER",
+        "exam_year": "2017 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364660002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC402 - Econometrics",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364730002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC402 - Econometrics",
+        "type": "EXAM PAPER",
+        "exam_year": "2018 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364670002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC402 - Econometrics",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364740002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC406 - Economic Policy Analysis",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364640002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC410 - Public Economics for Public Policy",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365060002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC410 - Public Economics for Public Policy",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365070002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC411 - Microeconomics",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365340002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC411 - Microeconomics",
+        "type": "EXAM PAPER",
+        "exam_year": "2017 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365280002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC411 - Microeconomics",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365350002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC411 - Microeconomics",
+        "type": "EXAM PAPER",
+        "exam_year": "2018 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365290002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC411 - Microeconomics",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365360002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC413 - Macroeconomics",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365970002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC413 - Macroeconomics",
+        "type": "EXAM PAPER",
+        "exam_year": "2017 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365910002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC413 - Macroeconomics",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365980002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC413 - Macroeconomics",
+        "type": "EXAM PAPER",
+        "exam_year": "2018 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365920002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC413 - Macroeconomics",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365990002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC417 - Advanced Macroeconomics",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365650002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC417 - Advanced Macroeconomics",
+        "type": "EXAM PAPER",
+        "exam_year": "2017 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365610002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC417 - Advanced Macroeconomics",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365660002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC417 - Advanced Macroeconomics",
+        "type": "EXAM PAPER",
+        "exam_year": "2018 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365600002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC417 - Advanced Macroeconomics",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365670002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC418 - Globalisation and Economic Policy",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365770002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC418 - Globalisation and Economic Policy",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365780002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC419 - Methods of Economic Policy Analysis",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365830002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC419 - Methods of Economic Policy Analysis",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365840002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC421 - International Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366290002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC421 - International Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2017 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366260002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC421 - International Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366300002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC421 - International Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2018 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366250002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC421 - International Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366310002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC423 - Labour Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366570002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC423 - Labour Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2017 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366540002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC423 - Labour Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366580002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC423 - Labour Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2018 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366530002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC423 - Labour Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366590002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC424 - Monetary Economics and Aggregate Fluctuations",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235367450002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC424 - Monetary Economics and Aggregate Fluctuations",
+        "type": "EXAM PAPER",
+        "exam_year": "2017 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235367410002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC424 - Monetary Economics and Aggregate Fluctuations",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235367460002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC424 - Monetary Economics and Aggregate Fluctuations",
+        "type": "EXAM PAPER",
+        "exam_year": "2018 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235367420002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC424 - Monetary Economics and Aggregate Fluctuations",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235367470002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC426 - Public Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235367570002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC426 - Public Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2017 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235367530002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC426 - Public Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235367580002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC426 - Public Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2018 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235367540002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC426 - Public Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235367590002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC427 - The Economics of Industry",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235307670002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC427 - The Economics of Industry",
+        "type": "EXAM PAPER",
+        "exam_year": "2017 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235367630002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC427 - The Economics of Industry",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235307680002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC427 - The Economics of Industry",
+        "type": "EXAM PAPER",
+        "exam_year": "2018 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235367640002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC427 - The Economics of Industry",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235307690002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC428 - Development and Growth",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235367190002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC428 - Development and Growth",
+        "type": "EXAM PAPER",
+        "exam_year": "2017 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235367150002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC428 - Development and Growth",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235367200002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC428 - Development and Growth",
+        "type": "EXAM PAPER",
+        "exam_year": "2018 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235367160002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC428 - Development and Growth",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235367210002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC440 - Micro and Macro Economics (for Public Policy)",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364410002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC440 - Micro and Macro Economics (for Public Policy)",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364420002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC441 - Microeconomics for MRes students",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364570002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC441 - Microeconomics for MRes students",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364580002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC441 - Microeconomics for MRes students",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364590002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC441 - Microeconomics for MRes students",
+        "type": "EXAM PAPER",
+        "exam_year": "2021",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364600002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC441 - Microeconomics for MRes students",
+        "type": "EXAM PAPER",
+        "exam_year": "2022",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364610002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC442 - Macroeconomics for MRes students",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363680002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC442 - Macroeconomics for MRes students",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363690002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC442 - Macroeconomics for MRes students",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363700002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC442 - Macroeconomics for MRes students",
+        "type": "EXAM PAPER",
+        "exam_year": "2020",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363710002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC442 - Macroeconomics for MRes students",
+        "type": "EXAM PAPER",
+        "exam_year": "2021",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363720002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC443 - Econometrics for MRes students",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363960002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC443 - Econometrics for MRes students",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363970002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC443 - Econometrics for MRes students",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363980002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC443 - Econometrics for MRes students",
+        "type": "EXAM PAPER",
+        "exam_year": "2021",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363990002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC443 - Econometrics for MRes students",
+        "type": "EXAM PAPER",
+        "exam_year": "2022",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364000002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC452 - Applying Behavioural Economics for Social Impact: Design, Delivery, Evaluation and Policy",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365800002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC452 - Applying Behavioural Economics for Social Impact: Design, Delivery, Evaluation and Policy",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365810002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC453 - Political Economy",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364940002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC453 - Political Economy",
+        "type": "EXAM PAPER",
+        "exam_year": "2017 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364900002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC453 - Political Economy",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364950002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC453 - Political Economy",
+        "type": "EXAM PAPER",
+        "exam_year": "2018 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364910002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC453 - Political Economy",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364960002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC454 - Development Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365020002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC454 - Development Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365030002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC455 - Quantitative Approaches and Policy Analysis",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365250002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC455 - Quantitative Approaches and Policy Analysis",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365260002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC465 - Economic Growth, Development, and Capitalism in Historical Perspective",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366190002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC465 - Economic Growth, Development, and Capitalism in Historical Perspective",
+        "type": "EXAM PAPER",
+        "exam_year": "2017 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366150002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC465 - Economic Growth, Development, and Capitalism in Historical Perspective",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366200002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC465 - Economic Growth, Development, and Capitalism in Historical Perspective",
+        "type": "EXAM PAPER",
+        "exam_year": "2018 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366160002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC465 - Economic Growth, Development, and Capitalism in Historical Perspective",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366210002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC475 - Quantitative Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235362690002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC475 - Quantitative Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2017 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235362650002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC475 - Quantitative Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235362700002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC475 - Quantitative Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2018 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235362660002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC475 - Quantitative Economics",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235362710002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC476 - Contracts and Organisations",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235362870002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC476 - Contracts and Organisations",
+        "type": "EXAM PAPER",
+        "exam_year": "2017 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235362830002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC476 - Contracts and Organisations",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235362880002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC476 - Contracts and Organisations",
+        "type": "EXAM PAPER",
+        "exam_year": "2018 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235362840002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC476 - Contracts and Organisations",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235362890002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC484 - Econometric Analysis",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364340002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC484 - Econometric Analysis",
+        "type": "EXAM PAPER",
+        "exam_year": "2017 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364280002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC484 - Econometric Analysis",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364350002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC484 - Econometric Analysis",
+        "type": "EXAM PAPER",
+        "exam_year": "2018 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364290002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC484 - Econometric Analysis",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364360002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC485 - Further Topics in Econometrics",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364500002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC485 - Further Topics in Econometrics",
+        "type": "EXAM PAPER",
+        "exam_year": "2017 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364440002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC485 - Further Topics in Econometrics",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364510002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC485 - Further Topics in Econometrics",
+        "type": "EXAM PAPER",
+        "exam_year": "2018 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364450002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC485 - Further Topics in Econometrics",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235364520002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC486 - Econometric Methods",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363600002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC486 - Econometric Methods",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363610002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC486 - Econometric Methods",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363620002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC486 - Econometric Methods",
+        "type": "EXAM PAPER",
+        "exam_year": "2020",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363630002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC486 - Econometric Methods",
+        "type": "EXAM PAPER",
+        "exam_year": "2021",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363640002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC487 - Advanced Microeconomics",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363890002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC487 - Advanced Microeconomics",
+        "type": "EXAM PAPER",
+        "exam_year": "2017 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363830002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC487 - Advanced Microeconomics",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363900002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC487 - Advanced Microeconomics",
+        "type": "EXAM PAPER",
+        "exam_year": "2018 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363840002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC487 - Advanced Microeconomics",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363910002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC4B5 - Macroeconomics for MSc F&E",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235307730002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC4B5 - Macroeconomics for MSc F&E",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235307740002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC4B5 - Macroeconomics for MSc F&E",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235307750002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC4B5 - Macroeconomics for MSc F&E",
+        "type": "EXAM PAPER",
+        "exam_year": "2020",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235307760002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC4B5 - Macroeconomics for MSc F&E",
+        "type": "EXAM PAPER",
+        "exam_year": "2022",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12237707070002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC4B6 - Microeconomics for MSc F&E",
+        "type": "EXAM PAPER",
+        "exam_year": "2017 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235307780002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC4B6 - Microeconomics for MSc F&E",
+        "type": "EXAM PAPER",
+        "exam_year": "2018 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235307790002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC4B6 - Microeconomics for MSc F&E",
+        "type": "EXAM PAPER",
+        "exam_year": "2019 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235307800002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC4B6 - Microeconomics for MSc F&E",
+        "type": "EXAM PAPER",
+        "exam_year": "2022 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12237707060002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC518 - Topics in Advanced Econometrics for Research Students",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363310002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC518 - Topics in Advanced Econometrics for Research Students",
+        "type": "EXAM PAPER",
+        "exam_year": "2017 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363260002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC518 - Topics in Advanced Econometrics for Research Students",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363320002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC518 - Topics in Advanced Econometrics for Research Students",
+        "type": "EXAM PAPER",
+        "exam_year": "2018 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363270002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC518 - Topics in Advanced Econometrics for Research Students",
+        "type": "EXAM PAPER",
+        "exam_year": "2020 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235363280002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC532 - International Economics for Research Students",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365200002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC532 - International Economics for Research Students",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365210002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC532 - International Economics for Research Students",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365220002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC533 - Labour Economics for Research Students",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365410002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC533 - Labour Economics for Research Students",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365420002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC533 - Labour Economics for Research Students",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365430002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC533 - Labour Economics for Research Students",
+        "type": "EXAM PAPER",
+        "exam_year": "2021",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365440002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC533 - Labour Economics for Research Students",
+        "type": "EXAM PAPER",
+        "exam_year": "2022",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365450002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC534 - Public Economics for Research Students",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365870002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC534 - Public Economics for Research Students",
+        "type": "EXAM PAPER",
+        "exam_year": "2021",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365880002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC534 - Public Economics for Research Students",
+        "type": "EXAM PAPER",
+        "exam_year": "2022",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365890002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC535 - Development Economics for Research Students",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366040002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC537 - Microeconomic Theory for Research Students",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366070002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC537 - Microeconomic Theory for Research Students",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366080002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC537 - Microeconomic Theory for Research Students",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366090002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC537 - Microeconomic Theory for Research Students",
+        "type": "EXAM PAPER",
+        "exam_year": "2021",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366100002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC537 - Microeconomic Theory for Research Students",
+        "type": "EXAM PAPER",
+        "exam_year": "2022",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366110002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC539 - Macroeconomics for Research Students",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365720002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC539 - Macroeconomics for Research Students",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365730002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC539 - Macroeconomics for Research Students",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365740002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC539 - Macroeconomics for Research Students",
+        "type": "EXAM PAPER",
+        "exam_year": "2021",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235365750002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC540 - Political Economy for Research Students",
+        "type": "EXAM PAPER",
+        "exam_year": "2017",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366850002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC540 - Political Economy for Research Students",
+        "type": "EXAM PAPER",
+        "exam_year": "2018",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366860002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC540 - Political Economy for Research Students",
+        "type": "EXAM PAPER",
+        "exam_year": "2019",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366870002021"
+    },
+    {
+        "name": "Economics",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317100002021&lang=en",
+        "course_name": "EC540 - Political Economy for Research Students",
+        "type": "EXAM PAPER",
+        "exam_year": "2021",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235366880002021"
+    },
+    {
         "name": "European Institute",
         "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235317080002021&lang=en",
         "course_name": "EU420 - European Law and Government",
