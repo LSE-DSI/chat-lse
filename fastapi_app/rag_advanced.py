@@ -22,23 +22,24 @@ class AdvancedRAGChat:
         self,
         *,
         searcher: PostgresSearcher,
-        openai_chat_client: AsyncOpenAI,
+        chat_client: AsyncOpenAI,
         chat_model: str,
         chat_deployment: str | None,  # Not needed for non-Azure OpenAI
-        openai_embed_client: AsyncOpenAI,
+        embed_client: AsyncOpenAI,
         embed_deployment: str | None,  # Not needed for non-Azure OpenAI or for retrieval_mode="text"
         embed_model: str,
         embed_dimensions: int,
+        context_window_override: int | None # Context window size (default to 4000 if None)
     ):
         self.searcher = searcher
-        self.openai_chat_client = openai_chat_client
+        self.chat_client = chat_client
         self.chat_model = chat_model
         self.chat_deployment = chat_deployment
-        self.openai_embed_client = openai_embed_client
+        self.embed_client = embed_client
         self.embed_deployment = embed_deployment
         self.embed_model = embed_model
         self.embed_dimensions = embed_dimensions
-        self.chat_token_limit = get_token_limit(chat_model, default_to_minimum=True)
+        self.chat_token_limit = context_window_override if context_window_override else get_token_limit(chat_model, default_to_minimum=True)
         current_dir = pathlib.Path(__file__).parent
         self.query_prompt_template = open(current_dir / "prompts/query.txt").read()
         self.answer_prompt_template = open(current_dir / "prompts/answer.txt").read()
@@ -65,7 +66,7 @@ class AdvancedRAGChat:
             fallback_to_default=True,
         )
 
-        chat_completion: ChatCompletion = await self.openai_chat_client.chat.completions.create(
+        chat_completion: ChatCompletion = await self.chat_client.chat.completions.create(
             messages=query_messages,  # type: ignore
             # Azure OpenAI takes the deployment name as the model name
             model=self.chat_deployment if self.chat_deployment else self.chat_model,
@@ -83,10 +84,7 @@ class AdvancedRAGChat:
         if vector_search:
             vector = await compute_text_embedding(
                 original_user_query,
-                self.openai_embed_client,
-                self.embed_model,
-                self.embed_deployment,
-                self.embed_dimensions,
+                self.embed_model 
             )
         if not text_search:
             query_text = None
@@ -107,7 +105,7 @@ class AdvancedRAGChat:
             fallback_to_default=True,
         )
 
-        chat_completion_response = await self.openai_chat_client.chat.completions.create(
+        chat_completion_response = await self.chat_client.chat.completions.create(
             # Azure OpenAI takes the deployment name as the model name
             model=self.chat_deployment if self.chat_deployment else self.chat_model,
             messages=messages,

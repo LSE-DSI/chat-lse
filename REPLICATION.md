@@ -1,12 +1,13 @@
 # Rag on Postgres Replication
 
-This repo contains the minimal codes to replicate the Rag on Postgres project. The code has been tested on Windows 11 and Ubuntu 24.04 LTS.
+This repo contains the minimal codes to replicate the Rag on Postgres project. The code has been tested on Windows 11, Ubuntu 24.04 LTS, and MacOS (M2). 
 
 Modifications:
 
 - Removed all Azure components
 - Removed all VSCode-related configurations
 - Removed fontend router in the fastapi_app
+- Removed dependency on close-sourced OpenAI chat and embedding models 
 
 ## ⚙️ Setup
 
@@ -38,15 +39,7 @@ $ source .venv/bin/activate
 
 ### Setup the environments
 
-1. **[IMPORTANT]** Copy `.env.sample` into a `.env` file and replace *YOUR-OPENAI-API-KEY* with your openai api key. Do not change other configs unless you know what you are doing.
-
-```
-# Needed for OpenAI.com:
-OPENAICOM_KEY=YOUR-OPENAI-API-KEY # Replace this value
-...
-```
-
-2. Start the Postgres docker container and verify the container is running. The STATUS of the container shoule be something like "Up 2 seconds".
+1. Start the Postgres docker container and verify the container is running. The STATUS of the container shoule be something like "Up 2 seconds".
 
 ```bash
 $ docker run -itd --name chatlse-postgres --restart unless-stopped -p 5432:5432 -e POSTGRES_PASSWORD=chatlse -e POSTGRES_USER=chatlse -e POSTGRES_DB=chatlse -d pgvector/pgvector:0.7.1-pg16
@@ -58,15 +51,33 @@ CONTAINER ID   IMAGE                          COMMAND                  CREATED  
 45d7301f5ef8   pgvector/pgvector:0.7.1-pg16   "docker-entrypoint.s…"   2 seconds ago   Up 2 seconds   0.0.0.0:5432->5432/tcp, :::5432->5432/tcp   chatlse-postgres
 ```
 
+2. Download [Ollama](https://ollama.com/download) or pull its docker image using: 
 
-3. Setup the Fastapi app and initialize database by running the setup script:
+CPU only: 
+```bash
+$ docker run -d -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
+```
+
+Nvidia GPU 
+```bash
+docker run -d --gpus=all -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
+```
+
+3. Generate sample LSE seed data by running: 
+
+```bash
+$ python fastapi_app/setup_seeddata_lse.py 
+```
+(use python or python3 depend on your set up)
+
+4. Setup the Fastapi app and initialize database by running the setup script:
 
 ```bash
 $ cd chat-lse # Make sure in the project root directory
 $ sh ./scripts/setup.sh
 ```
 
-4. Setup the frontend app:
+5. Setup the frontend app:
 
 ```bash
 $ cd frontend # Go to chat-lse/frontend folder
@@ -103,7 +114,8 @@ WARNING:  ASGI app factory detected. Using it, but please consider setting the -
 INFO:     Started server process [7611]
 INFO:     Waiting for application startup.
 INFO:ragapp:Authenticating to PostgreSQL using password...
-INFO:ragapp:Authenticating to OpenAI using OpenAI.com API key...
+INFO:ragapp:Authenticating to OpenAI using Ollama...
+INFO:ragapp:Authenticating to OpenAI using Ollama...
 INFO:     Application startup complete.
 ```
 
