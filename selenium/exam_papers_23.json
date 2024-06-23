@@ -42,6 +42,14 @@
     {
         "name": "Methodology",
         "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235316960002021&lang=en",
+        "course_name": "MY451 - Introduction to Quantitative Analysis",
+        "type": "EXAM PAPER",
+        "exam_year": "2023",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12255157410002021"
+    },
+    {
+        "name": "Methodology",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235316960002021&lang=en",
         "course_name": "MY452 - Applied Regression Analysis",
         "type": "EXAM PAPER",
         "exam_year": "2017",
@@ -78,6 +86,14 @@
         "type": "EXAM PAPER",
         "exam_year": "2022",
         "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235602270002021"
+    },
+    {
+        "name": "Methodology",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235316960002021&lang=en",
+        "course_name": "MY452 - Applied Regression Analysis",
+        "type": "EXAM PAPER",
+        "exam_year": "2023",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12255157400002021"
     },
     {
         "name": "Methodology",
@@ -122,6 +138,22 @@
     {
         "name": "Methodology",
         "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235316960002021&lang=en",
+        "course_name": "MY455 - Multivariate Analysis and Measurement",
+        "type": "EXAM PAPER",
+        "exam_year": "2022",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235582060002021"
+    },
+    {
+        "name": "Methodology",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235316960002021&lang=en",
+        "course_name": "MY455 - Multivariate Analysis and Measurement",
+        "type": "EXAM PAPER",
+        "exam_year": "2023",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12255157390002021"
+    },
+    {
+        "name": "Methodology",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235316960002021&lang=en",
         "course_name": "MY456 - Survey Methodology",
         "type": "EXAM PAPER",
         "exam_year": "2017",
@@ -162,6 +194,22 @@
     {
         "name": "Methodology",
         "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235316960002021&lang=en",
+        "course_name": "MY456 - Survey Methodology",
+        "type": "EXAM PAPER",
+        "exam_year": "2022",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235581980002021"
+    },
+    {
+        "name": "Methodology",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235316960002021&lang=en",
+        "course_name": "MY456 - Survey Methodology",
+        "type": "EXAM PAPER",
+        "exam_year": "2023",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12255157380002021"
+    },
+    {
+        "name": "Methodology",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235316960002021&lang=en",
         "course_name": "MY457 - Causal Inference for Observational and Experimental Studies",
         "type": "EXAM PAPER",
         "exam_year": "2017",
@@ -198,6 +246,22 @@
         "type": "EXAM PAPER",
         "exam_year": "2021",
         "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235601520002021"
+    },
+    {
+        "name": "Methodology",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235316960002021&lang=en",
+        "course_name": "MY457 - Causal Inference for Observational and Experimental Studies",
+        "type": "EXAM PAPER",
+        "exam_year": "2022",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235601560002021"
+    },
+    {
+        "name": "Methodology",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235316960002021&lang=en",
+        "course_name": "MY457 - Causal Inference for Observational and Experimental Studies",
+        "type": "EXAM PAPER",
+        "exam_year": "2023",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12255157370002021"
     },
     {
         "name": "Methodology",
@@ -278,6 +342,30 @@
         "type": "EXAM PAPER",
         "exam_year": "2020",
         "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235603740002021"
+    },
+    {
+        "name": "Methodology",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235316960002021&lang=en",
+        "course_name": "MY465 - Intermediate Quantitative Analysis",
+        "type": "EXAM PAPER",
+        "exam_year": "2021",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235603760002021"
+    },
+    {
+        "name": "Methodology",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235316960002021&lang=en",
+        "course_name": "MY465 - Intermediate Quantitative Analysis",
+        "type": "EXAM PAPER",
+        "exam_year": "2022",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235603780002021"
+    },
+    {
+        "name": "Methodology",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235316960002021&lang=en",
+        "course_name": "MY465 - Intermediate Quantitative Analysis",
+        "type": "EXAM PAPER",
+        "exam_year": "2023 Lent Term",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12255227520002021"
     },
     {
         "name": "Philosophy, Logic and Scientific Method",
@@ -558,6 +646,14 @@
         "type": "EXAM PAPER",
         "exam_year": "2021",
         "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235605760002021"
+    },
+    {
+        "name": "Philosophy, Logic and Scientific Method",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235316950002021&lang=en",
+        "course_name": "PH217 - Set Theory and Further Logic",
+        "type": "EXAM PAPER",
+        "exam_year": "2023",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12255157350002021"
     },
     {
         "name": "Philosophy, Logic and Scientific Method",
@@ -962,6 +1058,14 @@
     {
         "name": "Philosophy, Logic and Scientific Method",
         "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235316950002021&lang=en",
+        "course_name": "PH416 - Philosophy, Morals and Politics",
+        "type": "EXAM PAPER",
+        "exam_year": "2022",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235581590002021"
+    },
+    {
+        "name": "Philosophy, Logic and Scientific Method",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235316950002021&lang=en",
         "course_name": "PH419 - Set Theory and Further Logic",
         "type": "EXAM PAPER",
         "exam_year": "2017",
@@ -998,6 +1102,14 @@
         "type": "EXAM PAPER",
         "exam_year": "2021",
         "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235581480002021"
+    },
+    {
+        "name": "Philosophy, Logic and Scientific Method",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235316950002021&lang=en",
+        "course_name": "PH419 - Set Theory and Further Logic",
+        "type": "EXAM PAPER",
+        "exam_year": "2022",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235581490002021"
     },
     {
         "name": "Philosophy, Logic and Scientific Method",
@@ -1738,6 +1850,22 @@
     {
         "name": "Social Policy",
         "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235316920002021&lang=en",
+        "course_name": "SP271 - Psychology of Crime and Criminal Justice",
+        "type": "EXAM PAPER",
+        "exam_year": "2020 Resit",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235600790002021"
+    },
+    {
+        "name": "Social Policy",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235316920002021&lang=en",
+        "course_name": "SP271 - Psychology of Crime and Criminal Justice",
+        "type": "EXAM PAPER",
+        "exam_year": "2022",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235600830002021"
+    },
+    {
+        "name": "Social Policy",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235316920002021&lang=en",
         "course_name": "SP400 - International Social and Public Policy",
         "type": "EXAM PAPER",
         "exam_year": "2020",
@@ -2050,6 +2178,14 @@
     {
         "name": "Sociology",
         "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235316910002021&lang=en",
+        "course_name": "SO100 - Key Concepts: Introduction to Social Theory",
+        "type": "EXAM PAPER",
+        "exam_year": "2023",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12255867590002021"
+    },
+    {
+        "name": "Sociology",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235316910002021&lang=en",
         "course_name": "SO102 - Data in Society: Researching Social Life",
         "type": "EXAM PAPER",
         "exam_year": "2017",
@@ -2126,6 +2262,14 @@
         "type": "EXAM PAPER",
         "exam_year": "2021",
         "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235604700002021"
+    },
+    {
+        "name": "Sociology",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235316910002021&lang=en",
+        "course_name": "SO110 - Power, Inequality, and Difference: Contemporary Themes in Sociology",
+        "type": "EXAM PAPER",
+        "exam_year": "2023",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12255867570002021"
     },
     {
         "name": "Sociology",
@@ -2210,6 +2354,14 @@
     {
         "name": "Sociology",
         "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235316910002021&lang=en",
+        "course_name": "SO203 - Political Sociology",
+        "type": "EXAM PAPER",
+        "exam_year": "2023",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12255867520002021"
+    },
+    {
+        "name": "Sociology",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235316910002021&lang=en",
         "course_name": "SO208 - Gender and Society",
         "type": "EXAM PAPER",
         "exam_year": "2017",
@@ -2246,6 +2398,14 @@
         "type": "EXAM PAPER",
         "exam_year": "2021",
         "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235602410002021"
+    },
+    {
+        "name": "Sociology",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235316910002021&lang=en",
+        "course_name": "SO208 - Gender and Society",
+        "type": "EXAM PAPER",
+        "exam_year": "2021 General Course",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235602260002021"
     },
     {
         "name": "Sociology",
@@ -2474,6 +2634,22 @@
     {
         "name": "Sociology",
         "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235316910002021&lang=en",
+        "course_name": "SO407 - Politics and Society",
+        "type": "EXAM PAPER",
+        "exam_year": "2021",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235584090002021"
+    },
+    {
+        "name": "Sociology",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235316910002021&lang=en",
+        "course_name": "SO407 - Politics and Society",
+        "type": "EXAM PAPER",
+        "exam_year": "2022",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235584100002021"
+    },
+    {
+        "name": "Sociology",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235316910002021&lang=en",
         "course_name": "SO424 - Approaches to Human Rights",
         "type": "EXAM PAPER",
         "exam_year": "2017",
@@ -2510,6 +2686,14 @@
         "type": "EXAM PAPER",
         "exam_year": "2021",
         "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235604840002021"
+    },
+    {
+        "name": "Sociology",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235316910002021&lang=en",
+        "course_name": "SO424 - Approaches to Human Rights",
+        "type": "EXAM PAPER",
+        "exam_year": "2022",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235604870002021"
     },
     {
         "name": "Sociology",
@@ -2606,6 +2790,14 @@
         "type": "EXAM PAPER",
         "exam_year": "2021",
         "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235603160002021"
+    },
+    {
+        "name": "Sociology",
+        "subject_page_url": "https://librarysearch.lse.ac.uk/discovery/collectionDiscovery?vid=44LSE_INST%3A44LSE_VU1&collectionId=81235316910002021&lang=en",
+        "course_name": "SO468 - International Migration and Migrant Integration",
+        "type": "EXAM PAPER",
+        "exam_year": "2022",
+        "pdf_link": "https://librarysearch.lse.ac.uk/discovery/delivery/44LSE_INST:44LSE_VU1/12235603190002021"
     },
     {
         "name": "Sociology",
