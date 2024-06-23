@@ -1,7 +1,18 @@
-# data collection
-scrapy
+# Data Collection
+requests==2.31.0
+scrapy==2.11.2
+selenium==4.22.0
 
-pandas>=2
+# Data Manipulation
+pandas==2.2.2
+
+# LLM
+ollama==0.2.1
+llama-index==0.10.32
+llama-index.embeddings.huggingface==0.2.2
+
+# VSCode dependencies
+ipykernel==6.29.4
 
 # Copied from rag-on-postgres with Azure components removed
 # uvloop is commented out due to incompatibility on Windows

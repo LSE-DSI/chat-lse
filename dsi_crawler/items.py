@@ -5,10 +5,11 @@
 
 import scrapy
 
+
 class BoxScraperItem(scrapy.Item):
     """
     Represents a box scraped from the DSI pages. 
-    
+
     Attributes: 
     name: The name of the item, i.e box
     origin_url (scrapy.Field): The original URL of the box.
@@ -20,15 +21,15 @@ class BoxScraperItem(scrapy.Item):
     date_scraped (scrapy.Field): The date when the box was scraped.
     """
     name = 'boxes'
-    origin_url = scrapy.Field()  
+    origin_url = scrapy.Field()
     url = scrapy.Field()
     title = scrapy.Field()
     html = scrapy.Field()
     image_src = scrapy.Field()
     image_alt_text = scrapy.Field()
     date_scraped = scrapy.Field()
-    
-    
+
+
 class DSIPagesScraperItem(scrapy.Item):
     """
     Represents an item scraped from the DSI pages.
@@ -42,7 +43,7 @@ class DSIPagesScraperItem(scrapy.Item):
         date_scraped (scrapy.Field): The date when the page was scraped.
     """
     name = 'pages'
-    origin_url = scrapy.Field()  
+    origin_url = scrapy.Field()
     url = scrapy.Field()
     title = scrapy.Field()
     html = scrapy.Field()
