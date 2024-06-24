@@ -30,7 +30,7 @@ class BoxScraperItem(scrapy.Item):
     date_scraped = scrapy.Field()
 
 
-class DSIPagesScraperItem(scrapy.Item):
+class PagesScraperItem(scrapy.Item):
     """
     Represents an item scraped from the DSI pages.
 

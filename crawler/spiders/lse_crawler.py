@@ -1,5 +1,5 @@
 import scrapy
-from dsi_crawler.items import DSIPagesScraperItem, BoxScraperItem
+from crawler.items import PagesScraperItem, BoxScraperItem
 
 
 class SpiderDSI(scrapy.Spider):
@@ -67,7 +67,7 @@ class SpiderDSI(scrapy.Spider):
 
     def parse_linked_page(self, response):
         # Extract data from the linked page
-        item = DSIPagesScraperItem()
+        item = PagesScraperItem()
         item['origin_url'] = response.meta['origin_url']
         item['url'] = response.url
         item['title'] = response.css('title::text').get().strip()

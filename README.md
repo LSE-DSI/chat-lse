@@ -64,7 +64,7 @@ pip install -r requirements.txt
 2. Run the following command from the root of the project to save the scraped data to a JSON file:
 
 ```bash
-scrapy crawl dsi_crawler
+scrapy crawl crawler
 ```
 
 Note: with the current configuration, the crawler will save the data to `data/output.jl`(JSON Lines format). Read about scrapy's [item exporters](https://docs.scrapy.org/en/latest/topics/exporters.html#using-item-exporters) for more information.
