@@ -1,6 +1,6 @@
 import logging
 
-# Scrapy settings for dsi_crawler project
+# Scrapy settings for crawler project
 #
 # For simplicity, this file contains only settings considered important or
 # commonly used. You can find more settings consulting the documentation:
@@ -9,14 +9,14 @@ import logging
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = "dsi_crawler"
+BOT_NAME = "crawler"
 
-SPIDER_MODULES = ["dsi_crawler.spiders"]
-NEWSPIDER_MODULE = "dsi_crawler.spiders"
+SPIDER_MODULES = ["crawler.spiders"]
+NEWSPIDER_MODULE = "crawler.spiders"
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = "dsi_crawler (+http://www.yourdomain.com)"
+#USER_AGENT = "crawler (+http://www.yourdomain.com)"
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True
@@ -47,13 +47,13 @@ ROBOTSTXT_OBEY = True
 # Enable or disable spider middlewares
 # See https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 #SPIDER_MIDDLEWARES = {
-#    "dsi_crawler.middlewares.LseDsiScrapeSpiderMiddleware": 543,
+#    "crawler.middlewares.LseDsiScrapeSpiderMiddleware": 543,
 #}
 
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #DOWNLOADER_MIDDLEWARES = {
-#    "dsi_crawler.middlewares.LseDsiScrapeDownloaderMiddleware": 543,
+#    "crawler.middlewares.LseDsiScrapeDownloaderMiddleware": 543,
 #}
 
 # Enable or disable extensions
@@ -64,8 +64,8 @@ ROBOTSTXT_OBEY = True
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-ITEM_PIPELINES = {'dsi_crawler.pipelines.ItemExporter': 300, 
-                  'dsi_crawler.pipelines.ItemToSQLitePipeline': 500}
+ITEM_PIPELINES = {'crawler.pipelines.ItemExporter': 300, 
+                  'crawler.pipelines.ItemToSQLitePipeline': 500}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html

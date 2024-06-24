@@ -54,7 +54,7 @@ class ItemExporter(object):
 class ItemToSQLitePipeline:
     def __init__(self):
         # Connecting to SQLite database
-        self.conn = sqlite3.connect('data/dsi_crawler.db')
+        self.conn = sqlite3.connect('data/crawler.db')
         self.cursor = self.conn.cursor()
         logging.info('SQLite Connection established')
 
