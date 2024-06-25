@@ -33,19 +33,23 @@ class ExamsSpider(scrapy.Spider):
         WebDriverWait(driver, 10).until(EC.visibility_of_element_located(
             (By.XPATH, '/html/body/div[3]/div/div/h3[1]/a'))).click()
         WebDriverWait(driver, 30).until(EC.visibility_of_element_located(
-            (By.NAME, 'loginfmt'))).send_keys('username')
+            (By.NAME, 'loginfmt'))).send_keys('K.Dixon1@lse.ac.uk')
         next_button = WebDriverWait(driver, 5).until(
             EC.visibility_of_element_located((By.ID, 'idSIButton9')))
         if next_button:
             next_button.click()
         WebDriverWait(driver, 5).until(EC.visibility_of_element_located(
-            (By.NAME, 'passwd'))).send_keys('password')
+            (By.NAME, 'passwd'))).send_keys('')
         next_button = WebDriverWait(driver, 5).until(
             EC.visibility_of_element_located((By.ID, 'idSIButton9')))
         next_button.click()
 
-        print(WebDriverWait(driver, 10).until(EC.visibility_of_element_located(
-            (By.XPATH, '//*[@id="idRichContext_DisplaySign"]'))).text)
+        number = WebDriverWait(driver, 10).until(EC.visibility_of_element_located(
+            (By.XPATH, '//*[@id="idRichContext_DisplaySign"]'))).text
+
+        self.logger.info('Number: %s', number)
+
+        time.sleep(10)
 
         try:
             element = WebDriverWait(driver, 300).until(
@@ -63,7 +67,7 @@ class ExamsSpider(scrapy.Spider):
         WebDriverWait(driver, 10).until(EC.number_of_windows_to_be(2))
         new_window = driver.window_handles[-1]
         driver.switch_to.window(new_window)
-
+        self.logger.info('New window: %s', new_url)
         # Start scraping exam papers
         self.scrape_exam_papers(driver)
 

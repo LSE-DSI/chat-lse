@@ -17,7 +17,7 @@ NEWSPIDER_MODULE = "sel_scrapy.spiders"
 # For Firefox driver
 
 SELENIUM_DRIVER_NAME = 'firefox'
-SELENIUM_DRIVER_EXECUTABLE_PATH = which('geckodriver')
+SELENIUM_DRIVER_EXECUTABLE_PATH = '/usr/local/bin/geckodriver'
 SELENIUM_DRIVER_ARGUMENTS = ['--headless']
 
 DOWNLOADER_MIDDLEWARES = {

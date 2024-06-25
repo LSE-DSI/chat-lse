@@ -4,6 +4,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+import scrapy
+from scrapy.utils.project import get_project_settings
+from scrapy_selenium import SeleniumRequest
+
 
 class SimpleSeleniumSpider(scrapy.Spider):
     name = "simple_selenium"
@@ -12,23 +16,18 @@ class SimpleSeleniumSpider(scrapy.Spider):
         yield SeleniumRequest(
             url='https://www.lse.ac.uk/library',
             wait_time=10,
-            callback=self.parse
+            callback=self.parse,
+            script='window.scrollTo(0, document.body.scrollHeight);'
         )
 
     def parse(self, response):
         driver = response.meta.get('driver')
-        if not driver:
-            self.log("Driver not found in response meta.")
-            return
+        login_link = response.css('#Loginto::attr(href)').get()
+        login_link = response.urljoin(login_link)
+        self.logger.info('Login link: %s', login_link)
+        yield scrapy.Request(login_link, callback=self.parse_login)
 
-        self.log("Driver found, Selenium integration successful.")
-        # Verify a simple interaction
-        try:
-            element = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.ID, 'Loginto')))
-            self.log(f"Element found: {element.tag_name}")
-        except Exception as e:
-            self.log(f"Error finding element: {e}")
-
-        # Close the driver
-        driver.quit()
+    def parse_login(self, response):
+        next_button = response.css('#staff::attr(href)').get()
+        next_button = response.urljoin(next_button)
+        self.logger.info('Next button: %s', next_button)
