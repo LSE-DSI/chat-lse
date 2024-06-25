@@ -21,6 +21,7 @@ jupyter==1.0.0
 
 # Utils
 tqdm==4.66.4
+jsonlines==4.0.0
 python-dotenv==1.0.1 # Load environment variables from .env file
 
 # Copied from rag-on-postgres with Azure components removed
