@@ -126,28 +126,28 @@ class ItemToPostgresPipeline:
                     INSERT INTO Webpage (origin_url, url, title, html, date_scraped)
                     VALUES ($1, $2, $3, $4, $5)
                 ''', adapter['origin_url'], adapter['url'], adapter['title'], adapter['html'], adapter['date_scraped'])
-                
+
                 webpage_id = await conn.fetchval('SELECT LASTVAL()')
                 selector = scrapy.Selector(text=adapter['html'])
                 links = selector.css('a::attr(href)').extract()
-                
+
                 for link in links:
                     await conn.execute('''
                         INSERT INTO Links (webpage_id, link)
                         VALUES ($1, $2)
                     ''', webpage_id, link)
-                
+
                 await conn.execute('''
                     INSERT INTO CrawlerMetadata (webpage_id, crawled_at)
                     VALUES ($1, $2)
                 ''', webpage_id, datetime.now())
-            
+
             elif item_name == 'boxes':
                 await conn.execute('''
                     INSERT INTO Box (origin_url, url, title, html, image_src, image_alt_text, date_scraped)
                     VALUES ($1, $2, $3, $4, $5, $6, $7)
                 ''', adapter['origin_url'], adapter['url'], adapter['title'], adapter['html'], adapter['image_src'], adapter['image_alt_text'], adapter['date_scraped'])
-        
+
         return item
 
 class ItemToSQLitePipeline:
