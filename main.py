@@ -8,7 +8,7 @@ try:
         [
             'scrapy',
             'crawl',
-            'dsi_crawler'
+            'crawler'
         ]
     )
 except SystemExit:

@@ -4,12 +4,13 @@
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
 from scrapy.exporters import JsonLinesItemExporter
-from itemadapter import ItemAdapter 
+from itemadapter import ItemAdapter
 from datetime import datetime
-from scrapy import signals 
-import scrapy   
+from scrapy import signals
+import scrapy
 import sqlite3
 import logging
+
 
 class ItemExporter(object):
     """ Exports the items to JSON Lines files.
@@ -26,7 +27,7 @@ class ItemExporter(object):
 
     def spider_opened(self, spider):
         # Initialize file handlers and exporters for each item type
-        self.items = ['pages','boxes']
+        self.items = ['pages', 'boxes']
         self.files = {}
         self.exporters = {}
 
@@ -48,14 +49,15 @@ class ItemExporter(object):
         # Export each item to the corresponding file
         self.exporters[item.name].export_item(item)
         return item
-    
+
+
 class ItemToSQLitePipeline:
     def __init__(self):
         # Connecting to SQLite database
-        self.conn = sqlite3.connect('data/dsi_crawler.db')  
-        self.cursor = self.conn.cursor()  
+        self.conn = sqlite3.connect('data/crawler.db')
+        self.cursor = self.conn.cursor()
         logging.info('SQLite Connection established')
-        
+
         # Creating tables
         self.create_tables()
 
@@ -72,7 +74,7 @@ class ItemToSQLitePipeline:
                     date_scraped TEXT
                 )
             ''')
-            
+
             # Create Box table
             self.cursor.execute('''
                 CREATE TABLE IF NOT EXISTS Box (
@@ -87,7 +89,7 @@ class ItemToSQLitePipeline:
                     FOREIGN KEY (origin_url) REFERENCES Webpage(origin_url)
                     )
             ''')
-            
+
             # Create CrawlerMetadata table
             self.cursor.execute('''
                 CREATE TABLE IF NOT EXISTS CrawlerMetadata (
@@ -97,7 +99,7 @@ class ItemToSQLitePipeline:
                     FOREIGN KEY (webpage_id) REFERENCES Webpage(id)
                 )
             ''')
-            
+
             self.cursor.execute('''
                 CREATE TABLE IF NOT EXISTS Links (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -105,16 +107,15 @@ class ItemToSQLitePipeline:
                     link TEXT,
                     FOREIGN KEY (webpage_id) REFERENCES Webpage(id)
                 )
-            ''')    
-            
+            ''')
+
             # Commit changes to the database
-            self.conn.commit()  
+            self.conn.commit()
             logging.info('Tables created successfully')
-            
+
         except Exception as e:
             logging.error(f'Error creating tables: {e}')
-        
-    
+
     def process_item(self, item, spider):
         adapter = ItemAdapter(item)
         item_name = item.name
@@ -124,23 +125,23 @@ class ItemToSQLitePipeline:
             self.cursor.execute('''
                 INSERT INTO Webpage (origin_url, url, title, html, date_scraped)
                 VALUES (?, ?, ?, ?, ?)
-            ''', (adapter['origin_url'], adapter['url'], adapter['title'], 
+            ''', (adapter['origin_url'], adapter['url'], adapter['title'],
                   adapter['html'], adapter['date_scraped']))
-            
+
             # Retrieve the inserted webpage_id
-            webpage_id = self.cursor.lastrowid  
-            
+            webpage_id = self.cursor.lastrowid
+
             # Extract links from HTML
             selector = scrapy.Selector(text=adapter['html'])
             links = selector.css('a::attr(href)').extract()
-            
+
             # Insert data into Links table
             for link in links:
                 self.cursor.execute('''
                     INSERT INTO Links (webpage_id, link)
                     VALUES (?, ?)
                 ''', (webpage_id, link))
-                
+
             # Insert crawler metadata into CrawlerMetadata table
             self.cursor.execute('''
                 INSERT INTO CrawlerMetadata (webpage_id, crawled_at)
@@ -152,14 +153,13 @@ class ItemToSQLitePipeline:
             self.cursor.execute('''
                 INSERT INTO Box (origin_url, url, title, html,image_src, image_alt_text, date_scraped)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
-            ''', (adapter['origin_url'], adapter['url'], 
-                  adapter['title'], adapter['html'], adapter['image_src'], 
+            ''', (adapter['origin_url'], adapter['url'],
+                  adapter['title'], adapter['html'], adapter['image_src'],
                   adapter['image_alt_text'], adapter['date_scraped']))
 
         self.conn.commit()  # Commit changes to the database
         return item
-    
-    def close_spider(self, spider):  
-        self.conn.close()       
-        logging.info('SQLite Connection closed')
 
+    def close_spider(self, spider):
+        self.conn.close()
+        logging.info('SQLite Connection closed')

@@ -19,6 +19,7 @@ async def chat_handler(chat_request: ChatRequest):
         embed_deployment=global_storage.embed_deployment,
         embed_model=global_storage.embed_model,
         embed_dimensions=global_storage.embed_dimensions,
+        context_window_override=global_storage.context_window_override
     )
 
     messages = [message.model_dump() for message in chat_request.messages]

@@ -8,6 +8,8 @@ import sqlalchemy.exc
 from dotenv import load_dotenv
 from sqlalchemy import select, text, delete
 from sqlalchemy.ext.asyncio import async_sessionmaker
+from sqlalchemy.dialects.postgresql import JSONB
+
 
 from fastapi_app.postgres_engine import create_postgres_engine_from_args, create_postgres_engine_from_env
 from fastapi_app.postgres_models import PDF, Item

@@ -55,7 +55,7 @@ class Item(Base):
         if include_embedding:
             model_dict["embedding"] = self.embedding.tolist()  # assuming embedding is a list or similar structure
         return model_dict
-
+    
     def to_str_for_rag(self):
         return f"Name:{self.name} Description:{self.description} Type:{self.type}" 
 

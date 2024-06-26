@@ -32,9 +32,23 @@ Make sure the following are properly installed on your OS:
 ```bash
 # Use venv as an example. Can also use other virtual environments like conda
 
-$ cd chat-lse # Make sure in the project root directory
-$ python3 -m venv .venv
-$ source .venv/bin/activate
+conda create -n chat-lse python=3.11 ipython
+conda activate chat-lse # or the equivalent for your OS
+
+```
+
+5. (Important) Ensure that `pip` refers to the pip inside the conda environment we just created:
+
+```bash
+which pip
+```
+
+ this should output something like `/home/your-username/miniconda3/envs/chat-lse/bin/pip` (or equivalent if on Windows)
+
+6. Assuming you've fixed the `pip` path, install the required packages:
+
+```bash
+pip install -r requirements.txt
 ```
 
 ### Setup the environments
