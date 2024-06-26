@@ -12,7 +12,7 @@ from fastapi_app.postgres_models import Item
 
 async def update_embeddings():
     engine = await create_postgres_engine()
-    embed_client, embed_model, embed_dimensions = await create_embed_client()
+    embed_model = await create_embed_client()
 
     async with async_sessionmaker(engine, expire_on_commit=False)() as session:
         async with session.begin():
