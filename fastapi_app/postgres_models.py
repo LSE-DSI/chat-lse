@@ -56,10 +56,10 @@ class Item(Base):
         return model_dict
 
     def to_str_for_rag(self):
-        return f"Name:{self.name} Description:{self.description} URL:{self.url} Type:{self.type}"
+        return f"Name:{self.name} Content:{self.description} Type:{self.type}"
 
     def to_str_for_embedding(self):
-        return f"Name: {self.name} Description: {self.description} Type: {self.type}"
+        return f"Name: {self.name} Content: {self.description} Type: {self.name}"
 
 
 # Define HNSW index to support vector similarity search through the vector_cosine_ops access method (cosine distance).
