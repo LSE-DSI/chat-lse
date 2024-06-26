@@ -3,16 +3,18 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
+from scrapy.exporters import JsonLinesItemExporter
+from itemadapter import ItemAdapter
+from datetime import datetime
+from scrapy import signals
 import scrapy
 import sqlite3
+import asyncpg
+import asyncio
 import logging
-
-from scrapy import signals
 from datetime import datetime
-from itemadapter import ItemAdapter
-from crawler.settings import SQLITE_DB_PATH
-from scrapy.exporters import JsonLinesItemExporter
 
+from scrapy.utils.project import get_project_settings
 
 class ItemExporter(object):
     """ Exports the items to JSON Lines files.
@@ -35,8 +37,7 @@ class ItemExporter(object):
 
         for item in self.items:
             # Open a file for each item type
-            self.files[item] = open(
-                f'data/{item}.jl', 'wb')
+            self.files[item] = open(f'data/{item}.jl', 'wb')
             # Initialize a JsonLinesItemExporter for each item type
             self.exporters[item] = JsonLinesItemExporter(self.files[item])
             # Start exporting for each item type
@@ -53,11 +54,106 @@ class ItemExporter(object):
         self.exporters[item.name].export_item(item)
         return item
 
+class ItemToPostgresPipeline:
+    def __init__(self):
+        self.settings = get_project_settings()
+        self.db_pool = None
+
+    async def open_spider(self, spider):
+        self.db_pool = await asyncpg.create_pool(
+            host=self.settings.get('POSTGRES_HOST', 'localhost'),
+            port=self.settings.get('POSTGRES_PORT', 5432),
+            database=self.settings.get('POSTGRES_DB', 'mydatabase'),
+            user=self.settings.get('POSTGRES_USER', 'myuser'),
+            password=self.settings.get('POSTGRES_PASSWORD', 'mypassword'),
+        )
+        await self.create_tables()
+        logging.info('PostgreSQL Connection established')
+
+    async def close_spider(self, spider):
+        await self.db_pool.close()
+        logging.info('PostgreSQL Connection closed')
+
+    async def create_tables(self):
+        async with self.db_pool.acquire() as conn:
+            await conn.execute('''
+                CREATE TABLE IF NOT EXISTS Webpage (
+                    id SERIAL PRIMARY KEY,
+                    origin_url TEXT,
+                    url TEXT,
+                    title TEXT, 
+                    html TEXT, 
+                    date_scraped TIMESTAMP
+                );
+            ''')
+            await conn.execute('''
+                CREATE TABLE IF NOT EXISTS Box (
+                    id SERIAL PRIMARY KEY,
+                    origin_url TEXT,
+                    url TEXT, 
+                    title TEXT, 
+                    html TEXT, 
+                    image_src TEXT, 
+                    image_alt_text TEXT, 
+                    date_scraped TIMESTAMP,
+                    FOREIGN KEY (origin_url) REFERENCES Webpage(origin_url)
+                );
+            ''')
+            await conn.execute('''
+                CREATE TABLE IF NOT EXISTS CrawlerMetadata (
+                    id SERIAL PRIMARY KEY,
+                    webpage_id INTEGER,
+                    crawled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    FOREIGN KEY (webpage_id) REFERENCES Webpage(id)
+                );
+            ''')
+            await conn.execute('''
+                CREATE TABLE IF NOT EXISTS Links (
+                    id SERIAL PRIMARY KEY,
+                    webpage_id INTEGER,
+                    link TEXT,
+                    FOREIGN KEY (webpage_id) REFERENCES Webpage(id)
+                );
+            ''')
+
+    async def process_item(self, item, spider):
+        adapter = ItemAdapter(item)
+        item_name = item.name
+
+        async with self.db_pool.acquire() as conn:
+            if item_name == 'pages':
+                await conn.execute('''
+                    INSERT INTO Webpage (origin_url, url, title, html, date_scraped)
+                    VALUES ($1, $2, $3, $4, $5)
+                ''', adapter['origin_url'], adapter['url'], adapter['title'], adapter['html'], adapter['date_scraped'])
+                
+                webpage_id = await conn.fetchval('SELECT LASTVAL()')
+                selector = scrapy.Selector(text=adapter['html'])
+                links = selector.css('a::attr(href)').extract()
+                
+                for link in links:
+                    await conn.execute('''
+                        INSERT INTO Links (webpage_id, link)
+                        VALUES ($1, $2)
+                    ''', webpage_id, link)
+                
+                await conn.execute('''
+                    INSERT INTO CrawlerMetadata (webpage_id, crawled_at)
+                    VALUES ($1, $2)
+                ''', webpage_id, datetime.now())
+            
+            elif item_name == 'boxes':
+                await conn.execute('''
+                    INSERT INTO Box (origin_url, url, title, html, image_src, image_alt_text, date_scraped)
+                    VALUES ($1, $2, $3, $4, $5, $6, $7)
+                ''', adapter['origin_url'], adapter['url'], adapter['title'], adapter['html'], adapter['image_src'], adapter['image_alt_text'], adapter['date_scraped'])
+        
+        return item
 
 class ItemToSQLitePipeline:
     def __init__(self):
         # Connecting to SQLite database
-        self.conn = sqlite3.connect(SQLITE_DB_PATH, check_same_thread=False)
+        self.conn = sqlite3.connect('data/dsi_crawler.db')
         self.cursor = self.conn.cursor()
         logging.info('SQLite Connection established')
 
@@ -74,9 +170,7 @@ class ItemToSQLitePipeline:
                     url TEXT,
                     title TEXT, 
                     html TEXT, 
-                    date_scraped TEXT,
-                    current_hash TEXT,
-                    UNIQUE(url, current_hash)
+                    date_scraped TEXT
                 )
             ''')
 
@@ -91,10 +185,8 @@ class ItemToSQLitePipeline:
                     image_src TEXT, 
                     image_alt_text TEXT, 
                     date_scraped TEXT,
-                    current_hash TEXT,
-                    FOREIGN KEY (origin_url) REFERENCES Webpage(origin_url),
-                    UNIQUE(url, current_hash)
-                )
+                    FOREIGN KEY (origin_url) REFERENCES Webpage(origin_url)
+                    )
             ''')
 
             # Create CrawlerMetadata table
@@ -116,14 +208,9 @@ class ItemToSQLitePipeline:
                 )
             ''')
 
-            # Create indexes for efficient lookups
-            self.cursor.execute(
-                'CREATE INDEX IF NOT EXISTS idx_webpage_url ON Webpage(url);')
-            self.cursor.execute(
-                'CREATE INDEX IF NOT EXISTS idx_box_url ON Box(url);')
-
+            # Commit changes to the database
             self.conn.commit()
-            logging.info('Tables and indexes created successfully')
+            logging.info('Tables created successfully')
 
         except Exception as e:
             logging.error(f'Error creating tables: {e}')
@@ -133,91 +220,44 @@ class ItemToSQLitePipeline:
         item_name = item.name
 
         if item_name == 'pages':
-            self.process_page(adapter)
-        elif item_name == 'boxes':
-            self.process_box(adapter)
-
-        self.conn.commit()
-        return item
-
-    def process_page(self, adapter):
-        # Check if URL already exists in the database for pages
-        self.cursor.execute('''
-            SELECT id, current_hash FROM Webpage WHERE url = ?
-        ''', (adapter['url'],))
-        result = self.cursor.fetchone()
-
-        if result:
-            webpage_id, previous_hash = result
-            if previous_hash == adapter['current_hash']:
-                logging.info(f'Page not modified since last scraped: {adapter["url"]}')
-                return
-
-            else:
-                # Delete old entry
-                self.cursor.execute(
-                    'DELETE FROM Webpage WHERE id = ?', (webpage_id,))
-                self.cursor.execute(
-                    'DELETE FROM Links WHERE webpage_id = ?', (webpage_id,))
-                self.cursor.execute(
-                    'DELETE FROM CrawlerMetadata WHERE webpage_id = ?', (webpage_id,))
-
-        # If the page has not been modified, the function will return and not carry out the following operations
-
-        self.cursor.execute('''
-            INSERT INTO Webpage (origin_url, url, title, html, date_scraped, current_hash)
-            VALUES (?, ?, ?, ?, ?, ?)
-        ''', (adapter['origin_url'], adapter['url'], adapter['title'],
-              adapter['html'], adapter['date_scraped'], adapter['current_hash']))
-
-        webpage_id = self.cursor.lastrowid
-
-        selector = scrapy.Selector(text=adapter['html'])
-        links = selector.css('a::attr(href)').extract()
-
-        for link in links:
+            # Insert data into Webpage table
             self.cursor.execute('''
-                INSERT INTO Links (webpage_id, link)
+                INSERT INTO Webpage (origin_url, url, title, html, date_scraped)
+                VALUES (?, ?, ?, ?, ?)
+            ''', (adapter['origin_url'], adapter['url'], adapter['title'],
+                  adapter['html'], adapter['date_scraped']))
+
+            # Retrieve the inserted webpage_id
+            webpage_id = self.cursor.lastrowid
+
+            # Extract links from HTML
+            selector = scrapy.Selector(text=adapter['html'])
+            links = selector.css('a::attr(href)').extract()
+
+            # Insert data into Links table
+            for link in links:
+                self.cursor.execute('''
+                    INSERT INTO Links (webpage_id, link)
+                    VALUES (?, ?)
+                ''', (webpage_id, link))
+
+            # Insert crawler metadata into CrawlerMetadata table
+            self.cursor.execute('''
+                INSERT INTO CrawlerMetadata (webpage_id, crawled_at)
                 VALUES (?, ?)
-            ''', (webpage_id, link))
+            ''', (webpage_id, datetime.now()))
 
-        self.cursor.execute('''
-            INSERT INTO CrawlerMetadata (webpage_id, crawled_at)
-            VALUES (?, ?)
-        ''', (webpage_id, datetime.now()))
+        elif item_name == 'boxes':
+            # Insert data into Box table
+            self.cursor.execute('''
+                INSERT INTO Box (origin_url, url, title, html,image_src, image_alt_text, date_scraped)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+            ''', (adapter['origin_url'], adapter['url'],
+                  adapter['title'], adapter['html'], adapter['image_src'],
+                  adapter['image_alt_text'], adapter['date_scraped']))
 
-        logging.info(f'Page processed and stored in SQLite: {adapter["url"]}')
-
-    def process_box(self, adapter):
-        # Check if URL already exists in the database for boxes
-        self.cursor.execute('''
-            SELECT id, current_hash FROM Box WHERE url = ?
-        ''', (adapter['url'],))
-        result = self.cursor.fetchone()
-
-        if result:
-            box_id, previous_hash = result
-            if previous_hash == adapter['current_hash']:
-                logging.info(f'Box not modified since last scraped: {adapter["url"]}')
-                return
-            else:
-                # Delete old entry
-                self.cursor.execute('DELETE FROM Box WHERE id = ?', (box_id,))
-                self.cursor.execute(
-                    'DELETE FROM CrawlerMetadata WHERE webpage_id = (SELECT id FROM Webpage WHERE url = ?)', (adapter['origin_url'],))
-
-        self.cursor.execute('''
-            INSERT INTO Box (origin_url, url, title, html, image_src, image_alt_text, date_scraped, current_hash)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        ''', (adapter['origin_url'], adapter['url'], adapter['title'], adapter['html'],
-              adapter['image_src'], adapter['image_alt_text'], adapter['date_scraped'], adapter['current_hash']))
-
-        self.cursor.execute('''
-            INSERT INTO CrawlerMetadata (webpage_id, crawled_at)
-            VALUES ((SELECT id FROM Webpage WHERE url = ?), ?)
-        ''', (adapter['origin_url'], datetime.now()))
-
-        logging.info(f'Box processed and stored in SQLite: {adapter["url"]}')
+        self.conn.commit()  # Commit changes to the database
+        return item
 
     def close_spider(self, spider):
         self.conn.close()
