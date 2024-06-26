@@ -33,8 +33,7 @@ class ItemExporter(object):
 
         for item in self.items:
             # Open a file for each item type
-            self.files[item] = open(
-                f'data/{item}.jl', 'wb')
+            self.files[item] = open(f'data/{item}.jl', 'wb')
             # Initialize a JsonLinesItemExporter for each item type
             self.exporters[item] = JsonLinesItemExporter(self.files[item])
             # Start exporting for each item type
@@ -55,8 +54,7 @@ class ItemExporter(object):
 class ItemToSQLitePipeline:
     def __init__(self):
         # Connecting to SQLite database
-        self.conn = sqlite3.connect(
-            '/Users/jamie/Desktop/chatlse2024/chat-lse/crawler/data/dsi_crawler.db')
+        self.conn = sqlite3.connect('data/dsi_crawler.db')
         self.cursor = self.conn.cursor()
         logging.info('SQLite Connection established')
 
@@ -73,8 +71,7 @@ class ItemToSQLitePipeline:
                     url TEXT,
                     title TEXT, 
                     html TEXT, 
-                    date_scraped TEXT,
-                    current_hash TEXT
+                    date_scraped TEXT
                 )
             ''')
 
@@ -89,7 +86,6 @@ class ItemToSQLitePipeline:
                     image_src TEXT, 
                     image_alt_text TEXT, 
                     date_scraped TEXT,
-                    current_hash TEXT,
                     FOREIGN KEY (origin_url) REFERENCES Webpage(origin_url)
                     )
             ''')
@@ -127,10 +123,10 @@ class ItemToSQLitePipeline:
         if item_name == 'pages':
             # Insert data into Webpage table
             self.cursor.execute('''
-                INSERT INTO Webpage (origin_url, url, title, html, date_scraped, current_hash)
+                INSERT INTO Webpage (origin_url, url, title, html, date_scraped)
                 VALUES (?, ?, ?, ?, ?)
             ''', (adapter['origin_url'], adapter['url'], adapter['title'],
-                  adapter['html'], adapter['date_scraped'], adapter['current_hash']))
+                  adapter['html'], adapter['date_scraped']))
 
             # Retrieve the inserted webpage_id
             webpage_id = self.cursor.lastrowid
@@ -155,11 +151,11 @@ class ItemToSQLitePipeline:
         elif item_name == 'boxes':
             # Insert data into Box table
             self.cursor.execute('''
-                INSERT INTO Box (origin_url, url, title, html,image_src, image_alt_text, date_scraped, current_hash)
+                INSERT INTO Box (origin_url, url, title, html,image_src, image_alt_text, date_scraped)
                 VALUES (?, ?, ?, ?, ?, ?, ?)
             ''', (adapter['origin_url'], adapter['url'],
                   adapter['title'], adapter['html'], adapter['image_src'],
-                  adapter['image_alt_text'], adapter['date_scraped'], adapter['current_hash']))
+                  adapter['image_alt_text'], adapter['date_scraped']))
 
         self.conn.commit()  # Commit changes to the database
         return item

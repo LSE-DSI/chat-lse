@@ -1,6 +1,5 @@
 import scrapy
-from crawler.items import PagesScraperItem, BoxScraperItem
-import hashlib
+from dsi_crawler.items import DSIPagesScraperItem, BoxScraperItem
 
 
 class SpiderDSI(scrapy.Spider):
@@ -54,7 +53,6 @@ class SpiderDSI(scrapy.Spider):
                 "div.component__img img::attr(src)").get()
             item['image_alt_text'] = box.css(
                 ".component__img img::attr(alt)").get()
-            item['current_hash'] = self.compute_hash(item['html'])
 
             yield item
 
@@ -69,13 +67,12 @@ class SpiderDSI(scrapy.Spider):
 
     def parse_linked_page(self, response):
         # Extract data from the linked page
-        item = PagesScraperItem()
+        item = DSIPagesScraperItem()
         item['origin_url'] = response.meta['origin_url']
         item['url'] = response.url
         item['title'] = response.css('title::text').get().strip()
         item['html'] = response.text
         item['date_scraped'] = response.headers['Date'].decode()
-        item['current_hash'] = self.compute_hash(item['html'])
 
         yield item
 
@@ -93,7 +90,6 @@ class SpiderDSI(scrapy.Spider):
                 "div.component__img img::attr(src)").get()
             item['image_alt_text'] = box.css(
                 ".component__img img::attr(alt)").get()
-            item['current_hash'] = self.compute_hash(item['html'])
 
             yield item
 
@@ -113,6 +109,3 @@ class SpiderDSI(scrapy.Spider):
         self.logger.error(repr(failure))
         self.logger.error('Failed URL: %s', failure.request.url)
         print("Error:", repr(failure), "Failed URL:", failure.request.url)
-
-    def compute_hash(self, content: str):
-        return hashlib.md5(content.encode('utf-8')).hexdigest()
