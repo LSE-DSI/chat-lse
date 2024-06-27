@@ -10,6 +10,8 @@ from scrapy import signals
 import scrapy
 import sqlite3
 import logging
+import json
+from crawler.settings import SQLITE_DB_PATH, PAGES_JL_PATH, BOXES_JL_PATH
 
 
 class ItemExporter(object):
@@ -56,7 +58,7 @@ class ItemToSQLitePipeline:
     def __init__(self):
         # Connecting to SQLite database
         self.conn = sqlite3.connect(
-            '/Users/jamie/Desktop/chatlse2024/chat-lse/crawler/data/dsi_crawler.db')
+            SQLITE_DB_PATH, check_same_thread=False)
         self.cursor = self.conn.cursor()
         logging.info('SQLite Connection established')
 
@@ -121,10 +123,29 @@ class ItemToSQLitePipeline:
             logging.error(f'Error creating tables: {e}')
 
     def process_item(self, item, spider):
+
         adapter = ItemAdapter(item)
         item_name = item.name
+        item_exporter = ItemExporter()
 
-        if item_name == 'pages':
+        def load_json_lines(file_path):
+            data = []
+            try:
+                with open(file_path, 'r') as file:
+                    for line in file:
+                        data.append(json.loads(line))
+                        return data
+            except Exception as e:
+                logging.error(f'Error loading JSON Lines file: {e}')
+
+        def url_exists(file_path, url):
+            data = load_json_lines(file_path)
+            for entry in data:
+                if entry.get('url') == adapter['url']:
+                    return entry
+            return None
+
+        def insert_webpage_data(self, adapter):
             # Insert data into Webpage table
             self.cursor.execute('''
                 INSERT INTO Webpage (origin_url, url, title, html, date_scraped, current_hash)
@@ -152,7 +173,7 @@ class ItemToSQLitePipeline:
                 VALUES (?, ?)
             ''', (webpage_id, datetime.now()))
 
-        elif item_name == 'boxes':
+        def insert_data_into_box(self, adapter):
             # Insert data into Box table
             self.cursor.execute('''
                 INSERT INTO Box (origin_url, url, title, html, image_src, image_alt_text, date_scraped, current_hash)
@@ -161,8 +182,48 @@ class ItemToSQLitePipeline:
                   adapter['title'], adapter['html'], adapter['image_src'],
                   adapter['image_alt_text'], adapter['date_scraped'], adapter['current_hash']))
 
-        self.conn.commit()  # Commit changes to the database
-        return item
+        if url_exists(f'/Users/jamie/Desktop/chatlse2024/chat-lse/crawler/data/{item_name}.jl', adapter['url']) is None:
+            logging.info(f'Item name: {item_name} not previously scraped')
+            if item_name == 'pages':
+                insert_webpage_data(self, adapter)
+            elif item_name == 'boxes':
+                insert_data_into_box(self, adapter)
+
+            self.conn.commit()  # Commit changes to the database
+            return item
+
+        elif url_exists(PAGES_JL_PATH, adapter['url']) is not None:
+            # Check if the current hash is different from the previous hash
+            self.cursor.execute('''
+                SELECT current_hash FROM Webpage WHERE url = ?
+            ''', (adapter['url'],))
+            previous_hash = self.cursor.fetchone()
+            if previous_hash and previous_hash[0] != adapter['current_hash']:
+                # Insert data into Webpage table
+                insert_webpage_data(self, adapter)
+                self.conn.commit()  # Commit changes to the database
+                return item
+            else:
+                logging.info(
+                    f'Item name: {item_name} not modified since last scraped')
+                return item
+
+        elif url_exists(BOXES_JL_PATH, adapter['url']) is not None:
+            # Check if the current hash is different from the previous hash
+            self.cursor.execute('''
+                SELECT current_hash FROM Box WHERE url = ?
+            ''', (adapter['url'],))
+            previous_hash = self.cursor.fetchone()
+            if previous_hash and previous_hash[0] != adapter['current_hash']:
+                logging.info(
+                    f'Item name: {item_name} modified since last scraped')
+                insert_data_into_box(self, adapter)
+                self.conn.commit()
+                return item
+            else:
+                logging.info(
+                    f'Item name: {item_name} not modified since last scraped')
+                return item
 
     def close_spider(self, spider):
         self.conn.close()
