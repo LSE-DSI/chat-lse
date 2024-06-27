@@ -9,12 +9,18 @@ from datetime import datetime
 from scrapy import signals
 import scrapy
 import sqlite3
-import asyncpg
 import asyncio
+import argparse
 import logging
-from datetime import datetime
+import os 
 
-from scrapy.utils.project import get_project_settings
+import sqlalchemy 
+from sqlalchemy import text, MetaData 
+from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass, mapped_column
+
+from datetime import datetime
+from dotenv import load_dotenv
+from fastapi_app.postgres_engine import create_postgres_engine_from_env, create_postgres_engine_from_args
 
 class ItemExporter(object):
     """ Exports the items to JSON Lines files.
@@ -56,27 +62,26 @@ class ItemExporter(object):
 
 class ItemToPostgresPipeline:
     def __init__(self):
-        self.settings = get_project_settings()
-        self.db_pool = None
+        load_dotenv(override=True) 
+        self.engine = None
 
     async def open_spider(self, spider):
-        self.db_pool = await asyncpg.create_pool(
-            host=self.settings.get('POSTGRES_HOST', 'localhost'),
-            port=self.settings.get('POSTGRES_PORT', 5432),
-            database=self.settings.get('POSTGRES_DB', 'mydatabase'),
-            user=self.settings.get('POSTGRES_USER', 'myuser'),
-            password=self.settings.get('POSTGRES_PASSWORD', 'mypassword'),
-        )
-        await self.create_tables()
+        self.engine = await create_postgres_engine_from_env()
+        await self.create_tables(self.engine)
         logging.info('PostgreSQL Connection established')
 
     async def close_spider(self, spider):
-        await self.db_pool.close()
+        await self.engine.dispose()
         logging.info('PostgreSQL Connection closed')
 
-    async def create_tables(self):
-        async with self.db_pool.acquire() as conn:
-            await conn.execute('''
+    async def create_tables(engine):
+        async with engine.begin() as conn:
+            logging.info("Enabling the pgvector extension for Postgres...")
+            await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
+
+            logging.info("Creating Wepage table...")
+            await conn.execute(text('''
+                DROP TABLE IF EXISTS Webpage
                 CREATE TABLE IF NOT EXISTS Webpage (
                     id SERIAL PRIMARY KEY,
                     origin_url TEXT,
@@ -85,8 +90,10 @@ class ItemToPostgresPipeline:
                     html TEXT, 
                     date_scraped TIMESTAMP
                 );
-            ''')
-            await conn.execute('''
+            '''))
+
+            logging.info("Creating Box table...")
+            await conn.execute(text('''
                 CREATE TABLE IF NOT EXISTS Box (
                     id SERIAL PRIMARY KEY,
                     origin_url TEXT,
@@ -98,55 +105,64 @@ class ItemToPostgresPipeline:
                     date_scraped TIMESTAMP,
                     FOREIGN KEY (origin_url) REFERENCES Webpage(origin_url)
                 );
-            ''')
-            await conn.execute('''
+            '''))
+
+            logging.info("Creating CrawlerMetadata table...") 
+            await conn.execute(text('''
                 CREATE TABLE IF NOT EXISTS CrawlerMetadata (
                     id SERIAL PRIMARY KEY,
                     webpage_id INTEGER,
                     crawled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                     FOREIGN KEY (webpage_id) REFERENCES Webpage(id)
                 );
-            ''')
-            await conn.execute('''
+            '''))
+
+            logging.info("Creating Links table...") 
+            await conn.execute(text('''
                 CREATE TABLE IF NOT EXISTS Links (
                     id SERIAL PRIMARY KEY,
                     webpage_id INTEGER,
                     link TEXT,
                     FOREIGN KEY (webpage_id) REFERENCES Webpage(id)
                 );
-            ''')
+            '''))
 
-    async def process_item(self, item, spider):
+            # Create all tables in database
+            logging.info("Database extension and tables created successfully.")
+
+        await conn.close()
+
+    async def process_item(self, item, engine, spider):
         adapter = ItemAdapter(item)
         item_name = item.name
 
-        async with self.db_pool.acquire() as conn:
+        async with engine.begin() as conn:
             if item_name == 'pages':
-                await conn.execute('''
+                await conn.execute(text('''
                     INSERT INTO Webpage (origin_url, url, title, html, date_scraped)
                     VALUES ($1, $2, $3, $4, $5)
-                ''', adapter['origin_url'], adapter['url'], adapter['title'], adapter['html'], adapter['date_scraped'])
+                '''), adapter['origin_url'], adapter['url'], adapter['title'], adapter['html'], adapter['date_scraped'])
 
                 webpage_id = await conn.fetchval('SELECT LASTVAL()')
                 selector = scrapy.Selector(text=adapter['html'])
                 links = selector.css('a::attr(href)').extract()
 
                 for link in links:
-                    await conn.execute('''
+                    await conn.execute(text('''
                         INSERT INTO Links (webpage_id, link)
                         VALUES ($1, $2)
-                    ''', webpage_id, link)
+                    '''), webpage_id, link)
 
-                await conn.execute('''
+                await conn.execute(text('''
                     INSERT INTO CrawlerMetadata (webpage_id, crawled_at)
                     VALUES ($1, $2)
-                ''', webpage_id, datetime.now())
+                '''), webpage_id, datetime.now())
 
             elif item_name == 'boxes':
-                await conn.execute('''
+                await conn.execute(text('''
                     INSERT INTO Box (origin_url, url, title, html, image_src, image_alt_text, date_scraped)
                     VALUES ($1, $2, $3, $4, $5, $6, $7)
-                ''', adapter['origin_url'], adapter['url'], adapter['title'], adapter['html'], adapter['image_src'], adapter['image_alt_text'], adapter['date_scraped'])
+                '''), adapter['origin_url'], adapter['url'], adapter['title'], adapter['html'], adapter['image_src'], adapter['image_alt_text'], adapter['date_scraped'])
 
         return item
 
