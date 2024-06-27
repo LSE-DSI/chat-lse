@@ -36,17 +36,17 @@ class PagesScraperItem(scrapy.Item):
     Represents an item scraped from the DSI pages.
 
     Attributes:
-        name: The name of item, i.e page 
+        type: The name of item, i.e page 
         origin_url (scrapy.Field): The original URL of the page.
-        url (scrapy.Field): The URL of the page.
+        link (scrapy.Field): The URL of the page.
         title (scrapy.Field): The title of the page.
-        html (scrapy.Field): The HTML content of the page.
+        content (scrapy.Field): The HTML content of the page.
         date_scraped (scrapy.Field): The date when the page was scraped.
     """
-    name = 'pages'
+    type = 'webpages'
     origin_url = scrapy.Field()
-    url = scrapy.Field()
+    link = scrapy.Field()
     title = scrapy.Field()
-    html = scrapy.Field()
+    content = scrapy.Field()
     date_scraped = scrapy.Field()
     current_hash = scrapy.Field()
