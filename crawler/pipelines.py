@@ -128,7 +128,7 @@ class ItemToSQLitePipeline:
             # Insert data into Webpage table
             self.cursor.execute('''
                 INSERT INTO Webpage (origin_url, url, title, html, date_scraped, current_hash)
-                VALUES (?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?)
             ''', (adapter['origin_url'], adapter['url'], adapter['title'],
                   adapter['html'], adapter['date_scraped'], adapter['current_hash']))
 
@@ -155,8 +155,8 @@ class ItemToSQLitePipeline:
         elif item_name == 'boxes':
             # Insert data into Box table
             self.cursor.execute('''
-                INSERT INTO Box (origin_url, url, title, html,image_src, image_alt_text, date_scraped, current_hash)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
+                INSERT INTO Box (origin_url, url, title, html, image_src, image_alt_text, date_scraped, current_hash)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             ''', (adapter['origin_url'], adapter['url'],
                   adapter['title'], adapter['html'], adapter['image_src'],
                   adapter['image_alt_text'], adapter['date_scraped'], adapter['current_hash']))
