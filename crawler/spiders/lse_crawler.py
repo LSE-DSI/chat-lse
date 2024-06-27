@@ -37,6 +37,8 @@ class SpiderDSI(scrapy.Spider):
         'http://www.lse.ac.uk/statistics/home.aspx'
     ]
     max_depth = 3
+    global visited
+    visited = []
 
     def parse(self, response):
 
@@ -60,12 +62,14 @@ class SpiderDSI(scrapy.Spider):
 
         # Follow links found on the current page
         for next_page_url in response.css("a.component__link::attr(href)").extract():
-            yield scrapy.Request(
-                response.urljoin(next_page_url),
-                callback=self.parse_linked_page,
-                meta={'depth': 1, 'origin_url': response.url},
-                errback=self.handle_error
-            )
+            if next_page_url not in visited: 
+                visited.append(next_page_url)
+                yield scrapy.Request(
+                    response.urljoin(next_page_url),
+                    callback=self.parse_linked_page,
+                    meta={'depth': 1, 'origin_url': response.url},
+                    errback=self.handle_error
+                )
 
     def parse_linked_page(self, response):
         # Extract data from the linked page
@@ -101,13 +105,15 @@ class SpiderDSI(scrapy.Spider):
         current_depth = response.meta.get('depth', 1)
         if current_depth < self.max_depth:
             for next_page_url in response.css("a.component__link::attr(href)").extract():
-                yield scrapy.Request(
-                    response.urljoin(next_page_url),
-                    callback=self.parse_linked_page,
-                    meta={'depth': current_depth + 1,
-                          'origin_url': response.meta['origin_url']},
-                    errback=self.handle_error
-                )
+                if next_page_url not in visited: 
+                    visited.append(next_page_url)
+                    yield scrapy.Request(
+                        response.urljoin(next_page_url),
+                        callback=self.parse_linked_page,
+                        meta={'depth': current_depth + 1,
+                            'origin_url': response.meta['origin_url']},
+                        errback=self.handle_error
+                    )
 
     def handle_error(self, failure):
         self.logger.error(repr(failure))
