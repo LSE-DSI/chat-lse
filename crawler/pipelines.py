@@ -3,24 +3,19 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
+import scrapy
+import sqlite3
+import logging
+
 from scrapy.exporters import JsonLinesItemExporter
 from itemadapter import ItemAdapter
 from datetime import datetime
 from scrapy import signals
-import scrapy
-import sqlite3
-import asyncio
-import argparse
-import logging
-import os 
-
-import sqlalchemy 
-from sqlalchemy import text, MetaData 
-from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass, mapped_column
 
 from datetime import datetime
 from dotenv import load_dotenv
-from fastapi_app.postgres_engine import create_postgres_engine_from_env, create_postgres_engine_from_args
+from fastapi_app.postgres_engine import create_postgres_engine_from_env_sync
+from fastapi_app.postgres_models import WebPage
 
 class ItemExporter(object):
     """ Exports the items to JSON Lines files.
@@ -62,27 +57,33 @@ class ItemExporter(object):
 
 class ItemToPostgresPipeline:
     def __init__(self):
+        logging.debug("Init ItemToPostgresPipeline")
         load_dotenv(override=True) 
         self.engine = None
 
-    async def open_spider(self, spider):
-        self.engine = await create_postgres_engine_from_env()
-        await self.create_tables(self.engine)
+    def open_spider(self, spider):
+        logging.debug("ItemToPostgresPipeline open spider")
+        self.engine = create_postgres_engine_from_env_sync()
+        logging.debug(self.engine.url)
+        self.create_tables(self.engine)
         logging.info('PostgreSQL Connection established')
 
-    async def close_spider(self, spider):
-        await self.engine.dispose()
+    def close_spider(self, spider):
+        logging.debug("ItemToPostgresPipeline close spider")
+        self.engine.dispose()
         logging.info('PostgreSQL Connection closed')
 
-    async def create_tables(engine):
-        async with engine.begin() as conn:
+    def create_tables(self, engine):
+        logging.debug("ItemToPostgresPipeline create tables")
+        logging.debug(engine)
+        with engine.connect() as conn:
             logging.info("Enabling the pgvector extension for Postgres...")
-            await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
+            conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
 
             logging.info("Creating Wepage table...")
-            await conn.execute(text('''
-                DROP TABLE IF EXISTS Webpage
-                CREATE TABLE IF NOT EXISTS Webpage (
+            conn.execute(text('''
+                DROP TABLE IF EXISTS webpage;
+                CREATE TABLE IF NOT EXISTS webpage (
                     id SERIAL PRIMARY KEY,
                     origin_url TEXT,
                     url TEXT,
@@ -91,79 +92,109 @@ class ItemToPostgresPipeline:
                     date_scraped TIMESTAMP
                 );
             '''))
+            conn.commit()
 
-            logging.info("Creating Box table...")
-            await conn.execute(text('''
-                CREATE TABLE IF NOT EXISTS Box (
-                    id SERIAL PRIMARY KEY,
-                    origin_url TEXT,
-                    url TEXT, 
-                    title TEXT, 
-                    html TEXT, 
-                    image_src TEXT, 
-                    image_alt_text TEXT, 
-                    date_scraped TIMESTAMP,
-                    FOREIGN KEY (origin_url) REFERENCES Webpage(origin_url)
-                );
-            '''))
+            # logging.info("Creating Box table...")
+            # conn.execute(text('''
+            #     CREATE TABLE IF NOT EXISTS Box (
+            #         id SERIAL PRIMARY KEY,
+            #         origin_url TEXT,
+            #         url TEXT, 
+            #         title TEXT, 
+            #         html TEXT, 
+            #         image_src TEXT, 
+            #         image_alt_text TEXT, 
+            #         date_scraped TIMESTAMP,
+            #         FOREIGN KEY (origin_url) REFERENCES Webpage(origin_url)
+            #     );
+            # '''))
 
-            logging.info("Creating CrawlerMetadata table...") 
-            await conn.execute(text('''
-                CREATE TABLE IF NOT EXISTS CrawlerMetadata (
-                    id SERIAL PRIMARY KEY,
-                    webpage_id INTEGER,
-                    crawled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY (webpage_id) REFERENCES Webpage(id)
-                );
-            '''))
+            # logging.info("Creating CrawlerMetadata table...") 
+            # conn.execute(text('''
+            #     CREATE TABLE IF NOT EXISTS CrawlerMetadata (
+            #         id SERIAL PRIMARY KEY,
+            #         webpage_id INTEGER,
+            #         crawled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            #         FOREIGN KEY (webpage_id) REFERENCES Webpage(id)
+            #     );
+            # '''))
 
-            logging.info("Creating Links table...") 
-            await conn.execute(text('''
-                CREATE TABLE IF NOT EXISTS Links (
-                    id SERIAL PRIMARY KEY,
-                    webpage_id INTEGER,
-                    link TEXT,
-                    FOREIGN KEY (webpage_id) REFERENCES Webpage(id)
-                );
-            '''))
+            # logging.info("Creating Links table...") 
+            # conn.execute(text('''
+            #     CREATE TABLE IF NOT EXISTS Links (
+            #         id SERIAL PRIMARY KEY,
+            #         webpage_id INTEGER,
+            #         link TEXT,
+            #         FOREIGN KEY (webpage_id) REFERENCES Webpage(id)
+            #     );
+            # '''))
 
             # Create all tables in database
             logging.info("Database extension and tables created successfully.")
 
-        await conn.close()
+        conn.close()
 
-    async def process_item(self, item, engine, spider):
+    def process_item(self, item, spider):
+        logging.debug("ItemToPostgresPipeline process item")
         adapter = ItemAdapter(item)
         item_name = item.name
 
-        async with engine.begin() as conn:
+        # with self.engine.connect() as conn:
+        with Session(self.engine) as session:
             if item_name == 'pages':
-                await conn.execute(text('''
-                    INSERT INTO Webpage (origin_url, url, title, html, date_scraped)
-                    VALUES ($1, $2, $3, $4, $5)
-                '''), adapter['origin_url'], adapter['url'], adapter['title'], adapter['html'], adapter['date_scraped'])
+                logging.debug("item_name == 'pages'")
+                model = WebPage(
+                    origin_url=adapter['origin_url'],
+                    url = adapter['url'],
+                    title = adapter['title'],
+                    html = adapter['html'],
+                    date_scraped = adapter['date_scraped'],
+                )
+                session.add(model)
+                session.commit()
+                
+                # val = conn.execute(text('''
+                #     INSERT INTO webpage (origin_url, url, title, html, date_scraped)
+                #     VALUES ($1, $2, $3, $4, $5)
+                # '''), adapter['origin_url'], adapter['url'], adapter['title'], adapter['html'], adapter['date_scraped'])
 
-                webpage_id = await conn.fetchval('SELECT LASTVAL()')
-                selector = scrapy.Selector(text=adapter['html'])
-                links = selector.css('a::attr(href)').extract()
+                # logging.debug(type(adapter['date_scraped']))
+                # logging.debug(adapter['date_scraped'])
 
-                for link in links:
-                    await conn.execute(text('''
-                        INSERT INTO Links (webpage_id, link)
-                        VALUES ($1, $2)
-                    '''), webpage_id, link)
+                # val = conn.execute(text(f'''
+                #     INSERT INTO webpage (origin_url, url, title, html, date_scraped) VALUES ({adapter['origin_url']}, {adapter['url']}, {adapter['title']}, {adapter['html']}, {adapter['date_scraped']});
+                #  '''))
 
-                await conn.execute(text('''
-                    INSERT INTO CrawlerMetadata (webpage_id, crawled_at)
-                    VALUES ($1, $2)
-                '''), webpage_id, datetime.now())
+                # t = text(f'''
+                #     INSERT INTO webpage (origin_url, url, title, html, date_scraped) VALUES ('origin_url', 'url', 'title', 'html', 'Thu, 27 Jun 2024 14:22:57 GMT');
+                #  ''')
+                # logging.debug(t)
+                # val = conn.execute(t)
 
-            elif item_name == 'boxes':
-                await conn.execute(text('''
-                    INSERT INTO Box (origin_url, url, title, html, image_src, image_alt_text, date_scraped)
-                    VALUES ($1, $2, $3, $4, $5, $6, $7)
-                '''), adapter['origin_url'], adapter['url'], adapter['title'], adapter['html'], adapter['image_src'], adapter['image_alt_text'], adapter['date_scraped'])
+                # logging.debug(val)
 
+                # webpage_id = conn.fetchval('SELECT LASTVAL()')
+                # selector = scrapy.Selector(text=adapter['html'])
+                # links = selector.css('a::attr(href)').extract()
+
+                # for link in links:
+                #     conn.execute(text('''
+                #         INSERT INTO Links (webpage_id, link)
+                #         VALUES ($1, $2)
+                #     '''), webpage_id, link)
+
+                # conn.execute(text('''
+                #     INSERT INTO CrawlerMetadata (webpage_id, crawled_at)
+                #     VALUES ($1, $2)
+                # '''), webpage_id, datetime.now())
+                # conn.commit()
+
+            # elif item_name == 'boxes':
+            #     conn.execute(text('''
+            #         INSERT INTO Box (origin_url, url, title, html, image_src, image_alt_text, date_scraped)
+            #         VALUES ($1, $2, $3, $4, $5, $6, $7)
+            #     '''), adapter['origin_url'], adapter['url'], adapter['title'], adapter['html'], adapter['image_src'], adapter['image_alt_text'], adapter['date_scraped'])
+            #     conn.commit()
         return item
 
 class ItemToSQLitePipeline:
