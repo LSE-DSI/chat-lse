@@ -75,9 +75,9 @@ class SpiderDSI(scrapy.Spider):
         # Extract data from the linked page
         item = PagesScraperItem()
         item['origin_url'] = response.meta['origin_url']
-        item['url'] = response.url
+        item['link'] = response.url
         item['title'] = response.css('title::text').get().strip()
-        item['html'] = response.text
+        item['content'] = response.text
         item['date_scraped'] = response.headers['Date'].decode()
         item['current_hash'] = self.compute_hash(item['html'])
 
