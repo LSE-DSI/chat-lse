@@ -67,4 +67,10 @@ pip install -r requirements.txt
 scrapy crawl lse_crawler
 ```
 
+3. Run the following command from the root of the project to download all the documents:
+
+```bash
+scrapy crawl file_downloader
+```
+
 Note: with the current configuration, the crawler will save the data to `data/output.jl`(JSON Lines format). Read about scrapy's [item exporters](https://docs.scrapy.org/en/latest/topics/exporters.html#using-item-exporters) for more information.
