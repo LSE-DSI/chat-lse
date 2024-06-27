@@ -95,7 +95,7 @@ FEED_EXPORT_ENCODING = "utf-8"
 FEED_FORMAT = 'jsonlines'
 
 LOG_ENABLED = True
-LOG_LEVEL = logging.ERROR
+LOG_LEVEL = 'INFO'
 LOG_FILE = 'scrapy_errors.log'
 
 SQLITE_DB_PATH = '/Users/jamie/Desktop/chatlse2024/chat-lse/crawler/data/dsi_crawler.db'
