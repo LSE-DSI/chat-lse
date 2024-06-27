@@ -165,6 +165,7 @@ data/
 
 # npm
 node_modules
+static
 
 .vscode
 .DS_Store
