@@ -3,6 +3,7 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
+from hashlib import sha256
 from scrapy.exporters import JsonLinesItemExporter
 from itemadapter import ItemAdapter
 from datetime import datetime
@@ -57,8 +58,7 @@ class ItemExporter(object):
 class ItemToSQLitePipeline:
     def __init__(self):
         # Connecting to SQLite database
-        self.conn = sqlite3.connect(
-            SQLITE_DB_PATH, check_same_thread=False)
+        self.conn = sqlite3.connect(SQLITE_DB_PATH, check_same_thread=False)
         self.cursor = self.conn.cursor()
         logging.info('SQLite Connection established')
 
@@ -93,7 +93,7 @@ class ItemToSQLitePipeline:
                     date_scraped TEXT,
                     current_hash TEXT,
                     FOREIGN KEY (origin_url) REFERENCES Webpage(origin_url)
-                    )
+                )
             ''')
 
             # Create CrawlerMetadata table
@@ -123,10 +123,8 @@ class ItemToSQLitePipeline:
             logging.error(f'Error creating tables: {e}')
 
     def process_item(self, item, spider):
-
         adapter = ItemAdapter(item)
         item_name = item.name
-        item_exporter = ItemExporter()
 
         def load_json_lines(file_path):
             data = []
@@ -134,189 +132,77 @@ class ItemToSQLitePipeline:
                 with open(file_path, 'r') as file:
                     for line in file:
                         data.append(json.loads(line))
-                        return data
+                return data
             except Exception as e:
                 logging.error(f'Error loading JSON Lines file: {e}')
+                return []
 
         def url_exists(file_path, url):
             data = load_json_lines(file_path)
             for entry in data:
-                if entry.get('url') == adapter['url']:
+                if entry.get('url') == url:
                     return entry
             return None
 
-        def insert_webpage_data(self, adapter):
-            # Insert data into Webpage table
+        if item_name == 'pages':
+            existing_item = url_exists(PAGES_JL_PATH, adapter['url'])
+            if existing_item is None:
+                logging.info(f'Page not previously scraped: {adapter["url"]}')
+            else:
+                previous_hash = existing_item.get('current_hash')
+                if previous_hash and previous_hash == adapter['current_hash']:
+                    logging.info(f'Page not modified since last scraped: {
+                                 adapter["url"]}')
+                    return item
+
+        elif item_name == 'boxes':
+            existing_item = url_exists(BOXES_JL_PATH, adapter['url'])
+            if existing_item is None:
+                logging.info(f'Box not previously scraped: {adapter["url"]}')
+            else:
+                previous_hash = existing_item.get('current_hash')
+                if previous_hash and previous_hash == adapter['current_hash']:
+                    logging.info(f'Box not modified since last scraped: {
+                                 adapter["url"]}')
+                    return item
+
+        # If not returned above, proceed to update or insert into SQLite
+        if item_name == 'pages':
             self.cursor.execute('''
                 INSERT INTO Webpage (origin_url, url, title, html, date_scraped, current_hash)
                 VALUES (?, ?, ?, ?, ?, ?)
             ''', (adapter['origin_url'], adapter['url'], adapter['title'],
                   adapter['html'], adapter['date_scraped'], adapter['current_hash']))
 
-            # Retrieve the inserted webpage_id
             webpage_id = self.cursor.lastrowid
 
-            # Extract links from HTML
             selector = scrapy.Selector(text=adapter['html'])
             links = selector.css('a::attr(href)').extract()
 
-            # Insert data into Links table
             for link in links:
                 self.cursor.execute('''
                     INSERT INTO Links (webpage_id, link)
                     VALUES (?, ?)
                 ''', (webpage_id, link))
 
-            # Insert crawler metadata into CrawlerMetadata table
-            self.cursor.execute('''
-                INSERT INTO CrawlerMetadata (webpage_id, crawled_at)
-                VALUES (?, ?)
-            ''', (webpage_id, datetime.now()))
-
-        def insert_data_into_box(self, adapter):
-            # Insert data into Box table
+        elif item_name == 'boxes':
             self.cursor.execute('''
                 INSERT INTO Box (origin_url, url, title, html, image_src, image_alt_text, date_scraped, current_hash)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            ''', (adapter['origin_url'], adapter['url'],
-                  adapter['title'], adapter['html'], adapter['image_src'],
-                  adapter['image_alt_text'], adapter['date_scraped'], adapter['current_hash']))
+            ''', (adapter['origin_url'], adapter['url'], adapter['title'], adapter['html'],
+                  adapter['image_src'], adapter['image_alt_text'], adapter['date_scraped'], adapter['current_hash']))
 
-        if url_exists(f'/Users/jamie/Desktop/chatlse2024/chat-lse/crawler/data/{item_name}.jl', adapter['url']) is None:
-            logging.info(f'Item name: {item_name} not previously scraped')
-            if item_name == 'pages':
-                item_exporter.process_item(item, spider)
-                # Insert data into Webpage table
-                self.cursor.execute('''
-                    INSERT INTO Webpage (origin_url, url, title, html, date_scraped, current_hash)
-                   VALUES (?, ?, ?, ?, ?, ?)
-                ''', (adapter['origin_url'], adapter['url'], adapter['title'],
-                      adapter['html'], adapter['date_scraped'], adapter['current_hash']))
+        # Insert crawler metadata
+        self.cursor.execute('''
+            INSERT INTO CrawlerMetadata (webpage_id, crawled_at)
+            VALUES (?, ?)
+        ''', (webpage_id, datetime.now()))
 
-                self.conn.commit()  # Commit changes to the database
+        self.conn.commit()
+        logging.info(f'Item {item_name} processed and stored in SQLite')
 
-                # Retrieve the inserted webpage_id
-                webpage_id = self.cursor.lastrowid
+        return item
 
-                # Extract links from HTML
-                selector = scrapy.Selector(text=adapter['html'])
-                links = selector.css('a::attr(href)').extract()
-
-                # Insert data into Links table
-                for link in links:
-                    self.cursor.execute('''
-                        INSERT INTO Links (webpage_id, link)
-                        VALUES (?, ?)
-                    ''', (webpage_id, link))
-
-                self.conn.commit()  # Commit changes to the database
-
-                # Insert crawler metadata into CrawlerMetadata table
-                self.cursor.execute('''
-                    INSERT INTO CrawlerMetadata (webpage_id, crawled_at)
-                    VALUES (?, ?)
-                ''', (webpage_id, datetime.now()))
-
-                self.conn.commit()  # Commit changes to the database
-
-            elif item_name == 'boxes':
-                item_exporter.process_item(item, spider)
-                # Insert data into Box table
-                self.cursor.execute('''
-                    INSERT INTO Box (origin_url, url, title, html, image_src, image_alt_text, date_scraped, current_hash)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                ''', (adapter['origin_url'], adapter['url'],
-                      adapter['title'], adapter['html'], adapter['image_src'],
-                      adapter['image_alt_text'], adapter['date_scraped'], adapter['current_hash']))
-
-                self.conn.commit()  # Commit changes to the database
-
-                return item
-
-        elif url_exists(PAGES_JL_PATH, adapter['url']) is not None:
-            # Check if the current hash is different from the previous hash
-            self.cursor.execute('''
-                SELECT current_hash FROM Webpage WHERE url = ?
-            ''', (adapter['url'],))
-            previous_hash = self.cursor.fetchone()
-            if previous_hash and previous_hash[0] != adapter['current_hash']:
-                # Insert data into Webpage table
-                item_exporter.process_item(item, spider)
-                # Insert data into Webpage table
-                self.cursor.execute('''
-                    INSERT INTO Webpage (origin_url, url, title, html, date_scraped, current_hash)
-                   VALUES (?, ?, ?, ?, ?, ?)
-                ''', (adapter['origin_url'], adapter['url'], adapter['title'],
-                      adapter['html'], adapter['date_scraped'], adapter['current_hash']))
-
-                self.conn.commit()  # Commit changes to the database
-
-                # Retrieve the inserted webpage_id
-                webpage_id = self.cursor.lastrowid
-
-                # Extract links from HTML
-                selector = scrapy.Selector(text=adapter['html'])
-                links = selector.css('a::attr(href)').extract()
-
-                # Insert data into Links table
-                for link in links:
-                    self.cursor.execute('''
-                        INSERT INTO Links (webpage_id, link)
-                        VALUES (?, ?)
-                    ''', (webpage_id, link))
-
-                self.conn.commit()  # Commit changes to the database
-
-                # Insert crawler metadata into CrawlerMetadata table
-                self.cursor.execute('''
-                    INSERT INTO CrawlerMetadata (webpage_id, crawled_at)
-                    VALUES (?, ?)
-                ''', (webpage_id, datetime.now()))
-
-                self.conn.commit()  # Commit changes to the database
-
-                return item
-            else:
-                logging.info(
-                    f'Item name: {item_name} not modified since last scraped')
-                return item
-
-        elif url_exists(BOXES_JL_PATH, adapter['url']) is not None:
-            # Check if the current hash is different from the previous hash
-            self.cursor.execute('''
-                SELECT current_hash FROM Box WHERE url = ?
-            ''', (adapter['url'],))
-            previous_hash = self.cursor.fetchone()
-            if previous_hash and previous_hash[0] != adapter['current_hash']:
-                logging.info(
-                    f'Item name: {item_name} modified since last scraped')
-                item_exporter.process_item(item, spider)
-                # Insert data into Box table
-                self.cursor.execute('''
-                    INSERT INTO Box (origin_url, url, title, html, image_src, image_alt_text, date_scraped, current_hash)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-                ''', (adapter['origin_url'], adapter['url'],
-                      adapter['title'], adapter['html'], adapter['image_src'],
-                      adapter['image_alt_text'], adapter['date_scraped'], adapter['current_hash']))
-
-                self.conn.commit()  # Commit changes to the database
-
-                return item
-            else:
-                logging.info(
-                    f'Item name: {item_name} not modified since last scraped')
-                return item
-
-    def close_spider(self, spider, item):
+    def close_spider(self, spider):
         self.conn.close()
         logging.info('SQLite Connection closed')
-        # Instantiate the pipelines
-        item_exporter = ItemExporter()
-        item_to_sqlite_pipeline = ItemToSQLitePipeline()
-
-        # Process the items using the pipelines
-        item_exporter.process_item(item, spider)
-        item_to_sqlite_pipeline.process_item(item, spider)
-
-        # Close the spider and pipelines
-        item_to_sqlite_pipeline.close_spider(spider, item)
