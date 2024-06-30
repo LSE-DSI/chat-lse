@@ -6,13 +6,12 @@ import os
 
 import sqlalchemy.exc
 from dotenv import load_dotenv
-from sqlalchemy import select, text, delete
+from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import async_sessionmaker
-from sqlalchemy.dialects.postgresql import JSONB
 
 
-from fastapi_app.postgres_engine import create_postgres_engine_from_args, create_postgres_engine_from_env
-from fastapi_app.postgres_models import PDF, Item
+from postgres_engine import create_postgres_engine_from_args, create_postgres_engine_from_env
+from postgres_models import PDF, Item
 
 logger = logging.getLogger("ragapp")
 
@@ -30,6 +29,7 @@ async def seed_data(engine):
         # Load JSON data
         current_dir = os.path.dirname(os.path.realpath(__file__))
 
+        # FIXME: Read from data/seed_lse_data_overlap_128.json instead
         with open(os.path.join(current_dir, "seed_lse_data_0.json")) as f:
             pdf_data = json.load(f)
 

@@ -1,8 +1,8 @@
 import asyncio
 import json
 from dotenv import load_dotenv
-from fastapi_app.embeddings import compute_text_embedding  # Ensure correct imports
-from fastapi_app.clients import create_embed_client  # Import OpenAI client creation function
+from embeddings import compute_text_embedding  # Ensure correct imports
+from clients import create_embed_client  # Import OpenAI client creation function
 
 async def generate_json_entry(doc_id, type, doc_name, description, link, embed_model):
     try:
@@ -27,6 +27,7 @@ async def main():
 
     embed_model = await create_embed_client()
 
+    # FIXME: Instead of hardcoding the documents, load the PDFs from within notebooks\experiments\sample-docs. Consider creating the exact same df_docs as in notebooks\experiments\NB04 - Explore SentenceSplitter.ipynb
     # Manually defined descriptions and links for each document
     documents = [
         (1, "PDF","Exam Procedures for Candidates",  "Outlines essential procedures for LSE's in-person exams for the 2023/24 academic year. It details candidate responsibilities, exam conduct rules, permitted materials, use of electronic devices, and protocols for e-Exams, including equipment requirements and emergency procedures, to ensure fairness and integrity during the examination process.", "https://info.lse.ac.uk/current-students/services/assets/documents/Exam-Procedures-for-Candidates.pdf"),
@@ -47,7 +48,10 @@ async def main():
         else:
             print(f"Failed to create JSON entry for {doc_name}")
 
-    json_file_path = "fastapi_app/seed_data_lse.json"
+    # TODO: Add code to use SentenceSplitter as specified in notebooks\experiments\NB04 - Explore SentenceSplitter.ipynb 
+    # TODO: Choose the most appropriate **default** chunk overlap, as explored in https://github.com/LSE-DSI/chat-lse/issues/26#issuecomment-2198756414
+    # FIXME: Instead of writing to fastapi_app/..., write to data/seed_lse_data_overlap_128.json 
+    json_file_path = #"fastapi_app/seed_data_lse.json"
     try:
         with open(json_file_path, "w") as f:
             json.dump(json_data, f, indent=4)
@@ -56,6 +60,13 @@ async def main():
         print(f"Failed to write JSON file: {e}")
  
 if __name__ == "__main__":
+    # TODO: Before running anything, inform the user that this script will take a long time to run
+    #   - If the sample docs are still the same, the user can skip this script and use the existing seed data
+    #   - Existing data is available in our Sharepoint folder, as specified https://github.com/LSE-DSI/chat-lse/blob/develop/instructions/SETUP.md#33-initialize-database-and-add-sample-data
+
+    # TODO: Ask the user if they really want to run this script. If they do, they should type "YES" (or y or Y) to confirm
+    #   - The script should exit without running anything if they type NO (or n or N).
+
     loop = asyncio.get_event_loop()
     if loop.is_running():
         # Reuse the existing running loop
