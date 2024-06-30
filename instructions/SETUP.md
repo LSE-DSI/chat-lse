@@ -128,9 +128,11 @@ OLLAMA_ENDPOINT=http://<Rizzie IP address>:11434/v1
 
 1. You MUST download the seed data from our Sharepoint folder:
 
-    [Sharepoint > ChatLSE > pdf-chunking-experiments](https://lsecloud.sharepoint.com/:f:/r/sites/TEAM_DSI-Executive/Shared%20Documents/Computing/ChatLSE/pdf-chunking-experiments?csf=1&web=1&e=pdMAIb) (last updated: 28 June 2024) -- Check [notebooks/experiments/NB04 - Explore SentenceSplitter.ipynb](https://github.com/LSE-DSI/chat-lse/blob/edef01b/notebooks/experiments/NB04%20-%20Explore%20SentenceSplitter.ipynb) to understand how the JSONs were created from the sample PDF documents.
+    [Sharepoint > ChatLSE > pdf-chunking-experiments](https://lsecloud.sharepoint.com/:f:/r/sites/TEAM_DSI-Executive/Shared%20Documents/Computing/ChatLSE/pdf-chunking-experiments?csf=1&web=1&e=pdMAIb) (last updated: 28 June 2024)
 
-2. Move all the `seed_lse_*.json` downloaded files to the `data/` folder.
+   Check [notebooks/experiments/NB04 - Explore SentenceSplitter.ipynb](https://github.com/LSE-DSI/chat-lse/blob/edef01b/notebooks/experiments/NB04%20-%20Explore%20SentenceSplitter.ipynb) to understand how the JSONs were created from the sample PDF documents.
+
+3. Move all the `seed_lse_*.json` downloaded files to the `data/` folder.
 
 3.Now it is safe to run the seed data scripts:
 
