@@ -5,6 +5,9 @@ scrapy==2.11.2
 # Data Manipulation
 pandas==2.2.2
 
+# Docs
+PyPDF2==3.0.1
+
 # SQL
 jupysql>=0.10.4
 sqlalchemy>=2.0.23

@@ -6,70 +6,67 @@ import os
 
 import sqlalchemy.exc
 from dotenv import load_dotenv
-from sqlalchemy import select, text, delete
-from sqlalchemy import cast, Integer
+from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import async_sessionmaker
-from sqlalchemy.dialects.postgresql import JSONB
 
 
-from fastapi_app.postgres_engine import create_postgres_engine_from_args, create_postgres_engine_from_env
-from fastapi_app.postgres_models import Item
+from postgres_engine import create_postgres_engine_from_args, create_postgres_engine_from_env
+from postgres_models import PDF, Item
 
 logger = logging.getLogger("ragapp")
 
 
 async def seed_data(engine):
 
-    # Check if Item table exists
-    async with engine.begin() as conn:
-        result = await conn.execute(
-            text(
-                "SELECT EXISTS (SELECT 1 FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'items')"
-            )
-        )
-        if not result.scalar():
-            logger.error("Items table does not exist. Please run the database setup script first.")
-            return
-
+    # Create session for database operations
     async with async_sessionmaker(engine, expire_on_commit=False)() as session:
+
+        # Delete existing data in tables (assuming cascading is set up in foreign key)
         await session.execute(delete(Item))
+        await session.execute(delete(PDF))
         await session.commit()
+
+        # Load JSON data
         current_dir = os.path.dirname(os.path.realpath(__file__))
-        with open(os.path.join(current_dir, "seed_data_lse.json")) as f:
-            catalog_items = json.load(f)
-            for catalog_item in catalog_items:
-                item_id = int(catalog_item["Id"])
-                item = await session.execute(select(Item).filter(cast(Item.id, Integer) == item_id))
-                if item.scalars().first():
-                    continue
+
+        # FIXME: Read from data/seed_lse_data_overlap_128.json instead
+        with open(os.path.join(current_dir, "seed_lse_data_0.json")) as f:
+            pdf_data = json.load(f)
+
+        for pdf_entry in pdf_data:
+            pdf = PDF(
+                id=pdf_entry["Id"],
+                name=pdf_entry["Name"],
+                description=pdf_entry["Description"],
+                link=pdf_entry["Link"]
+            )
+            session.add(pdf)
+
+            # Each chunk in the PDF becomes an item in the Items table
+            for chunk in pdf_entry["Chunks"]:
                 item = Item(
-                    id=catalog_item["Id"],
-                    type=catalog_item["Type"],
-                    name=catalog_item["Name"],
-                    description=catalog_item["Description"],
-                    link=catalog_item["Link"],
-                    embedding=catalog_item["Embedding"],
+                    type=chunk["Type"],
+                    name=chunk["Name"],
+                    description=chunk["Description"],
+                    embedding=chunk["Embedding"],
+                    pdf_id=pdf_entry["Id"]  # Link item back to the PDF
                 )
                 session.add(item)
 
-            try:
-                await session.commit()
-            except sqlalchemy.exc.IntegrityError:
-                pass
-
-    logger.info("Items table seeded successfully.")
-
+        try:
+            await session.commit()
+            logger.info("Database seeded successfully.")
+        except sqlalchemy.exc.IntegrityError as e:
+            logger.error(f"Failed to seed database: {e}")
 
 async def main():
-
-    parser = argparse.ArgumentParser(description="Create database schema")
+    parser = argparse.ArgumentParser(description="Populate database with seed data")
     parser.add_argument("--host", type=str, help="Postgres host")
     parser.add_argument("--username", type=str, help="Postgres username")
     parser.add_argument("--password", type=str, help="Postgres password")
     parser.add_argument("--database", type=str, help="Postgres database")
     parser.add_argument("--sslmode", type=str, help="Postgres sslmode")
 
-    # if no args are specified, use environment variables
     args = parser.parse_args()
     if args.host is None:
         engine = await create_postgres_engine_from_env()
@@ -77,13 +74,9 @@ async def main():
         engine = await create_postgres_engine_from_args(args)
 
     await seed_data(engine)
-
     await engine.dispose()
 
-
 if __name__ == "__main__":
-
-    logging.basicConfig(level=logging.WARNING)
-    logger.setLevel(logging.INFO)
+    logging.basicConfig(level=logging.INFO)
     load_dotenv(override=True)
     asyncio.run(main())
