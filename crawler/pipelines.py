@@ -34,7 +34,7 @@ class ItemExporter(object):
 
     def spider_opened(self, spider):
         # Initialize file handlers and exporters for each item type
-        self.items = ['pages']
+        self.items = ['webpage']
         self.files = {}
         self.exporters = {}
 
@@ -88,9 +88,9 @@ class ItemToPostgresPipeline:
                 CREATE TABLE IF NOT EXISTS webpage (
                     id SERIAL PRIMARY KEY,
                     origin_url TEXT,
-                    url TEXT,
+                    link TEXT,
                     title TEXT, 
-                    html TEXT, 
+                    content TEXT, 
                     date_scraped TIMESTAMP
                 );
             '''))
@@ -112,9 +112,9 @@ class ItemToPostgresPipeline:
                 #FIXME: Webpage has been deprecated and replaced with Document
                 model = Webpage(
                     origin_url=adapter['origin_url'],
-                    url = adapter['url'],
+                    link = adapter['link'],
                     title = adapter['title'],
-                    html = adapter['html'],
+                    content = adapter['content'],
                     date_scraped = adapter['date_scraped'],
                 )
                 session.add(model)

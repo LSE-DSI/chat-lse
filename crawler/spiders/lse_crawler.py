@@ -57,14 +57,14 @@ class SpiderDSI(scrapy.Spider):
         # Extract data from the linked page
         item = PagesScraperItem()
         item['origin_url'] = response.meta['origin_url']
-        item['link'] = response.url
+        item['link'] = response.link
         item['title'] = response.css('title::text').get().strip()
-        item['content'] = response.text
+        item['content'] = response.content
         item['date_scraped'] = response.headers['Date'].decode()
-        item['current_hash'] = self.compute_hash(item['html'])
+        item['current_hash'] = self.compute_hash(item['content'])
 
         yield item
-        
+
         # Follow links found on the linked page if the depth is less than max_depth
         current_depth = response.meta.get('depth', 1)
         if current_depth < self.max_depth:

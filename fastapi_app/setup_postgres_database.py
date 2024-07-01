@@ -5,8 +5,8 @@ import logging
 from dotenv import load_dotenv
 from sqlalchemy import text
 
-from .postgres_engine import create_postgres_engine_from_args, create_postgres_engine_from_env
-from .postgres_models import Base
+from fastapi_app.postgres_engine import create_postgres_engine_from_args, create_postgres_engine_from_env
+from fastapi_app.postgres_models import Base
 
 logger = logging.getLogger("ragapp")
 
@@ -16,6 +16,8 @@ async def create_db_schema(engine):
         logger.info("Enabling the pgvector extension for Postgres...")
         await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
         logger.info("Dropping existing tables...")
+        #FIXME: This does not drop all tables, but only those defined in fastapi_app.postgres_models 
+        # (tables that have been renamed or removed will not be dropped)
         await conn.run_sync(Base.metadata.drop_all)
         logger.info("Creating database tables and indexes...")
         await conn.run_sync(Base.metadata.create_all)
