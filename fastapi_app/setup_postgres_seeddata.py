@@ -11,7 +11,7 @@ from sqlalchemy.ext.asyncio import async_sessionmaker
 
 
 from postgres_engine import create_postgres_engine_from_args, create_postgres_engine_from_env
-from postgres_models import PDF, Item
+from postgres_models import Doc 
 
 logger = logging.getLogger("ragapp")
 
@@ -22,37 +22,30 @@ async def seed_data(engine):
     async with async_sessionmaker(engine, expire_on_commit=False)() as session:
 
         # Delete existing data in tables (assuming cascading is set up in foreign key)
-        await session.execute(delete(Item))
-        await session.execute(delete(PDF))
+        await session.execute(delete(Doc))
         await session.commit()
 
         # Load JSON data
         current_dir = os.path.dirname(os.path.realpath(__file__))
 
-        # FIXME: Read from data/seed_lse_data_overlap_128.json instead
-        with open(os.path.join(current_dir, "seed_lse_data_0.json")) as f:
-            pdf_data = json.load(f)
+        pdf_data = []
+        with open(os.path.join(current_dir, "data/seed_lse_data.jsonl")) as f:
+            for line in f: 
+                pdf_data.append(json.load(line))
 
         for pdf_entry in pdf_data:
-            pdf = PDF(
-                id=pdf_entry["Id"],
-                name=pdf_entry["Name"],
-                description=pdf_entry["Description"],
-                link=pdf_entry["Link"]
+            pdf = Doc(
+                id=pdf_entry["id"],
+                doc_id=pdf_entry["doc_id"],
+                chunk_id=pdf_entry["chunk_id"],
+                type=pdf_entry["type"],
+                name=pdf_entry["name"],
+                description=pdf_entry["description"],
+                content=pdf_entry["content"],
+                url=pdf_entry["url"], 
+                embedding=pdf_entry["embedding"],
             )
             session.add(pdf)
-
-            # Each chunk in the PDF becomes an item in the Items table
-            for chunk in pdf_entry["Chunks"]:
-                item = Item(
-                    type=chunk["Type"],
-                    name=chunk["Name"],
-                    description=chunk["Description"],
-                    embedding=chunk["Embedding"],
-                    pdf_id=pdf_entry["Id"]  # Link item back to the PDF
-                )
-                session.add(item)
-
         try:
             await session.commit()
             logger.info("Database seeded successfully.")
