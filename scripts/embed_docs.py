@@ -6,8 +6,6 @@ import argparse
 
 import numpy as np
 
-import pdfplumber
-
 from dotenv import load_dotenv
 from sqlalchemy.orm import sessionmaker
 from sentence_transformers import SentenceTransformer
@@ -38,13 +36,6 @@ async def setup_database():
     async with engine.begin() as conn:
         await conn.run_sync(metadata.create_all)
     return engine
-
-async def extract_text_from_pdf(file_path):
-    text = ""
-    with pdfplumber.open(file_path) as pdf:
-        for page in pdf.pages:
-            text += page.extract_text() or ""
-    return text
 
 def create_embeddings(text):
     embedding = model.encode(text)
