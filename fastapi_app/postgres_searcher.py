@@ -2,7 +2,7 @@ from pgvector.utils import to_db
 from sqlalchemy import Float, Integer, select, text
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
-from .postgres_models import Item
+from .postgres_models import Doc
 
 
 class PostgresSearcher:
@@ -35,7 +35,7 @@ class PostgresSearcher:
 
         vector_query = f"""
             SELECT id, RANK () OVER (ORDER BY embedding <=> :embedding) AS rank
-                FROM items
+                FROM docs
                 {filter_clause_where}
                 ORDER BY embedding <=> :embedding
                 LIMIT 20
@@ -86,6 +86,6 @@ class PostgresSearcher:
             # Convert results to Item models
             items = []
             for id, _ in results[:query_top]:
-                item = await session.execute(select(Item).where(Item.id == id))
+                item = await session.execute(select(Doc).where(Doc.id == id))
                 items.append(item.scalar())
             return items
