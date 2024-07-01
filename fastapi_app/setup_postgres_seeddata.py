@@ -10,8 +10,8 @@ from sqlalchemy import delete
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
 
-from postgres_engine import create_postgres_engine_from_args, create_postgres_engine_from_env
-from postgres_models import Doc 
+from fastapi_app.postgres_engine import create_postgres_engine_from_args, create_postgres_engine_from_env
+from fastapi_app.postgres_models import Doc 
 
 logger = logging.getLogger("ragapp")
 

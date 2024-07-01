@@ -4,8 +4,8 @@ import os
 
 from dotenv import load_dotenv
 from tqdm import tqdm 
-from embeddings import compute_text_embedding  # Ensure correct imports
-from clients import create_embed_client  # Import OpenAI client creation function
+from fastapi_app.embeddings import compute_text_embedding  # Ensure correct imports
+from fastapi_app.clients import create_embed_client  # Import OpenAI client creation function
 from llama_index.core.node_parser import SentenceSplitter 
 
 async def generate_json_entry(embed_model, id, doc_id, chunk_id, filetype, filename, description, text, url):

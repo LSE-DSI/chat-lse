@@ -5,8 +5,8 @@ import logging
 from dotenv import load_dotenv
 from sqlalchemy import text
 
-from postgres_engine import create_postgres_engine_from_args, create_postgres_engine_from_env
-from postgres_models import Base
+from fastapi_app.postgres_engine import create_postgres_engine_from_args, create_postgres_engine_from_env
+from fastapi_app.postgres_models import Base
 
 logger = logging.getLogger("ragapp")
 
