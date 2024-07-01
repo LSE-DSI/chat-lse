@@ -1,20 +1,20 @@
 import os
-import argparse
-import pdfplumber
-import numpy as np
-from sentence_transformers import SentenceTransformer
-from sqlalchemy import Table, Column, Integer, String, LargeBinary, MetaData
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.future import select
-from sqlalchemy.orm import sessionmaker
-from dotenv import load_dotenv
+import asyncio
 import logging
 import warnings
+import argparse
 
-from .postgres_engine import create_postgres_engine_from_env
+import numpy as np
 
-# Load environment variables
-load_dotenv()
+import pdfplumber
+
+from dotenv import load_dotenv
+from sqlalchemy.orm import sessionmaker
+from sentence_transformers import SentenceTransformer
+from sqlalchemy import Table, Column, Integer, String, LargeBinary, MetaData
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from fastapi_app.postgres_engine import create_postgres_engine_from_env
 
 # Initialize logging
 logging.basicConfig(level=logging.INFO)
@@ -74,6 +74,8 @@ async def main():
     if not os.path.isdir(args.dir):
         raise ValueError(f"The directory {args.dir} does not exist or is not a directory.")
     
+    load_dotenv(override=True)
+
     engine = await setup_database()
     async_session = sessionmaker(
         bind=engine, 
@@ -87,5 +89,4 @@ async def main():
     logging.info("Embedding process completed.")
 
 if __name__ == "__main__":
-    import asyncio
     asyncio.run(main())
