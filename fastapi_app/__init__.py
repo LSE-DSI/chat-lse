@@ -51,4 +51,9 @@ def create_app():
 
     app.include_router(api_routes.router)
 
+    if os.environ.get("STATIC_DIR"):
+        print(os.environ.get("STATIC_DIR"))
+        from . import frontend_routes  # noqa
+        app.mount("/", frontend_routes.router)
+
     return app

@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Stack, IconButton } from "@fluentui/react";
+import { Stack, IconButton, Link } from "@fluentui/react";
 import DOMPurify from "dompurify";
 
 import styles from "./Answer.module.css";
@@ -32,11 +32,21 @@ export const Answer = ({
     const followupQuestions = answer.choices[0].context.followup_questions;
     const messageContent = answer.choices[0].message.content;
     const parsedAnswer = useMemo(() => parseAnswerToHtml(messageContent, isStreaming, onCitationClicked), [answer]);
+    const thoughts = answer.choices[0].context.thoughts.find((item)=>item.title==="Search results")?.description
 
     const sanitizedAnswerHtml = DOMPurify.sanitize(parsedAnswer.answerHtml);
 
     return (
         <Stack className={`${styles.answerContainer} ${isSelected && styles.selected}`} verticalAlign="space-between">
+            {/* {
+                JSON.stringify(thoughts)
+            } */}
+            {/* {
+                thoughts.map((item)=>(
+                    <div>{JSON.stringify(item)}</div>
+                ))
+            } */}
+
             <Stack.Item>
                 <Stack horizontal horizontalAlign="space-between">
                     <AnswerIcon />
@@ -65,7 +75,7 @@ export const Answer = ({
                 <div className={styles.answerText} dangerouslySetInnerHTML={{ __html: sanitizedAnswerHtml }}></div>
             </Stack.Item>
 
-            {!!parsedAnswer.citations.length && (
+            {/* {!!parsedAnswer.citations.length && (
                 <Stack.Item>
                     <Stack horizontal wrap tokens={{ childrenGap: 5 }}>
                         <span className={styles.citationLearnMore}>Citations:</span>
@@ -74,6 +84,30 @@ export const Answer = ({
                                 <a key={i} className={styles.citation} title={x}>
                                     {`${++i}. ${x}`}
                                 </a>
+                            );
+                        })}
+                    </Stack>
+                </Stack.Item>
+            )} */}
+
+            {!!thoughts.length && (
+                <Stack.Item>
+                    <Stack wrap tokens={{ childrenGap: 5 }}>
+                        <span className={styles.citationLearnMore}>Citations:</span>
+                        {thoughts.map((x: Record<string, any>, i: number) => {
+                            return (
+                                // <>
+                                // <a href={x.link} className={styles.citationLink} key={i} title={x.description} target="_blank">
+                                //     <span className={styles.citationMarker}>{`${++i}.`}</span>
+                                //     {x.name}
+                                // </a>
+                                // </>
+                                <div>
+                                    <span className={styles.citationMarker}>{`${++i}`}</span>
+                                    <Link className={styles.citationLink} appearance="subtle" href={x.link} target="_blank">
+                                        {x.name}
+                                    </Link>
+                                </div>
                             );
                         })}
                     </Stack>
