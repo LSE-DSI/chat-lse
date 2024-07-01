@@ -42,24 +42,6 @@ class SpiderDSI(scrapy.Spider):
 
     def parse(self, response):
 
-        # Extract box data from the current page
-        for box in response.css("a.component__link"):
-
-            item = BoxScraperItem()
-            item['origin_url'] = self.start_urls[0]
-            item['url'] = box.attrib['href']
-            item['title'] = box.css("h2.component__title ::text").get().strip()
-            item['html'] = '\n'.join(
-                [element for element in box.css(".component__details").extract()])
-            item['date_scraped'] = response.headers['Date'].decode()
-            item['image_src'] = box.css(
-                "div.component__img img::attr(src)").get()
-            item['image_alt_text'] = box.css(
-                ".component__img img::attr(alt)").get()
-            item['current_hash'] = self.compute_hash(item['html'])
-
-            yield item
-
         # Follow links found on the current page
         for next_page_url in response.css("a.component__link::attr(href)").extract():
             if next_page_url not in visited: 
@@ -75,31 +57,13 @@ class SpiderDSI(scrapy.Spider):
         # Extract data from the linked page
         item = PagesScraperItem()
         item['origin_url'] = response.meta['origin_url']
-        item['link'] = response.url
+        item['link'] = response.link
         item['title'] = response.css('title::text').get().strip()
-        item['content'] = response.text
+        item['content'] = response.content
         item['date_scraped'] = response.headers['Date'].decode()
-        item['current_hash'] = self.compute_hash(item['html'])
+        item['current_hash'] = self.compute_hash(item['content'])
 
         yield item
-
-        # Extract box data from the linked page
-        for box in response.css("a.component__link"):
-
-            item = BoxScraperItem()
-            item['origin_url'] = self.start_urls[0]
-            item['url'] = box.attrib['href']
-            item['title'] = box.css("h2.component__title ::text").get().strip()
-            item['html'] = '\n'.join(
-                [element for element in box.css(".component__details").extract()])
-            item['date_scraped'] = response.headers['Date'].decode()
-            item['image_src'] = box.css(
-                "div.component__img img::attr(src)").get()
-            item['image_alt_text'] = box.css(
-                ".component__img img::attr(alt)").get()
-            item['current_hash'] = self.compute_hash(item['html'])
-
-            yield item
 
         # Follow links found on the linked page if the depth is less than max_depth
         current_depth = response.meta.get('depth', 1)
