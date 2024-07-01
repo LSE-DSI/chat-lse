@@ -28,10 +28,8 @@ async def seed_data(engine):
         # Load JSON data
         current_dir = os.path.dirname(os.path.realpath(__file__))
 
-        pdf_data = []
-        with open(os.path.join(current_dir, "data/seed_lse_data.jsonl")) as f:
-            for line in f: 
-                pdf_data.append(json.load(line))
+        with open(os.path.join(current_dir, "../data/seed_lse_data.jsonl")) as f:
+            pdf_data = json.load(f)
 
         for pdf_entry in pdf_data:
             pdf = Doc(

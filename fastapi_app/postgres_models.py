@@ -1,32 +1,26 @@
 from __future__ import annotations
 
 from pgvector.sqlalchemy import Vector
-from sqlalchemy import Index, Column, Integer, String, ForeignKey, text 
-from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass
-from sqlalchemy.orm import declarative_base, relationship, Mapped
+from sqlalchemy import Index, Column, Integer, String, ForeignKey, text, inspect 
+from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass, mapped_column
 
-from postgres_engine import create_postgres_engine_from_env_sync
 
 
 # Define the models
 class Base(DeclarativeBase, MappedAsDataclass):
     pass
 
-
-Base = declarative_base()
-
-
 class Doc(Base):
     __tablename__ = "docs"
-    id: Mapped[int] = Column(Integer, primary_key=True, autoincrement=True)
-    doc_id: Mapped[int] = Column(Integer)
-    chunk_id: Mapped[int] = Column(Integer)
-    type: Mapped[str] = Column(String)
-    name: Mapped[str] = Column(String)
-    description: Mapped[str] = Column(String)
-    content: Mapped[str] = Column(String)
-    url: Mapped[str] = Column(String)
-    embedding: Mapped[Vector] = Column(Vector(1024)) # GTE-large
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    doc_id: Mapped[int] = mapped_column()
+    chunk_id: Mapped[int] = mapped_column()
+    type: Mapped[str] = mapped_column()
+    name: Mapped[str] = mapped_column()
+    description: Mapped[str] = mapped_column()
+    content: Mapped[str] = mapped_column()
+    url: Mapped[str] = mapped_column()
+    embedding: Mapped[Vector] = mapped_column(Vector(1024)) # GTE-large
 
     def to_dict(self, include_embedding: bool = False):
         # Manually construct the dictionary
@@ -54,7 +48,7 @@ class Doc(Base):
 
 # Define HNSW index to support vector similarity search through the vector_cosine_ops access method (cosine distance).
 index = Index(
-    "hnsw_index_for_innerproduct_item_embedding",
+    "hnsw_index_for_innerproduct_doc_embedding",
     Doc.embedding,
     postgresql_using="hnsw",
     postgresql_with={"m": 16, "ef_construction": 64},
