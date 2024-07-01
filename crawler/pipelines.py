@@ -34,7 +34,7 @@ class ItemExporter(object):
 
     def spider_opened(self, spider):
         # Initialize file handlers and exporters for each item type
-        self.items = ['pages', 'boxes']
+        self.items = ['pages']
         self.files = {}
         self.exporters = {}
 
@@ -218,15 +218,6 @@ class ItemToSQLitePipeline:
                 INSERT INTO CrawlerMetadata (webpage_id, crawled_at)
                 VALUES (?, ?)
             ''', (webpage_id, datetime.now()))
-
-        elif item_name == 'boxes':
-            # Insert data into Box table
-            self.cursor.execute('''
-                INSERT INTO Box (origin_url, url, title, html,image_src, image_alt_text, date_scraped)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            ''', (adapter['origin_url'], adapter['url'],
-                  adapter['title'], adapter['html'], adapter['image_src'],
-                  adapter['image_alt_text'], adapter['date_scraped']))
 
         self.conn.commit()  # Commit changes to the database
         return item
