@@ -5,8 +5,8 @@
 }
 
 .header {
-    background-color: #222222;
-    color: #f2f2f2;
+    background-color: #ffffff;
+    color: #E0112B;
 }
 
 .headerContainer {
@@ -21,6 +21,7 @@
     display: flex;
     align-items: center;
     margin-right: 40px;
+    background-color: #E0112B;
     color: #f2f2f2;
     text-decoration: none;
 }
@@ -31,10 +32,12 @@
 
 .headerTitle {
     margin-left: 12px;
+    margin-right: 12px;
     font-weight: 600;
 }
 
 .headerRightText {
     font-weight: normal;
     margin-left: 40px;
+    color: #9b9b9b;
 }

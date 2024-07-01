@@ -3,14 +3,21 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
-from scrapy.exporters import JsonLinesItemExporter
-from itemadapter import ItemAdapter
-from datetime import datetime
-from scrapy import signals
 import scrapy
 import sqlite3
 import logging
 
+from sqlalchemy import text 
+from datetime import datetime
+from dotenv import load_dotenv
+from sqlalchemy.orm import Session 
+from itemadapter import ItemAdapter
+
+from scrapy import signals
+from scrapy.exporters import JsonLinesItemExporter
+
+from fastapi_app.postgres_engine import create_postgres_engine_from_env_sync
+from fastapi_app.postgres_models import Webpage
 
 class ItemExporter(object):
     """ Exports the items to JSON Lines files.
@@ -27,7 +34,7 @@ class ItemExporter(object):
 
     def spider_opened(self, spider):
         # Initialize file handlers and exporters for each item type
-        self.items = ['pages', 'boxes']
+        self.items = ['webpage']
         self.files = {}
         self.exporters = {}
 
@@ -50,11 +57,75 @@ class ItemExporter(object):
         self.exporters[item.name].export_item(item)
         return item
 
+class ItemToPostgresPipeline:
+    def __init__(self):
+        logging.debug("Init ItemToPostgresPipeline")
+        load_dotenv(override=True) 
+        self.engine = None
+
+    def open_spider(self, spider):
+        logging.debug("ItemToPostgresPipeline open spider")
+        self.engine = create_postgres_engine_from_env_sync()
+        logging.debug(self.engine.url)
+        self.create_tables(self.engine)
+        logging.info('PostgreSQL Connection established')
+
+    def close_spider(self, spider):
+        logging.debug("ItemToPostgresPipeline close spider")
+        self.engine.dispose()
+        logging.info('PostgreSQL Connection closed')
+
+    def create_tables(self, engine):
+        logging.debug("ItemToPostgresPipeline create tables")
+        logging.debug(engine)
+        with engine.connect() as conn:
+            logging.info("Enabling the pgvector extension for Postgres...")
+            conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
+
+            logging.info("Creating Wepage table...")
+            conn.execute(text('''
+                DROP TABLE IF EXISTS webpage;
+                CREATE TABLE IF NOT EXISTS webpage (
+                    id SERIAL PRIMARY KEY,
+                    origin_url TEXT,
+                    link TEXT,
+                    title TEXT, 
+                    content TEXT, 
+                    date_scraped TIMESTAMP
+                );
+            '''))
+            conn.commit()
+
+            logging.info("Database extension and tables created successfully.")
+
+        conn.close()
+
+    def process_item(self, item, spider):
+        logging.debug("ItemToPostgresPipeline process item")
+        adapter = ItemAdapter(item)
+        item_name = item.name
+
+        # with self.engine.connect() as conn:
+        with Session(self.engine) as session:
+            if item_name == 'pages':
+                logging.debug("item_name == 'pages'")
+                #FIXME: Webpage has been deprecated and replaced with Document
+                model = Webpage(
+                    origin_url=adapter['origin_url'],
+                    link = adapter['link'],
+                    title = adapter['title'],
+                    content = adapter['content'],
+                    date_scraped = adapter['date_scraped'],
+                )
+                session.add(model)
+                session.commit()
+                
+        return item
 
 class ItemToSQLitePipeline:
     def __init__(self):
         # Connecting to SQLite database
-        self.conn = sqlite3.connect('data/crawler.db')
+        self.conn = sqlite3.connect('data/dsi_crawler.db')
         self.cursor = self.conn.cursor()
         logging.info('SQLite Connection established')
 
@@ -147,15 +218,6 @@ class ItemToSQLitePipeline:
                 INSERT INTO CrawlerMetadata (webpage_id, crawled_at)
                 VALUES (?, ?)
             ''', (webpage_id, datetime.now()))
-
-        elif item_name == 'boxes':
-            # Insert data into Box table
-            self.cursor.execute('''
-                INSERT INTO Box (origin_url, url, title, html,image_src, image_alt_text, date_scraped)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            ''', (adapter['origin_url'], adapter['url'],
-                  adapter['title'], adapter['html'], adapter['image_src'],
-                  adapter['image_alt_text'], adapter['date_scraped']))
 
         self.conn.commit()  # Commit changes to the database
         return item

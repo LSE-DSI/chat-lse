@@ -1,45 +1,55 @@
 from __future__ import annotations
 
-from dataclasses import asdict
-
 from pgvector.sqlalchemy import Vector
-from sqlalchemy import Index
+from sqlalchemy import Index, Column, Integer, String, ForeignKey, text, inspect 
 from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass, mapped_column
+
 
 
 # Define the models
 class Base(DeclarativeBase, MappedAsDataclass):
     pass
 
-
-class Item(Base):
-    __tablename__ = "items"
+class Doc(Base):
+    __tablename__ = "docs"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
+    doc_id: Mapped[int] = mapped_column()
+    chunk_id: Mapped[int] = mapped_column()
     type: Mapped[str] = mapped_column()
     name: Mapped[str] = mapped_column()
     description: Mapped[str] = mapped_column()
-    link: Mapped[str] = mapped_column()
-    embedding: Mapped[Vector] = mapped_column(Vector(1024))  # gte-large
+    content: Mapped[str] = mapped_column()
+    url: Mapped[str] = mapped_column()
+    embedding: Mapped[Vector] = mapped_column(Vector(1024)) # GTE-large
 
     def to_dict(self, include_embedding: bool = False):
-        model_dict = asdict(self)
+        # Manually construct the dictionary
+        model_dict = {
+            "id": self.id,
+            "doc_id": self.doc_id, 
+            "chunk_id": self.chunk_id, 
+            "type": self.type,
+            "name": self.name,
+            "description": self.description,
+            "content": self.content, 
+            "url": self.url, 
+        }
         if include_embedding:
-            model_dict["embedding"] = model_dict["embedding"].tolist()
-        else:
-            del model_dict["embedding"]
+            # assuming embedding is a list or similar structure
+            model_dict["embedding"] = self.embedding.tolist()
         return model_dict
-    
+
     def to_str_for_rag(self):
-        return f"Name:{self.name} Description:{self.description} Link:{self.link} Type:{self.type}"
+        return f"Name:{self.name} Description:{self.description} Content: {self.content} Type:{self.type}"
 
     def to_str_for_embedding(self):
-        return f"Name: {self.name} Description: {self.description} Type: {self.type}"
+        return f"Name: {self.name} Description: {self.description} Content: {self.content} Type: {self.type}"
 
 
 # Define HNSW index to support vector similarity search through the vector_cosine_ops access method (cosine distance).
 index = Index(
-    "hnsw_index_for_innerproduct_item_embedding",
-    Item.embedding,
+    "hnsw_index_for_innerproduct_doc_embedding",
+    Doc.embedding,
     postgresql_using="hnsw",
     postgresql_with={"m": 16, "ef_construction": 64},
     postgresql_ops={"embedding": "vector_ip_ops"},

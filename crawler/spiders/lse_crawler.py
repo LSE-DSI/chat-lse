@@ -1,5 +1,6 @@
 import scrapy
 from crawler.items import PagesScraperItem, BoxScraperItem
+import hashlib
 
 
 class SpiderDSI(scrapy.Spider):
@@ -36,76 +37,52 @@ class SpiderDSI(scrapy.Spider):
         'http://www.lse.ac.uk/statistics/home.aspx'
     ]
     max_depth = 3
+    global visited
+    visited = []
 
     def parse(self, response):
 
-        # Extract box data from the current page
-        for box in response.css("a.component__link"):
-
-            item = BoxScraperItem()
-            item['origin_url'] = self.start_urls[0]
-            item['url'] = box.attrib['href']
-            item['title'] = box.css("h2.component__title ::text").get().strip()
-            item['html'] = '\n'.join(
-                [element for element in box.css(".component__details").extract()])
-            item['date_scraped'] = response.headers['Date'].decode()
-            item['image_src'] = box.css(
-                "div.component__img img::attr(src)").get()
-            item['image_alt_text'] = box.css(
-                ".component__img img::attr(alt)").get()
-
-            yield item
-
         # Follow links found on the current page
         for next_page_url in response.css("a.component__link::attr(href)").extract():
-            yield scrapy.Request(
-                response.urljoin(next_page_url),
-                callback=self.parse_linked_page,
-                meta={'depth': 1, 'origin_url': response.url},
-                errback=self.handle_error
-            )
+            if next_page_url not in visited: 
+                visited.append(next_page_url)
+                yield scrapy.Request(
+                    response.urljoin(next_page_url),
+                    callback=self.parse_linked_page,
+                    meta={'depth': 1, 'origin_url': response.url},
+                    errback=self.handle_error
+                )
 
     def parse_linked_page(self, response):
         # Extract data from the linked page
         item = PagesScraperItem()
         item['origin_url'] = response.meta['origin_url']
-        item['url'] = response.url
+        item['link'] = response.link
         item['title'] = response.css('title::text').get().strip()
-        item['html'] = response.text
+        item['content'] = response.content
         item['date_scraped'] = response.headers['Date'].decode()
+        item['current_hash'] = self.compute_hash(item['content'])
 
         yield item
-
-        # Extract box data from the linked page
-        for box in response.css("a.component__link"):
-
-            item = BoxScraperItem()
-            item['origin_url'] = self.start_urls[0]
-            item['url'] = box.attrib['href']
-            item['title'] = box.css("h2.component__title ::text").get().strip()
-            item['html'] = '\n'.join(
-                [element for element in box.css(".component__details").extract()])
-            item['date_scraped'] = response.headers['Date'].decode()
-            item['image_src'] = box.css(
-                "div.component__img img::attr(src)").get()
-            item['image_alt_text'] = box.css(
-                ".component__img img::attr(alt)").get()
-
-            yield item
 
         # Follow links found on the linked page if the depth is less than max_depth
         current_depth = response.meta.get('depth', 1)
         if current_depth < self.max_depth:
             for next_page_url in response.css("a.component__link::attr(href)").extract():
-                yield scrapy.Request(
-                    response.urljoin(next_page_url),
-                    callback=self.parse_linked_page,
-                    meta={'depth': current_depth + 1,
-                          'origin_url': response.meta['origin_url']},
-                    errback=self.handle_error
-                )
+                if next_page_url not in visited: 
+                    visited.append(next_page_url)
+                    yield scrapy.Request(
+                        response.urljoin(next_page_url),
+                        callback=self.parse_linked_page,
+                        meta={'depth': current_depth + 1,
+                            'origin_url': response.meta['origin_url']},
+                        errback=self.handle_error
+                    )
 
     def handle_error(self, failure):
         self.logger.error(repr(failure))
         self.logger.error('Failed URL: %s', failure.request.url)
         print("Error:", repr(failure), "Failed URL:", failure.request.url)
+
+    def compute_hash(self, content: str):
+        return hashlib.md5(content.encode('utf-8')).hexdigest()

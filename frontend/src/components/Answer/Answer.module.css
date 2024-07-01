@@ -32,7 +32,7 @@
 }
 
 .selected {
-    outline: 2px solid rgba(115, 118, 225, 1);
+    outline: 2px solid rgb(225, 115, 115);
 }
 
 .citationLearnMore {
@@ -41,15 +41,20 @@
     line-height: 24px;
 }
 
-.citation {
+.citationLink {
     font-weight: 500;
     line-height: 24px;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.citationMarker {
     text-align: center;
     border-radius: 4px;
-    padding: 0px 8px;
-    background: #d1dbfa;
-    color: #123bb6;
-    text-decoration: none;
+    padding: 0px 4px;
+    margin-right: 8px;
+    background: #fad1d1;
+    color: #b61212;
     cursor: pointer;
 }
 
@@ -102,8 +107,8 @@ sup {
     min-width: 14px;
     height: 14px;
     border-radius: 3px;
-    background: #d1dbfa;
-    color: #123bb6;
+    background: #fad1d1;
+    color: #b61212;
     text-decoration-color: transparent;
     outline: transparent solid 1px;
     cursor: pointer;

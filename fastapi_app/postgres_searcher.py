@@ -2,7 +2,7 @@ from pgvector.utils import to_db
 from sqlalchemy import Float, Integer, select, text
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
-from .postgres_models import Item
+from .postgres_models import Doc
 
 
 class PostgresSearcher:
@@ -35,7 +35,7 @@ class PostgresSearcher:
 
         vector_query = f"""
             SELECT id, RANK () OVER (ORDER BY embedding <=> :embedding) AS rank
-                FROM items
+                FROM docs
                 {filter_clause_where}
                 ORDER BY embedding <=> :embedding
                 LIMIT 20
@@ -43,7 +43,7 @@ class PostgresSearcher:
 
         fulltext_query = f"""
             SELECT id, RANK () OVER (ORDER BY ts_rank_cd(to_tsvector('english', description), query) DESC)
-                FROM items, plainto_tsquery('english', :query) query
+                FROM docs, plainto_tsquery('english', :query) query
                 WHERE to_tsvector('english', description) @@ query {filter_clause_and}
                 ORDER BY ts_rank_cd(to_tsvector('english', description), query) DESC
                 LIMIT 20
@@ -83,9 +83,9 @@ class PostgresSearcher:
                 )
             ).fetchall()
 
-            # Convert results to Item models
-            items = []
+            # Convert results to Doc models
+            docs = []
             for id, _ in results[:query_top]:
-                item = await session.execute(select(Item).where(Item.id == id))
-                items.append(item.scalar())
-            return items
+                doc = await session.execute(select(Doc).where(Doc.id == id))
+                docs.append(doc.scalar())
+            return docs
