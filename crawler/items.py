@@ -28,6 +28,7 @@ class BoxScraperItem(scrapy.Item):
     image_src = scrapy.Field()
     image_alt_text = scrapy.Field()
     date_scraped = scrapy.Field()
+    current_hash = scrapy.Field()
 
 
 class PagesScraperItem(scrapy.Item):
@@ -48,3 +49,4 @@ class PagesScraperItem(scrapy.Item):
     title = scrapy.Field()
     html = scrapy.Field()
     date_scraped = scrapy.Field()
+    current_hash = scrapy.Field()
