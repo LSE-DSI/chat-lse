@@ -3,15 +3,15 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
-from scrapy.exporters import JsonLinesItemExporter
-from itemadapter import ItemAdapter
-from datetime import datetime
-from scrapy import signals
 import scrapy
 import sqlite3
 import logging
-import json
-from crawler.settings import SQLITE_DB_PATH, PAGES_JL_PATH, BOXES_JL_PATH
+
+from scrapy import signals
+from datetime import datetime
+from itemadapter import ItemAdapter
+from crawler.settings import SQLITE_DB_PATH
+from scrapy.exporters import JsonLinesItemExporter
 
 
 class ItemExporter(object):
@@ -150,8 +150,7 @@ class ItemToSQLitePipeline:
         if result:
             webpage_id, previous_hash = result
             if previous_hash == adapter['current_hash']:
-                logging.info(f'Page not modified since last scraped: {
-                             adapter["url"]}')
+                logging.info(f'Page not modified since last scraped: {adapter["url"]}')
                 return
 
             else:
@@ -199,8 +198,7 @@ class ItemToSQLitePipeline:
         if result:
             box_id, previous_hash = result
             if previous_hash == adapter['current_hash']:
-                logging.info(f'Box not modified since last scraped: {
-                             adapter["url"]}')
+                logging.info(f'Box not modified since last scraped: {adapter["url"]}')
                 return
             else:
                 # Delete old entry
