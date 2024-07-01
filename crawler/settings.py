@@ -98,6 +98,6 @@ LOG_ENABLED = True
 LOG_LEVEL = 'INFO'
 LOG_FILE = 'scrapy_errors.log'
 
-SQLITE_DB_PATH = '/Users/jamie/Desktop/chatlse2024/chat-lse/crawler/data/dsi_crawler.db'
-PAGES_JL_PATH = '/Users/jamie/Desktop/chatlse2024/chat-lse/crawler/data/pages.jl'
-BOXES_JL_PATH = '/Users/jamie/Desktop/chatlse2024/chat-lse/crawler/data/boxes.jl'
+SQLITE_DB_PATH = 'data/dsi_crawler.db'
+PAGES_JL_PATH = 'data/pages.jl'
+BOXES_JL_PATH = 'data/boxes.jl'
