@@ -1,5 +1,9 @@
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 
+# Filter unnecessary FutureWarning thrown by HuggingFaceEmbedding
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
 DEFAULT_EMBED_MODEL = "thenlper/gte-large"
 
 async def compute_text_embedding(
