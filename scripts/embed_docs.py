@@ -1,7 +1,7 @@
 import os
+import glob
 import asyncio
 import logging
-import warnings
 import argparse
 
 import numpy as np
@@ -42,11 +42,14 @@ def create_embeddings(text):
     return np.array(embedding).astype(np.float32).tobytes()
 
 async def embed_docs(directory, session):
-    for filename in os.listdir(directory):
-        if not filename.endswith('.pdf'):
-            warnings.warn(f"Skipping non-PDF file: {filename}")
-            continue
-        
+
+    # https://stackoverflow.com/a/13297537/843365
+    listing = glob.glob(os.path.join(directory, "*.pdf"))
+
+    if not listing:
+        raise ValueError(f"No PDF files found in {directory}")
+
+    for filename in listing:
         file_path = os.path.join(directory, filename)
         text = await extract_text_from_pdf(file_path)
         embedding = create_embeddings(text)
