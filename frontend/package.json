@@ -13,7 +13,6 @@
   },
   "dependencies": {
     "@azure/msal-react": "^2.0.6",
-    "@esbuild/darwin-arm64": "^0.21.4",
     "@azure/msal-browser": "^3.1.0",
     "@fluentui/react": "^8.112.5",
     "@fluentui/react-components": "^9.37.3",
