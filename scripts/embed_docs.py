@@ -16,6 +16,13 @@ from fastapi_app.clients import create_embed_client
 from llama_index.core.node_parser import SentenceSplitter 
 from fastapi_app.postgres_engine import create_postgres_engine_from_env
 
+import PyPDF2
+import re
+import tqdm as tqdm
+import json 
+
+import pandas as pd 
+
 # Initialize logging
 logging.basicConfig(level=logging.INFO)
 
@@ -90,10 +97,126 @@ async def main():
         )
 
     # STEP 3 -- Read the PDFs in the directory
-    # TODO: Read the PDFs in the directory and embed them (adapt from notebooks/NB04)
+
+    DOCS_FOLDER = './notebooks/experiments/sample-docs/'
+
+    def read_pdf(file_path=DOCS_FOLDER):
+        # Initialize a variable to hold all the text
+        all_text = ""
+        
+        # Open the PDF file
+        with open(file_path, "rb") as file:
+            # Initialize a PDF reader object
+            pdf_reader = PyPDF2.PdfReader(file)
+            
+            # Iterate through each page in the PDF
+            for page in pdf_reader.pages:
+                # Extract text from the page
+                text = page.extract_text()
+                if text:
+                    all_text += text  # Append the extracted text to all_text
+
+        return all_text
+
+    def clean_text(text):
+        # Replace all newline characters with a single space
+        cleaned_text = re.sub(r'\n', '', text)
+        # Replace two or more spaces with a single space
+        cleaned_text = re.sub(r' {2,}', ' ', cleaned_text)
+        # Replace a space followed by a period with just a period
+        cleaned_text = re.sub(r' \.', '.', cleaned_text)
+        # Replace a space followed by a comma with just a comma
+        cleaned_text = re.sub(r' ,', ',', cleaned_text)
+        return cleaned_text
+    
+    path_all_pdfs = [file for file in os.listdir(DOCS_FOLDER)]
+    docs = {filename: read_pdf(os.path.join(DOCS_FOLDER, filename)) for filename in tqdm(path_all_pdfs)}
+    print(f"Read {len(docs)} documents")
+
+    cleaned_docs = {filename: clean_text(doc) for filename, doc in tqdm(docs.items())}
 
     # STEP 4 -- Generate the embeddings
-    # TODO: Generate the embeddings for the text chunks (adapt from notebooks/NB04)
+    
+    def generate_chunk_entry(embedding_model, chunk_name, chunktext):
+        try:
+            embedding = embedding_model.get_text_embedding(chunktext)
+            return {
+                "chunkname": chunk_name,
+                "chunktext": chunktext,
+                "embedding": embedding,  
+            }
+        except Exception as e:
+            print(f"Error computing embedding for chunk {chunk_name}: {e}")
+            return None
+        
+    def generate_json_entry(embed_model, splitter, filetype, filename, description, cleaned_text, url, **kwargs):
+        try:
+            # Split the description into chunks according to the sentence splitter
+            if isinstance(splitter, SentenceSplitter):
+                sentence_chunks = splitter.split_text(cleaned_text)
+            else:
+                raise ValueError(f"Unsupported splitter type: {type(splitter)}")
+            chunks = []
+            chunk_id = 1
+            for chunk in tqdm(sentence_chunks, desc=f"Embedding document chunks '{filename}'"):
+                chunk_entry = generate_chunk_entry(embed_model, f"{filename} - Part {chunk_id}", chunk)
+                if chunk_entry:
+                    chunks.append(chunk_entry)
+                    chunk_id += 1
+
+            return {
+                "filetype": filetype,
+                "filename": filename,
+                "description": description,
+                "cleaned_text": cleaned_text,
+                "url": url,
+                "chunks": chunks,
+            }
+        except Exception as e:
+            print(f"Failed to compute embedding for {filename}: {e}")
+            return None
+        
+    df_docs = pd.Series(cleaned_docs).to_frame("cleaned_text")
+    df_docs.index.name = "filename"
+
+    # Manually annotate docs 
+    df_docs.loc["ConfidentialityPolicy.pdf", "description"] = "Immigration Advice Confidentiality Policy"
+    df_docs.loc["Formatting-and-binding-your-thesis-2021-22.pdf", "description"] = "Formatting and binding your thesis"
+    df_docs.loc["LSE-2030-booklet.pdf", "description"] = "LSE 2030 Strategy"
+    df_docs.loc["MSc-Mark-Frame.pdf", "description"] = "MSc Mark Frame"
+    df_docs.loc["bsc-handbook-21.22.pdf", "description"] = "BSc Economics Handbook 2021/22"
+    df_docs.loc["UG-Student-Handbook-Department-of-International-History-2023-24 (1).pdf", "description"] = "UG History Department Handbook 2023/24"
+    df_docs.loc["Exam-Procedures-for-Candidates.pdf", "description"] = "Exam Procedures for Candidates"
+    df_docs.loc["Spring-Exam-Timetable-2024-Final.pdf", "description"] = "Spring Exam Timetable 2024"
+    df_docs.loc["InterruptionPolicy.pdf", "description"] = "Interruption of Studies Policy"
+    df_docs.loc["Appeals-Regulations.pdf", "description"] = "Academic Appeals Regulations for Taught Programmes"
+    df_docs.loc["In-Course-Financial-Support.pdf", "description"] = "In-Course Financial Support - Application form and guidance notes"
+    df_docs.loc["BA-BSc-Three-Year-scheme-for-students-from-2018.19.pdf", "description"] = "BA/BSc Three-Year Scheme for students from 2018/19"
+    df_docs.loc["comPro.pdf", "description"] = "Student Complaints Procedure"
+    df_docs.loc["Student-Guidance-Deferral.pdf", "description"] = "Student Guidance on Deferral"
+
+    # Add URL of the document
+    df_docs.loc["ConfidentialityPolicy.pdf", "url"] = "https://info.lse.ac.uk/current-students/immigration-advice/assets/documents/Info-Sheets/ConfidentialityPolicy.pdf"
+    df_docs.loc["Formatting-and-binding-your-thesis-2021-22.pdf", "url"] = "https://info.lse.ac.uk/current-students/phd-academy/assets/documents/Formatting-and-binding-your-thesis-2021-22.pdf"
+    df_docs.loc["LSE-2030-booklet.pdf", "url"] = "https://www.lse.ac.uk/2030/assets/pdf/LSE-2030-booklet.pdf"
+    df_docs.loc["MSc-Mark-Frame.pdf", "url"] = "https://www.lse.ac.uk/sociology/assets/documents/study/Assessment-and-Feedback/MSc-Mark-Frame.pdf"
+    df_docs.loc["bsc-handbook-21.22.pdf", "url"] = "https://www.lse.ac.uk/economics/Assets/Documents/undergraduate-study/bsc-handbook-21.22.pdf"
+    df_docs.loc["UG-Student-Handbook-Department-of-International-History-2023-24 (1).pdf", "url"] = "https://www.lse.ac.uk/International-History/Assets/Documents/student-handbooks/2023-24/UG-Student-Handbook-Department-of-International-History-2023-24.pdf"
+    df_docs.loc["Exam-Procedures-for-Candidates.pdf", "url"] = "https://info.lse.ac.uk/current-students/services/assets/documents/Exam-Procedures-for-Candidates.pdf"
+    df_docs.loc["Spring-Exam-Timetable-2024-Final.pdf", "url"] = "https://info.lse.ac.uk/current-students/services/assets/documents/Spring-Exam-Timetable-2024-Final.pdf"
+    df_docs.loc["InterruptionPolicy.pdf", "url"] = "https://info.lse.ac.uk/Staff/Divisions/Academic-Registrars-Division/Teaching-Quality-Assurance-and-Review-Office/Assets/Documents/Calendar/InterruptionPolicy.pdf"
+    df_docs.loc["Appeals-Regulations.pdf", "url"] = "https://info.lse.ac.uk/current-students/services/assets/documents/Appeals-Regulations-August-2018.pdf"
+    df_docs.loc["In-Course-Financial-Support.pdf", "url"] = "https://info.lse.ac.uk/current-students/financial-support/assets/documents/In-Course-Financial-Support.pdf"
+    df_docs.loc["BA-BSc-Three-Year-scheme-for-students-from-2018.19.pdf", "url"] = "https://info.lse.ac.uk/staff/divisions/academic-registrars-division/Teaching-Quality-Assurance-and-Review-Office/Assets/Documents/Calendar/BA-BSc-Three-Year-scheme-for-students-from-2018.19.pdf"
+    df_docs.loc["comPro.pdf", "url"] = "https://info.lse.ac.uk/staff/Services/Policies-and-procedures/Assets/Documents/comPro.pdf?from_serp=1"
+    df_docs.loc["Student-Guidance-Deferral.pdf", "url"] = "https://info.lse.ac.uk/current-students/services/assets/documents/Student-Guidance-Deferral.pdf"
+
+    df_docs["filetype"] = "pdf"
+
+    json_entries = [
+        generate_json_entry(embed_model, splitter, **doc)
+        for _, doc in df_docs.reset_index().iterrows()]
+
 
     # STEP 5 -- Store the embeddings in the database
     # TODO: Adopt from fastapi_app/setup_postgres_seeddata.py
