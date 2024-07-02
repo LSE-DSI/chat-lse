@@ -69,7 +69,7 @@ Nvidia GPU
 docker run -d --gpus=all -v ollama:/root/.ollama -p 11434:11434 --name ollama ollama/ollama
 ```
 
-## 3. Setup and run Backend FastAPI APP locally
+## 3. Setup environment
 
 ### 3.1 Install Python dependencies
 
@@ -91,7 +91,7 @@ which pip
 Install dependencies
 
 ```bash
-pip install -e .
+pip install -r requirements.txt
 ```
 
 ### 3.2 Config environment variables
@@ -122,33 +122,52 @@ OLLAMA_ENDPOINT=http://localhost:11434/v1
 OLLAMA_ENDPOINT=http://<Rizzie IP address>:11434/v1
 ```
 
-### 3.3 Initialize database and add sample data
+## 4. Initialise the database
 
-⚠️ ATTENTION: Seed data was getting too large and can no longer be hosted reliably on GitHub. 
+### 4.1 Create a table from scratch
 
-1. You MUST download the seed data from our Sharepoint folder:
+**Only run the command below if you are OK with wiping out your entire Postgres database!** We don't yet have a clear routine for simply updating the database, but it will be available soon!
 
-    [Sharepoint > ChatLSE > pdf-chunking-experiments](https://lsecloud.sharepoint.com/:f:/r/sites/TEAM_DSI-Executive/Shared%20Documents/Computing/ChatLSE/pdf-chunking-experiments?csf=1&web=1&e=pdMAIb) (last updated: 28 June 2024)
-
-   Check [notebooks/experiments/NB04 - Explore SentenceSplitter.ipynb](https://github.com/LSE-DSI/chat-lse/blob/edef01b/notebooks/experiments/NB04%20-%20Explore%20SentenceSplitter.ipynb) to understand how the JSONs were created from the sample PDF documents.
-
-3. Move all the `seed_lse_*.json` downloaded files to the `data/` folder.
-
-3.Now it is safe to run the seed data scripts:
-
-```
-# Go to the project root directory
-
-$ cd chat-lse
-$ python fastapi_app/setup_seeddata_lse.py 
-$ python fastapi_app/setup_postgres_database.py
-$ python fastapi_app/setup_postgres_seeddata.py
+```bash
+ipython fastapi_app/setup_postgres_database.py
 ```
 
-### 3.4 Start the FastAPI APP
+### 4.2 (Optional) Produce a JSON with embeddings for a sample of PDF documents
+
+The reason this is optional is that you can just simply download the `seed_lse_data.jsonl` file from [Sharepoint > ChatLSE > pdf-chunking-experiments](https://lsecloud.sharepoint.com/:f:/r/sites/TEAM_DSI-Executive/Shared%20Documents/Computing/ChatLSE/pdf-chunking-experiments?csf=1&web=1&e=pdMAIb) (last updated: 1 July 2024) [^1].
+
+- Open [notebooks/experiments/NB04 - Explore SentenceSplitter.ipynb](https://github.com/LSE-DSI/chat-lse/blob/1ce06e29de6b55af9ab49a598ce6d15fd60c8993/notebooks/experiments/NB04%20-%20Explore%20SentenceSplitter.ipynb) and jump to Section 3
+- Alter the `overlapping_token_chunks_sizes` so you run just with sentence_overlap = 128
+
+    ```python
+    overlapping_token_chunks_sizes = [128]
+    ```
+
+- Run the cell below and wait until it is complete (it might take a few minutes).
+- Rename the output file to `seed_lse_data.jsonl`:
+
+  ```bash
+  cd chat-lse # Ensure you are at the root of the project
+  cp data/seed_lse_data_overlap_128.jsonl data/seed_lse_data.jsonl
+  ```
+
+[^1]: Check [notebooks/experiments/NB04 - Explore SentenceSplitter.ipynb](https://github.com/LSE-DSI/chat-lse/blob/1ce06e29de6b55af9ab49a598ce6d15fd60c8993/notebooks/experiments/NB04%20-%20Explore%20SentenceSplitter.ipynb) to understand how the JSON Lines files were created from the sample PDF documents.
+
+### 4.3 Add sample documents to Postgres
+
+Ensure you have the `data/seed_lse_data.jsonl` file and then run:
+
+```bash
+ipython fastapi_app/setup_postgres_seeddata.py
+```
+
+
+## 5. Start the FastAPI APP
+
+We need our API to be running in the background, to handle requests from the website to LLAMA and Postgres:
 
 ```
-$ sh ./scripts/start_fastapi_app.sh
+sh ./scripts/start_fastapi_app.sh
 ```
 
 You should see something like:
@@ -166,14 +185,14 @@ INFO:ragapp:Authenticating to OpenAI using Ollama...
 INFO:     Application startup complete.
 ```
 
-## 4. Setup and run Frontend APP
+## 6. Setup and run Frontend APP
 
-### 4.1 Install npm dependencies
+### 6.1 Install npm dependencies
 
 ```bash
 # Go to chat-lse/frontend
-$ cd frontend 
-$ npm install
+cd frontend 
+npm install
 ```
 
 You might see the following warning. We can ignore it for now.
@@ -187,7 +206,7 @@ To address all issues, run:
 Run `npm audit` for details.
 ```
 
-### 4.2 Start the frontend APP
+### 6.2 Start the frontend APP
 
 Open a new terminal and run:
 
@@ -211,6 +230,6 @@ You should see something like:
   ➜  press h to show help
 ```
 
-## 4.3 Use the APP
+## 6.3 Use the APP
 
 Open http://localhost:5173/ in the web browser to try the app.
