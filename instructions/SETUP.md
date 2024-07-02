@@ -136,22 +136,17 @@ ipython fastapi_app/setup_postgres_database.py
 
 The reason this is optional is that you can just simply download the `seed_lse_data.jsonl` file from [Sharepoint > ChatLSE > pdf-chunking-experiments](https://lsecloud.sharepoint.com/:f:/r/sites/TEAM_DSI-Executive/Shared%20Documents/Computing/ChatLSE/pdf-chunking-experiments?csf=1&web=1&e=pdMAIb) (last updated: 1 July 2024) [^1].
 
-- Open [notebooks/experiments/NB04 - Explore SentenceSplitter.ipynb](https://github.com/LSE-DSI/chat-lse/blob/1ce06e29de6b55af9ab49a598ce6d15fd60c8993/notebooks/experiments/NB04%20-%20Explore%20SentenceSplitter.ipynb) and jump to Section 3
-- Alter the `overlapping_token_chunks_sizes` so you run just with sentence_overlap = 128
+- Open [fastapi_app/setup_seeeddata_lse.py](https://github.com/LSE-DSI/chat-lse/blob/develop/fastapi_app/setup_seeddata_lse.py) 
+- Add the following to your .env file: 
 
-    ```python
-    overlapping_token_chunks_sizes = [128]
+    ```
+    EMBED_CHUNK_SIZE=512 
+    EMBED_OVERLAP_SIZE=128
     ```
 
-- Run the cell below and wait until it is complete (it might take a few minutes).
-- Rename the output file to `seed_lse_data.jsonl`:
+- Run the script and wait until it is complete (it might take a few minutes).
 
-  ```bash
-  cd chat-lse # Ensure you are at the root of the project
-  cp data/seed_lse_data_overlap_128.jsonl data/seed_lse_data.jsonl
-  ```
-
-[^1]: Check [notebooks/experiments/NB04 - Explore SentenceSplitter.ipynb](https://github.com/LSE-DSI/chat-lse/blob/1ce06e29de6b55af9ab49a598ce6d15fd60c8993/notebooks/experiments/NB04%20-%20Explore%20SentenceSplitter.ipynb) to understand how the JSON Lines files were created from the sample PDF documents.
+[^1]: Check [fastapi_app/setup_seeeddata_lse.py](https://github.com/LSE-DSI/chat-lse/blob/develop/fastapi_app/setup_seeddata_lse.py) to understand how the JSON Lines files were created from the sample PDF documents.
 
 ### 4.3 Add sample documents to Postgres
 
@@ -166,7 +161,7 @@ ipython fastapi_app/setup_postgres_seeddata.py
 
 We need our API to be running in the background, to handle requests from the website to LLAMA and Postgres:
 
-```
+```bash 
 sh ./scripts/start_fastapi_app.sh
 ```
 
