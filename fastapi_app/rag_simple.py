@@ -50,7 +50,7 @@ class SimpleRAGChat:
         original_user_query = messages[-1]["content"]
         past_messages = messages[:-1]
 
-        # Retrieve relevant items from the database
+        # Retrieve relevant documents from the database
         vector: list[float] = []
         query_text = None
         if vector_search:
@@ -63,7 +63,7 @@ class SimpleRAGChat:
 
         results = await self.searcher.search(query_text, vector, top)
 
-        sources_content = [f"[{(item.id)}]:{item.to_str_for_rag()}\n\n" for item in results]
+        sources_content = [f"[{(doc.doc_id)}]:{doc.to_str_for_rag()}\n\n" for doc in results]
         content = "\n".join(sources_content)
 
         # Generate a contextual and content specific answer using the search results and chat history
