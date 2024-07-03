@@ -64,8 +64,8 @@ ROBOTSTXT_OBEY = True
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-ITEM_PIPELINES = {'dsi_crawler.pipelines.ItemExporter': 300, 
-                  'dsi_crawler.pipelines.ItemToPostgresPipeline': 500}
+ITEM_PIPELINES = {'crawler.pipelines.ItemExporter': 300, 
+                  'crawler.pipelines.ItemToPostgresPipeline': 500}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://docs.scrapy.org/en/latest/topics/autothrottle.html
@@ -97,7 +97,3 @@ FEED_FORMAT = 'jsonlines'
 LOG_ENABLED = True
 LOG_LEVEL = 'INFO'
 LOG_FILE = 'scrapy_errors.log'
-
-SQLITE_DB_PATH = 'data/dsi_crawler.db'
-PAGES_JL_PATH = 'data/pages.jl'
-BOXES_JL_PATH = 'data/boxes.jl'

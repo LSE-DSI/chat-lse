@@ -91,7 +91,8 @@ class ItemToPostgresPipeline:
                     link TEXT,
                     title TEXT, 
                     content TEXT, 
-                    date_scraped TIMESTAMP
+                    date_scraped TIMESTAMP, 
+                    current_hash TEXT 
                 );
             '''))
             conn.commit()
@@ -107,8 +108,8 @@ class ItemToPostgresPipeline:
 
         # with self.engine.connect() as conn:
         with Session(self.engine) as session:
-            if item_name == 'pages':
-                logging.debug("item_name == 'pages'")
+            if item_name == 'webpage':
+                logging.debug("item_name == 'webpage'")
                 #FIXME: Webpage has been deprecated and replaced with Document
                 model = Webpage(
                     origin_url=adapter['origin_url'],
@@ -116,6 +117,7 @@ class ItemToPostgresPipeline:
                     title = adapter['title'],
                     content = adapter['content'],
                     date_scraped = adapter['date_scraped'],
+                    current_hash = adapter['current_hash']
                 )
                 session.add(model)
                 session.commit()

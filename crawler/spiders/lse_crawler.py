@@ -1,5 +1,5 @@
 import scrapy
-from crawler.items import PagesScraperItem, BoxScraperItem
+from crawler.items import PagesScraperItem 
 import hashlib
 
 
@@ -41,9 +41,8 @@ class SpiderDSI(scrapy.Spider):
     visited = []
 
     def parse(self, response):
-
         # Follow links found on the current page
-        for next_page_url in response.css("a.component__link::attr(href)").extract():
+        for next_page_url in response.css("a::attr(href)").extract():
             if next_page_url not in visited: 
                 visited.append(next_page_url)
                 yield scrapy.Request(
@@ -68,7 +67,7 @@ class SpiderDSI(scrapy.Spider):
         # Follow links found on the linked page if the depth is less than max_depth
         current_depth = response.meta.get('depth', 1)
         if current_depth < self.max_depth:
-            for next_page_url in response.css("a.component__link::attr(href)").extract():
+            for next_page_url in response.css("a::attr(href)").extract():
                 if next_page_url not in visited: 
                     visited.append(next_page_url)
                     yield scrapy.Request(
