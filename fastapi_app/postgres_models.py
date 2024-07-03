@@ -11,16 +11,6 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass, mapped_co
 class Base(DeclarativeBase, MappedAsDataclass):
     pass
 
-class Webpage(Base): 
-    __tablename__ = "webpages" 
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True) 
-    original_url: Mapped[str] = mapped_column()
-    link: Mapped[str] = mapped_column()
-    title: Mapped[str] = mapped_column()
-    content: Mapped[str] = mapped_column()
-    date_scraped: Mapped[datetime] = mapped_column()
-    current_has: Mapped[str] = mapped_column()
-
 class Doc(Base):
     __tablename__ = "docs"
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
