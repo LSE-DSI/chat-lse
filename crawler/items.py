@@ -5,6 +5,7 @@
 
 import scrapy
 
+
 class PagesScraperItem(scrapy.Item):
     """
     Represents an item scraped from the DSI pages.
@@ -18,9 +19,9 @@ class PagesScraperItem(scrapy.Item):
         date_scraped (scrapy.Field): The date when the page was scraped.
     """
     type = 'webpage'
+    doc_id = scrapy.Field()
     origin_url = scrapy.Field()
-    link = scrapy.Field()
+    url = scrapy.Field()
     title = scrapy.Field()
     content = scrapy.Field()
     date_scraped = scrapy.Field()
-    current_hash = scrapy.Field()

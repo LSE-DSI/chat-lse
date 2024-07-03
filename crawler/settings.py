@@ -64,7 +64,7 @@ ROBOTSTXT_OBEY = True
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
-ITEM_PIPELINES = {'crawler.pipelines.ItemExporter': 300, 
+ITEM_PIPELINES = {'crawler.pipelines.ItemExporter': 300,
                   'crawler.pipelines.ItemToPostgresPipeline': 500}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
@@ -95,5 +95,5 @@ FEED_EXPORT_ENCODING = "utf-8"
 FEED_FORMAT = 'jsonlines'
 
 LOG_ENABLED = True
-LOG_LEVEL = 'INFO'
+LOG_LEVEL = 'ERROR'
 LOG_FILE = 'scrapy_errors.log'
