@@ -4,7 +4,6 @@
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
 import scrapy
-import sqlite3
 import logging
 import os
 import re
@@ -49,7 +48,6 @@ class ItemExporter(object):
         self.items = ['webpage']
         self.files = {}
         self.exporters = {}
-
         for item in self.items:
             # Open a file for each item type
             self.files[item] = open(f'data/{item}.jl', 'wb')
@@ -66,7 +64,7 @@ class ItemExporter(object):
 
     def process_item(self, item, spider):
         # Export each item to the corresponding file
-        self.exporters[item.name].export_item(item)
+        self.exporters[item.type].export_item(item)
         return item
 
 
@@ -95,7 +93,7 @@ class ItemToPostgresPipeline:
             logging.info("Enabling the pgvector extension for Postgres...")
             conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
 
-            logging.info("Creating Wepage table...")
+            logging.info("Creating wepage table...")
             conn.execute(text('''
                 CREATE TABLE IF NOT EXISTS webpage (
                     doc_id TEXT,
@@ -103,23 +101,21 @@ class ItemToPostgresPipeline:
                     url TEXT,
                     title TEXT,
                     content TEXT,
-                    date_scraped TIMESTAMP,
+                    date_scraped TIMESTAMP
                 );
             '''))
-# add chunk_id INT NOT NULL DEFAULT nextval('chunk_seq'), above when we update the code to create the chunks; for now content = entire html.
+
             conn.commit()
             logging.info("Database extension and tables created successfully.")
 
         conn.close()
 
     def process_item(self, item, spider):
-        logging.debug("ItemToPostgresPipeline process item")
+        logging.info("ItemToPostgresPipeline process item")
         adapter = ItemAdapter(item)
-        item_name = item.name
 
         with Session(self.engine) as session:
-            if item_name == 'pages':
-                self.process_page(adapter, session)
+            self.process_page(adapter, session)
             session.commit()
 
         return item
@@ -133,15 +129,13 @@ class ItemToPostgresPipeline:
         if result:
             url, previous_hash = result
             if previous_hash == adapter['doc_id']:
-                logging.info(f'Page not modified since last scraped: {
-                             adapter["url"]}')
+                logging.info(f"Page not modified since last scraped: {adapter.url}")
                 return
             else:
-                session.execute(text('DELETE FROM webpage WHERE url = :url'), {
-                                'url': url})
+                session.execute(text('DELETE FROM webpage WHERE url = :url'), {'url': url})
 
         session.execute(text('''
-            INSERT INTO Webpage (doc_id, origin_url, url, title, content, date_scraped)
+            INSERT INTO webpage (doc_id, origin_url, url, title, content, date_scraped)
             VALUES (:doc_id, :origin_url, :url, :title, :content, :date_scraped)
         '''), {
             'doc_id': adapter['doc_id'],
@@ -154,11 +148,7 @@ class ItemToPostgresPipeline:
         # only export item to webpage.jl in the case of reprocessing to postgresdb
         self.process_item(adapter, 'webpage')
 
-        logging.info(f'Page processed and stored in PostgreSQL: {
-                     adapter["url"]}')
+        logging.info(f'Page processed and stored in PostgreSQL: {adapter.url}')
 
     # temorarily deleted the process_box method (adapt from the pages method if needed again)
 
-    def close_spider(self, spider):
-        self.engine.dispose()
-        logging.info('PostgreSQL Connection closed')

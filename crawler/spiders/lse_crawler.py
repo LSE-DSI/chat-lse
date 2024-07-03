@@ -40,12 +40,12 @@ class SpiderDSI(scrapy.Spider):
     global visited
     visited = []
 
-    def parse(self, response):
-
+    def parse(self, response):        
         # Follow links found on the current page
-        for next_page_url in response.css("a::attr(href)").extract():
+        for next_page_url in response.css("a.component__link::attr(href)").extract():
             if next_page_url not in visited:
                 visited.append(next_page_url)
+                #print(f"following link: {response.urljoin(next_page_url)}")
                 yield scrapy.Request(
                     response.urljoin(next_page_url),
                     callback=self.parse_linked_page,
@@ -56,19 +56,19 @@ class SpiderDSI(scrapy.Spider):
     def parse_linked_page(self, response):
         # Extract data from the linked page
         item = PagesScraperItem()
-        item['doc_id'] = self.compute_hash(item['content'])
         item['origin_url'] = response.meta['origin_url']
         item['url'] = response.url
         item['title'] = response.css('title::text').get().strip()
-        item['content'] = response.content
+        item['content'] = response.text
         item['date_scraped'] = response.headers['Date'].decode()
+        item['doc_id'] = self.compute_hash(item['content'])
 
         yield item
 
         # Follow links found on the linked page if the depth is less than max_depth
         current_depth = response.meta.get('depth', 1)
         if current_depth < self.max_depth:
-            for next_page_url in response.css("a::attr(href)").extract():
+            for next_page_url in response.css("a.component__link::attr(href)").extract():
                 if next_page_url not in visited:
                     visited.append(next_page_url)
                     yield scrapy.Request(
