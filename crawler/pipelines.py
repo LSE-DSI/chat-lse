@@ -114,14 +114,18 @@ class ItemToPostgresPipeline:
         logging.info("ItemToPostgresPipeline process item")
         adapter = ItemAdapter(item)
 
-        with Session(self.engine) as session:
-            self.process_page(adapter, session)
-            session.commit()
+        with self.engine.connect() as conn:
+            try: 
+                self.process_page(conn, adapter)
+                conn.commit()
+            except Exception as e: # Keeping this here for debugging 
+                print("Transaction failed:", e) 
+                conn.rollback()
 
         return item
 
-    def process_page(self, adapter, session):
-        result = session.execute(
+    def process_page(self, conn, adapter):
+        result = conn.execute(
             text('SELECT url, doc_id FROM webpage WHERE url = :url'),
             {'url': adapter['url']}
         ).fetchone()
@@ -129,12 +133,12 @@ class ItemToPostgresPipeline:
         if result:
             url, previous_hash = result
             if previous_hash == adapter['doc_id']:
-                logging.info(f"Page not modified since last scraped: {adapter.url}")
+                logging.info(f"Page not modified since last scraped:", adapter["url"])
                 return
             else:
-                session.execute(text('DELETE FROM webpage WHERE url = :url'), {'url': url})
+                conn.execute(text('DELETE FROM webpage WHERE url = :url'), {'url': url})
 
-        session.execute(text('''
+        conn.execute(text('''
             INSERT INTO webpage (doc_id, origin_url, url, title, content, date_scraped)
             VALUES (:doc_id, :origin_url, :url, :title, :content, :date_scraped)
         '''), {
@@ -145,10 +149,11 @@ class ItemToPostgresPipeline:
             'content': adapter['content'],
             'date_scraped': adapter['date_scraped'],
         })
-        # only export item to webpage.jl in the case of reprocessing to postgresdb
-        self.process_item(adapter, 'webpage')
 
-        logging.info(f'Page processed and stored in PostgreSQL: {adapter.url}')
+        # only export item to webpage.jl in the case of reprocessing to postgresdb
+        #self.process_item(adapter, 'webpage')
+
+        logging.info(f'Page processed and stored in PostgreSQL:', adapter["url"])
 
     # temorarily deleted the process_box method (adapt from the pages method if needed again)
 

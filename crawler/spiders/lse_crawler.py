@@ -1,6 +1,7 @@
 import scrapy
-from crawler.items import PagesScraperItem
 import hashlib
+from crawler.items import PagesScraperItem
+from dateutil.parser import parse
 
 
 class SpiderDSI(scrapy.Spider):
@@ -58,9 +59,10 @@ class SpiderDSI(scrapy.Spider):
         item = PagesScraperItem()
         item['origin_url'] = response.meta['origin_url']
         item['url'] = response.url
+        print(f"url: {response.url}")
         item['title'] = response.css('title::text').get().strip()
         item['content'] = response.text
-        item['date_scraped'] = response.headers['Date'].decode()
+        item['date_scraped'] = self.parse_as_datetime(response.headers['Date'].decode())
         item['doc_id'] = self.compute_hash(item['content'])
 
         yield item
@@ -86,3 +88,7 @@ class SpiderDSI(scrapy.Spider):
 
     def compute_hash(self, content: str):
         return hashlib.md5(content.encode('utf-8')).hexdigest()
+
+    def parse_as_datetime(self, date_str): 
+        # Takes a date string and parse it as a datetime object to be fed as TIMESTAMP 
+        return parse(date_str).replace(tzinfo=None) 
