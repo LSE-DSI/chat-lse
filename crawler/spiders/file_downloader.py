@@ -16,7 +16,7 @@ class FileDownloaderSpider(scrapy.Spider):
         file_name = response.url.split('/')[-1]
         
         # Save the file
-        file_path = os.path.join('data/', file_name)
+        file_path = os.path.join('data/documents/', file_name)
         with open(file_path, 'wb') as f:
             f.write(response.body)
         self.log(f'Saved file {file_name}')
