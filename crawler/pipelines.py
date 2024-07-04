@@ -48,6 +48,7 @@ class ItemToPostgresPipeline:
             logging.info("Creating lse_doc table...")
             conn.execute(text('''
                 CREATE TABLE IF NOT EXISTS lse_doc (
+                    id TEXT, 
                     doc_id TEXT,
                     chunk_id TEXT, 
                     type TEXT, 
@@ -109,15 +110,16 @@ class ItemToPostgresPipeline:
         content = adapter["content"]
         date_scraped = adapter["date_scraped"]
         output_list = generate_json_entry_for_html(content, url, title, date_scraped, doc_id)
-        for doc_id, chunk_id, type, url, title, content, date_scraped, embedding in output_list:
+        for idx, doc_id, chunk_id, type, url, title, content, date_scraped, embedding in output_list:
             conn.execute(text('''
-                INSERT INTO lse_doc (doc_id, chunk_id, type, url, title, content, date_scraped, embedding)
-                VALUES (:doc_id, :chunk_id, :type, :url, :title, :content, :date_scraped, :embedding)
+                INSERT INTO lse_doc (id, doc_id, chunk_id, type, url, title, content, date_scraped, embedding)
+                VALUES (:id, :doc_id, :chunk_id, :type, :url, :title, :content, :date_scraped, :embedding)
             '''), {
-                'doc_id': doc_id,
-                'chunk_id': chunk_id,
-                'type': type,
-                'url': url,
+                "id": idx, 
+                "doc_id": doc_id,
+                "chunk_id": chunk_id,
+                "type": type,
+                "url": url,
                 "title": title,
                 "content": content,
                 "date_scraped": date_scraped,
@@ -150,15 +152,16 @@ class ItemToPostgresPipeline:
         file_path = adapter["file_path"]
         date_scraped = adapter["date_scraped"]
         output_list = generate_json_entry_for_files(file_path, url, title, date_scraped)
-        for doc_id, chunk_id, type, url, title, content, date_scraped, embedding in output_list:
+        for idx, doc_id, chunk_id, type, url, title, content, date_scraped, embedding in output_list:
             conn.execute(text('''
-                INSERT INTO lse_doc (doc_id, chunk_id, type, url, title, content, date_scraped, embedding)
-                VALUES (:doc_id, :chunk_id, :type, :url, :title, :content, :date_scraped, :embedding)
+                INSERT INTO lse_doc (id, doc_id, chunk_id, type, url, title, content, date_scraped, embedding)
+                VALUES (:id, :doc_id, :chunk_id, :type, :url, :title, :content, :date_scraped, :embedding)
             '''), {
-                'doc_id': doc_id,
-                'chunk_id': chunk_id,
-                'type': type,
-                'url': url,
+                "id": idx, 
+                "doc_id": doc_id,
+                "chunk_id": chunk_id,
+                "type": type,
+                "url": url,
                 "title": title,
                 "content": content,
                 "date_scraped": date_scraped,

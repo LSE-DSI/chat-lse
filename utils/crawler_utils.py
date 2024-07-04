@@ -65,9 +65,6 @@ def embed_text(text, type, url, title, date_scraped, doc_id):
     # Get embedding model 
     EMBED_MODEL = os.getenv("OLLAMA_EMBED_MODEL")
 
-    # Generate hash for content
-    doc_id = hashlib.md5(text.encode("utf-8")).hexdigest()
-
     # Chunking and embedding chunks
     splitter = SentenceSplitter(
         chunk_size=EMBED_CHUNK_SIZE if EMBED_CHUNK_SIZE else 512,
@@ -77,8 +74,10 @@ def embed_text(text, type, url, title, date_scraped, doc_id):
     sentence_chunks = splitter.split_text(text)
     output_list = []
     for chunk_id, chunk_text in enumerate(sentence_chunks):
+        id = f"{doc_id}_{chunk_id}"
         embedding = compute_text_embedding_sync(chunk_text, EMBED_MODEL)
         output_list.append([
+            id, 
             doc_id,
             chunk_id,
             type,
