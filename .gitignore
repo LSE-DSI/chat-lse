@@ -296,7 +296,7 @@ dist
 ##### CUSTOM #####
 
 data/
-
+static/
 
 .vscode
 .DS_Store

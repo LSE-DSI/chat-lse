@@ -6,6 +6,7 @@ from typing import (
 
 from openai import AsyncOpenAI
 from openai_messages_token_helper import build_messages, get_token_limit
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 
 from .api_models import ThoughtStep
 from .embeddings import compute_text_embedding
@@ -23,7 +24,7 @@ class SimpleRAGChat:
         chat_deployment: str | None,  # Not needed for non-Azure OpenAI
         embed_client: AsyncOpenAI,
         embed_deployment: str | None,  # Not needed for non-Azure OpenAI or for retrieval_mode="text"
-        embed_model: str,
+        embed_model: HuggingFaceEmbedding,
         embed_dimensions: int,
         context_window_override: int | None # Context window size (default to 4000 if None)
     ):
@@ -56,7 +57,8 @@ class SimpleRAGChat:
         if vector_search:
             vector = await compute_text_embedding(
                 original_user_query,
-                self.embed_model
+                None,
+                self.embed_model,
             )
         if text_search:
             query_text = original_user_query
