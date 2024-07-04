@@ -116,7 +116,7 @@ export const Answer = ({
                                 <div>
                                     <span className={styles.citationMarker}>{`${++i}`}</span>
                                     <Link className={styles.citationLink} appearance="subtle" href={x.url} target="_blank">
-                                        {x.name}
+                                        {x.title}
                                     </Link>
                                 </div>
                             );
