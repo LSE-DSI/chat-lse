@@ -133,7 +133,7 @@ class ItemToPostgresPipeline:
         if result:
             url, previous_hash = result
             if previous_hash == adapter['doc_id']:
-                logging.info(f"Page not modified since last scraped:", adapter["url"])
+                print(f"Page not modified since last scraped:", adapter["url"])
                 return
             else:
                 conn.execute(text('DELETE FROM webpage WHERE url = :url'), {'url': url})
