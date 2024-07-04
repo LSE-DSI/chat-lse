@@ -39,14 +39,11 @@ def clean_text(text):
     return cleaned_text
 
 
-async def embed_text(text, file_path, url, title, date_scraped): 
+async def embed_text(text, file_path, url, title, date_scraped, doc_id): 
     load_dotenv(override=True)
 
     EMBED_CHUNK_SIZE = os.getenv("EMBED_CHUNK_SIZE") # Default is 512 for GTE-large
     EMBED_OVERLAP_SIZE = os.getenv("EMBED_OVERLAP_SIZE") # Default is 128 as experimented
-
-    # Generate hash for content 
-    doc_id = hashlib.md5(text.encode("utf-8")).hexdigest() 
 
     # Chunking and embedding chunks 
     embed_model = await create_embed_client() 
@@ -100,4 +97,7 @@ async def generate_json_entry_for_files(file_path, url, title, date_scraped):
     elif file_path.endswith(".pptx"): 
         pass
 
-    await embed_text(cleaned_content, file_path, url, title, date_scraped)
+    # Generate hash for content 
+    doc_id = hashlib.md5(cleaned_content.encode("utf-8")).hexdigest() 
+
+    await embed_text(cleaned_content, file_path, url, title, date_scraped, doc_id)
