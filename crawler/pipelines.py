@@ -178,7 +178,7 @@ class ItemToPostgresPipeline:
         # only export item to webpage.jl in the case of reprocessing to postgresdb
         #self.process_item(adapter, 'webpage')
 
-        logging.info(f'Page processed and stored in PostgreSQL:', adapter["url"])
+        logging.info(f'Page processed and stored in PostgreSQL: {adapter["url"]}')
 
     # temorarily deleted the process_box method (adapt from the pages method if needed again)
 
