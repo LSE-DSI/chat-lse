@@ -4,10 +4,24 @@ import re
 import hashlib
 from PyPDF2 import PdfReader
 from dotenv import load_dotenv
-from llama_index.core.node_parser import SentenceSplitter
-from fastapi_app.clients import create_embed_client
-from fastapi_app.embeddings import compute_text_embedding
 from bs4 import BeautifulSoup
+from llama_index.core.node_parser import SentenceSplitter
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+
+# Filter unnecessary FutureWarning thrown by HuggingFaceEmbedding
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
+
+DEFAULT_EMBED_MODEL = "thenlper/gte-large"
+
+
+def compute_text_embedding_sync(
+    q: str, embed_model: str = DEFAULT_EMBED_MODEL
+):
+    model = HuggingFaceEmbedding(model_name=embed_model) 
+    embedding = model.get_text_embedding(q)
+
+    return embedding
 
 
 def read_pdf(file_path):
@@ -41,40 +55,44 @@ def clean_text(text):
     return cleaned_text
 
 
-async def embed_text(text, file_path, url, title, date_scraped, doc_id):
+def embed_text(text, type, url, title, date_scraped, doc_id):
     load_dotenv(override=True)
 
     # Default is 512 for GTE-large
     EMBED_CHUNK_SIZE = os.getenv("EMBED_CHUNK_SIZE")
-    #  Default is 128 as experimented
+    # Default is 128 as experimented
     EMBED_OVERLAP_SIZE = os.getenv("EMBED_OVERLAP_SIZE")
+    # Get embedding model 
+    EMBED_MODEL = os.getenv("OLLAMA_EMBED_MODEL")
 
     # Generate hash for content
     doc_id = hashlib.md5(text.encode("utf-8")).hexdigest()
 
     # Chunking and embedding chunks
-    embed_model = await create_embed_client()
     splitter = SentenceSplitter(
         chunk_size=EMBED_CHUNK_SIZE if EMBED_CHUNK_SIZE else 512,
         chunk_overlap=EMBED_OVERLAP_SIZE if EMBED_OVERLAP_SIZE else 128
     )
 
     sentence_chunks = splitter.split_text(text)
+    output_list = []
     for chunk_id, chunk_text in enumerate(sentence_chunks):
-        embedding = await compute_text_embedding(chunk_text, embed_model)
-        yield [
+        embedding = compute_text_embedding_sync(chunk_text, EMBED_MODEL)
+        output_list.append([
             doc_id,
             chunk_id,
-            file_path.split(".")[-1],
+            type,
             url,
             title,
             chunk_text,
             date_scraped,
             embedding
-        ]
+        ])
+    
+    return output_list
 
 
-async def generate_json_entry_for_files(file_path, url, title, date_scraped):
+def generate_json_entry_for_files(file_path, url, title, date_scraped):
     """
     This function takes the metadata returned by the `file_downloader`, chunks and embeds
     the files and returns a json entry for input into postgres database. 
@@ -105,11 +123,12 @@ async def generate_json_entry_for_files(file_path, url, title, date_scraped):
         pass
 
     doc_id = hashlib.md5(cleaned_content.encode("utf-8")).hexdigest()
+    type = file_path.split(".")[-1]
 
-    await embed_text(cleaned_content, file_path, url, title, date_scraped, doc_id)
+    return embed_text(cleaned_content, type, url, title, date_scraped, doc_id)
 
 
-async def generate_json_entry_for_html(text, url, title, date_scraped, doc_id):
+def generate_json_entry_for_html(text, url, title, date_scraped, doc_id):
     """
     This function takes the metadata returned by the lse_crawler, parses, chunks and embeds
     the html and returns a list entry for input into postgres database. 
@@ -128,4 +147,5 @@ async def generate_json_entry_for_html(text, url, title, date_scraped, doc_id):
     # Parse the html content
     soup = BeautifulSoup(text, 'html.parser')
     cleaned_content = clean_text(soup.get_text())
-    await embed_text(cleaned_content, None, url, title, date_scraped, doc_id)
+
+    return embed_text(cleaned_content, "webpage", url, title, date_scraped, doc_id)

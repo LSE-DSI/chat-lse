@@ -49,7 +49,7 @@ class SpiderDSI(scrapy.Spider):
                 visited.append(next_page_url)
 
                 # Download linked files 
-                if next_page_url.endswith(('.pdf', '.doc', '.docx', '.ppt', '.pptx')):
+                if next_page_url.endswith(('.pdf')): # Keeping only support for .pdf for now 
                     # Download the linked files 
                     yield scrapy.Request(response.urljoin(next_page_url), callback=self.save_file)
                     
@@ -89,7 +89,7 @@ class SpiderDSI(scrapy.Spider):
                     visited.append(next_page_url)
 
                     # Download linked files 
-                    if next_page_url.endswith(('.pdf', '.doc', '.docx', '.ppt', '.pptx')):
+                    if next_page_url.endswith(('.pdf')): # Keeping only support for .pdf for now 
                         # Download the linked files 
                         yield scrapy.Request(response.urljoin(next_page_url), callback=self.save_file)
                         

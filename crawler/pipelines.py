@@ -3,27 +3,15 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
-import scrapy
 import logging
 import os
-import re
 
-
-from scrapy import signals
-from datetime import datetime
 from itemadapter import ItemAdapter
-from scrapy.exporters import JsonLinesItemExporter
-from bs4 import BeautifulSoup
 
 from sqlalchemy import text
-from sqlalchemy.orm import Session
 from dotenv import load_dotenv
 
 from fastapi_app.postgres_engine import create_postgres_engine_from_env_sync
-from fastapi_app.postgres_models import Doc
-from fastapi_app.embeddings import compute_text_embedding
-
-from llama_index.core.node_parser import SentenceSplitter
 
 from utils.crawler_utils import generate_json_entry_for_files, generate_json_entry_for_html
 # Default is 512 for GTE-large
@@ -71,27 +59,6 @@ class ItemToPostgresPipeline:
                 );
             '''))
 
-            logging.info("Creating wepage table...")
-            conn.execute(text('''
-                CREATE TABLE IF NOT EXISTS webpage (
-                    doc_id TEXT,
-                    url TEXT,
-                    title TEXT,
-                    content TEXT,
-                    date_scraped TIMESTAMP
-                );
-            '''))
-
-            logging.info("Creating file table...")
-            conn.execute(text('''
-                CREATE TABLE IF NOT EXISTS file_metadata (
-                    url TEXT,
-                    title TEXT,
-                    file_path TEXT,
-                    date_scraped TIMESTAMP
-                );
-            '''))
-
             conn.commit()
             logging.info("Database extension and tables created successfully.")
 
@@ -112,29 +79,12 @@ class ItemToPostgresPipeline:
                     conn.rollback()
 
             elif item_type == "file_metadata":
-                url = adapter["url"]
-                title = adapter["title"]
-                file_path = adapter["file_path"]
-                date_scraped = adapter["date_scraped"]
-                for doc_id, chunk_id, type, url, title, content, date_scraped, embedding in generate_json_entry_for_files(file_path, url, title, date_scraped):
-                    try:
-                        conn.execute(text('''
-                            INSERT INTO lse_doc (doc_id, chunk_id, type, url, title, content, date_scraped, embedding)
-                            VALUES (:doc_id, :chunk_id, :type, url, :title, :content, :date_scraped, :embedding)
-                        '''), {
-                            'doc_id': doc_id,
-                            'chunk_id': chunk_id,
-                            'type': type,
-                            'url': url,
-                            "title": title,
-                            "content": content,
-                            "date_scraped": date_scraped,
-                            "embedding": embedding
-                        })
-                        conn.commit()
-                    except Exception as e:  # Keeping this for debugging
-                        print("Transaction failed:", e)
-                        conn.rollback()
+                try: 
+                    self.process_file(conn, adapter)
+                    conn.commit()
+                except Exception as e:  # Keeping this for debugging
+                    print("Transaction failed:", e)
+                    conn.rollback()
 
         return item
 
@@ -153,29 +103,66 @@ class ItemToPostgresPipeline:
                 conn.execute(
                     text('DELETE FROM lse_doc WHERE url = :url'), {'url': url})
 
-            url = adapter["url"]
-            title = adapter["title"]
-            content = adapter["content"]
-            date_scraped = adapter["date_scraped"]
-            for doc_id, chunk_id, type, url, title, content, date_scraped, embedding in generate_json_entry_for_html(file_path, url, title, date_scraped, doc_id):
-                conn.execute(text('''
-                    INSERT INTO lse_doc (doc_id, chunk_id, type, url, title, content, date_scraped, embedding)
-                    VALUES (:doc_id, :chunk_id, :type, url, :title, :content, :date_scraped, :embedding)
-                '''), {
-                    'doc_id': doc_id,
-                    'chunk_id': chunk_id,
-                    'type': 'webpage',
-                    'url': url,
-                    "title": title,
-                    "content": content,
-                    "date_scraped": date_scraped,
-                    "embedding": embedding
-                })
+        doc_id = adapter["doc_id"]
+        url = adapter["url"]
+        title = adapter["title"]
+        content = adapter["content"]
+        date_scraped = adapter["date_scraped"]
+        output_list = generate_json_entry_for_html(content, url, title, date_scraped, doc_id)
+        for doc_id, chunk_id, type, url, title, content, date_scraped, embedding in output_list:
+            conn.execute(text('''
+                INSERT INTO lse_doc (doc_id, chunk_id, type, url, title, content, date_scraped, embedding)
+                VALUES (:doc_id, :chunk_id, :type, :url, :title, :content, :date_scraped, :embedding)
+            '''), {
+                'doc_id': doc_id,
+                'chunk_id': chunk_id,
+                'type': type,
+                'url': url,
+                "title": title,
+                "content": content,
+                "date_scraped": date_scraped,
+                "embedding": embedding
+            })
 
         # only export item to webpage.jl in the case of reprocessing to postgresdb
         # self.process_item(adapter, 'webpage')
 
-        logging.info(f'Page processed and stored in PostgreSQL:',
-                     adapter["url"])
+        logging.info(f'Page processed and stored in PostgreSQL {adapter["url"]}')
 
-    # temorarily deleted the process_box method (adapt from the pages method if needed again)
+
+    def process_file(self, conn, adapter): 
+        result = conn.execute(
+            text('SELECT url, doc_id FROM lse_doc WHERE url = :url'),
+            {'url': adapter['url']}
+        ).fetchone()
+
+        if result:
+            url, previous_hash = result
+            if previous_hash == adapter['doc_id']:
+                print(f"File not modified since last scraped:", adapter["url"])
+                return
+            else:
+                conn.execute(
+                    text('DELETE FROM lse_doc WHERE url = :url'), {'url': url})
+        
+        url = adapter["url"]
+        title = adapter["title"]
+        file_path = adapter["file_path"]
+        date_scraped = adapter["date_scraped"]
+        output_list = generate_json_entry_for_files(file_path, url, title, date_scraped)
+        for doc_id, chunk_id, type, url, title, content, date_scraped, embedding in output_list:
+            conn.execute(text('''
+                INSERT INTO lse_doc (doc_id, chunk_id, type, url, title, content, date_scraped, embedding)
+                VALUES (:doc_id, :chunk_id, :type, :url, :title, :content, :date_scraped, :embedding)
+            '''), {
+                'doc_id': doc_id,
+                'chunk_id': chunk_id,
+                'type': type,
+                'url': url,
+                "title": title,
+                "content": content,
+                "date_scraped": date_scraped,
+                "embedding": embedding
+            })
+
+        logging.info(f'File processed and stored in PostgreSQL: {adapter["url"]}')
