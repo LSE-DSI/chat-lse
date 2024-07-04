@@ -39,6 +39,37 @@ def clean_text(text):
     return cleaned_text
 
 
+async def embed_text(text, file_path, url, title, date_scraped): 
+    load_dotenv(override=True)
+
+    EMBED_CHUNK_SIZE = os.getenv("EMBED_CHUNK_SIZE") # Default is 512 for GTE-large
+    EMBED_OVERLAP_SIZE = os.getenv("EMBED_OVERLAP_SIZE") # Default is 128 as experimented
+
+    # Generate hash for content 
+    doc_id = hashlib.md5(text.encode("utf-8")).hexdigest() 
+
+    # Chunking and embedding chunks 
+    embed_model = await create_embed_client() 
+    splitter = SentenceSplitter(
+        chunk_size = EMBED_CHUNK_SIZE if EMBED_CHUNK_SIZE else 512, 
+        chunk_overlap=EMBED_OVERLAP_SIZE if EMBED_OVERLAP_SIZE else 128
+        )
+    
+    sentence_chunks = splitter.split_text(text) 
+    for chunk_id, chunk_text in enumerate(sentence_chunks): 
+        embedding = await compute_text_embedding(chunk_text, embed_model)
+        yield [
+            doc_id, 
+            chunk_id, 
+            file_path.split(".")[-1], 
+            url, 
+            title, 
+            chunk_text, 
+            date_scraped, 
+            embedding 
+        ]
+
+
 async def generate_json_entry_for_files(file_path, url, title, date_scraped): 
     """
     This function takes the metadata returned by the `file_downloader`, chunks and embeds
@@ -56,11 +87,6 @@ async def generate_json_entry_for_files(file_path, url, title, date_scraped):
         - date_scraped: datetime of when the data is scraped 
         - embedding: embedded chunk 
     """
-    load_dotenv(override=True)
-
-    EMBED_CHUNK_SIZE = os.getenv("EMBED_CHUNK_SIZE") # Default is 512 for GTE-large
-    EMBED_OVERLAP_SIZE = os.getenv("EMBED_OVERLAP_SIZE") # Default is 128 as experimented
-
     # Parse file for different file types 
     if file_path.endswith(".pdf"): 
         content = read_pdf(file_path) 
@@ -74,26 +100,4 @@ async def generate_json_entry_for_files(file_path, url, title, date_scraped):
     elif file_path.endswith(".pptx"): 
         pass
 
-    # Generate hash for content 
-    doc_id = hashlib.md5(cleaned_content.encode("utf-8")).hexdigest() 
-
-    # Chunking and embedding chunks 
-    embed_model = await create_embed_client() 
-    splitter = SentenceSplitter(
-        chunk_size = EMBED_CHUNK_SIZE if EMBED_CHUNK_SIZE else 512, 
-        chunk_overlap=EMBED_OVERLAP_SIZE if EMBED_OVERLAP_SIZE else 128
-        )
-    
-    sentence_chunks = splitter.split_text(cleaned_content) 
-    for chunk_id, chunk_text in enumerate(sentence_chunks): 
-        embedding = await compute_text_embedding(chunk_text, embed_model)
-        yield {
-            "doc_id": doc_id, 
-            "chunk_id": chunk_id, 
-            "type": file_path.split(".")[-1], 
-            "url": url, 
-            "title": title, 
-            "content": chunk_text, 
-            "date_scraped": date_scraped, 
-            "embedding": embedding 
-        } 
+    await embed_text(cleaned_content, file_path, url, title, date_scraped)

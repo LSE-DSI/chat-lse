@@ -25,6 +25,8 @@ from fastapi_app.embeddings import compute_text_embedding
 
 from llama_index.core.node_parser import SentenceSplitter
 
+from utils.crawler_utils import generate_json_entry_for_files
+
 # Default is 512 for GTE-large
 EMBED_CHUNK_SIZE = os.getenv("EMBED_CHUNK_SIZE")
 #  Default is 128 as experimented
@@ -45,7 +47,7 @@ class ItemExporter(object):
         return pipeline
 
     def spider_opened(self, spider):
-        self.items = ['webpage'] # CHANGE THIS TO ["file_metadata", "webpage"] DEPENDS ON WHICH TABLE YOU WANT TO POPULATE
+        self.items = ['file_metadata'] # CHANGE THIS TO ["file_metadata", "webpage"] DEPENDS ON WHICH TABLE YOU WANT TO POPULATE
         self.files = {}
         self.exporters = {}
         for item in self.items:
@@ -93,6 +95,20 @@ class ItemToPostgresPipeline:
             logging.info("Enabling the pgvector extension for Postgres...")
             conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
 
+            logging.info("Creating lse_doc table...")
+            conn.execute(text('''
+                CREATE TABLE IF NOT EXISTS lse_doc (
+                    doc_id TEXT,
+                    chunk_id TEXT, 
+                    type TEXT, 
+                    url TEXT,
+                    title TEXT,
+                    content TEXT,
+                    date_scraped TIMESTAMP, 
+                    embedding VECTOR(1024) 
+                );
+            '''))
+
             logging.info("Creating wepage table...")
             conn.execute(text('''
                 CREATE TABLE IF NOT EXISTS webpage (
@@ -133,20 +149,29 @@ class ItemToPostgresPipeline:
                     print("Transaction failed:", e) 
                     conn.rollback()
             elif item_type == "file_metadata": 
-                try: 
-                    conn.execute(text('''
-                        INSERT INTO file_metadata (url, title, file_path, date_scraped)
-                        VALUES (:url, :title, :file_path, :date_scraped)
-                    '''), {
-                        'url': adapter['url'],
-                        'title': adapter['title'],
-                        'file_path': adapter['file_path'],
-                        'date_scraped': adapter['date_scraped'],
-                    })
-                    conn.commit()
-                except Exception as e: # Keeping this for debugging
-                    print("Transaction failed:", e)
-                    conn.rollback()
+                url = adapter["url"]
+                title = adapter["title"]
+                file_path = adapter["file_path"]
+                date_scraped = adapter["date_scraped"]
+                for doc_id, chunk_id, type, url, title, content, date_scraped, embedding in generate_json_entry_for_files(file_path, url, title, date_scraped): 
+                    try: 
+                        conn.execute(text('''
+                            INSERT INTO lse_doc (doc_id, chunk_id, type, url, title, content, date_scraped, embedding)
+                            VALUES (:doc_id, :chunk_id, :type, url, :title, :content, :date_scraped, :embedding)
+                        '''), {
+                            'doc_id': doc_id,
+                            'chunk_id': chunk_id,
+                            'type': type, 
+                            'url': url, 
+                            "title": title, 
+                            "content": content, 
+                            "date_scraped": date_scraped, 
+                            "embedding": embedding
+                        })
+                        conn.commit()
+                    except Exception as e: # Keeping this for debugging
+                        print("Transaction failed:", e)
+                        conn.rollback()
 
         return item
 
