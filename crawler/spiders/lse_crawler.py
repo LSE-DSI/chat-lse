@@ -41,7 +41,7 @@ class SpiderDSI(scrapy.Spider):
     global visited
     visited = []
 
-    def parse(self, response):        
+    def parse(self, response): 
         # Follow links found on the current page
         for next_page_url in response.css("a.component__link::attr(href)").extract():
             if next_page_url not in visited:
@@ -59,7 +59,6 @@ class SpiderDSI(scrapy.Spider):
         item = PagesScraperItem()
         item['origin_url'] = response.meta['origin_url']
         item['url'] = response.url
-        print(f"url: {response.url}")
         item['title'] = response.css('title::text').get().strip()
         item['content'] = response.text
         item['date_scraped'] = self.parse_as_datetime(response.headers['Date'].decode())
