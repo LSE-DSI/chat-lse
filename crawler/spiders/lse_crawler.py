@@ -4,6 +4,7 @@ import hashlib
 from crawler.items import PagesScraperItem, FilesScraperItem
 from dateutil.parser import parse
 
+DATA_FOLDER = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', 'data', 'files')
 
 class SpiderDSI(scrapy.Spider):
     name = 'lse_crawler'
@@ -126,8 +127,10 @@ class SpiderDSI(scrapy.Spider):
     def save_file(self, response):
         file_name = response.url.split('/')[-1]
         
+        os.makedirs(DATA_FOLDER, exist_ok=True)
+
         # Save the file
-        file_path = os.path.join('data/files/', file_name)
+        file_path = os.path.join(DATA_FOLDER, file_name)
         with open(file_path, 'wb') as f:
             f.write(response.body)
         self.log(f'Saved file {file_name}')
