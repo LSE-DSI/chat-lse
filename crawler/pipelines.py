@@ -4,24 +4,36 @@
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
 import scrapy
-import sqlite3
 import logging
+import os
+import re
 
-from sqlalchemy import text 
-from datetime import datetime
-from dotenv import load_dotenv
-from sqlalchemy.orm import Session 
-from itemadapter import ItemAdapter
 
 from scrapy import signals
+from datetime import datetime
+from itemadapter import ItemAdapter
 from scrapy.exporters import JsonLinesItemExporter
+from bs4 import BeautifulSoup
+
+from sqlalchemy import text
+from sqlalchemy.orm import Session
+from dotenv import load_dotenv
 
 from fastapi_app.postgres_engine import create_postgres_engine_from_env_sync
-from fastapi_app.postgres_models import Webpage
+from fastapi_app.postgres_models import Doc
+from fastapi_app.embeddings import compute_text_embedding
+
+from llama_index.core.node_parser import SentenceSplitter
+
+# Default is 512 for GTE-large
+EMBED_CHUNK_SIZE = os.getenv("EMBED_CHUNK_SIZE")
+#  Default is 128 as experimented
+EMBED_OVERLAP_SIZE = os.getenv("EMBED_OVERLAP_SIZE")
+
 
 class ItemExporter(object):
     """ Exports the items to JSON Lines files.
-    The items include boxes and pages, which are exported as inidividual JSON Lines file"""
+    The items include boxes and pages, which are exported as individual JSON Lines files"""
 
     @classmethod
     def from_crawler(cls, crawler):
@@ -33,11 +45,9 @@ class ItemExporter(object):
         return pipeline
 
     def spider_opened(self, spider):
-        # Initialize file handlers and exporters for each item type
-        self.items = ['webpage']
+        self.items = ['webpage'] # CHANGE THIS TO ["file_metadata", "webpage"] DEPENDS ON WHICH TABLE YOU WANT TO POPULATE
         self.files = {}
         self.exporters = {}
-
         for item in self.items:
             # Open a file for each item type
             self.files[item] = open(f'data/{item}.jl', 'wb')
@@ -54,13 +64,14 @@ class ItemExporter(object):
 
     def process_item(self, item, spider):
         # Export each item to the corresponding file
-        self.exporters[item.name].export_item(item)
+        self.exporters[item.type].export_item(item)
         return item
+
 
 class ItemToPostgresPipeline:
     def __init__(self):
         logging.debug("Init ItemToPostgresPipeline")
-        load_dotenv(override=True) 
+        load_dotenv(override=True)
         self.engine = None
 
     def open_spider(self, spider):
@@ -82,146 +93,92 @@ class ItemToPostgresPipeline:
             logging.info("Enabling the pgvector extension for Postgres...")
             conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
 
-            logging.info("Creating Wepage table...")
+            logging.info("Creating wepage table...")
             conn.execute(text('''
-                DROP TABLE IF EXISTS webpage;
                 CREATE TABLE IF NOT EXISTS webpage (
-                    id SERIAL PRIMARY KEY,
-                    origin_url TEXT,
-                    link TEXT,
-                    title TEXT, 
-                    content TEXT, 
+                    doc_id TEXT,
+                    url TEXT,
+                    title TEXT,
+                    content TEXT,
                     date_scraped TIMESTAMP
                 );
             '''))
-            conn.commit()
 
+            logging.info("Creating file table...")
+            conn.execute(text('''
+                CREATE TABLE IF NOT EXISTS file_metadata (
+                    url TEXT,
+                    title TEXT,
+                    file_path TEXT,
+                    date_scraped TIMESTAMP
+                );
+            '''))
+
+            conn.commit()
             logging.info("Database extension and tables created successfully.")
 
         conn.close()
 
     def process_item(self, item, spider):
-        logging.debug("ItemToPostgresPipeline process item")
+        logging.info("ItemToPostgresPipeline process item")
         adapter = ItemAdapter(item)
-        item_name = item.name
+        item_type = item.type 
 
-        # with self.engine.connect() as conn:
-        with Session(self.engine) as session:
-            if item_name == 'pages':
-                logging.debug("item_name == 'pages'")
-                #FIXME: Webpage has been deprecated and replaced with Document
-                model = Webpage(
-                    origin_url=adapter['origin_url'],
-                    link = adapter['link'],
-                    title = adapter['title'],
-                    content = adapter['content'],
-                    date_scraped = adapter['date_scraped'],
-                )
-                session.add(model)
-                session.commit()
-                
+        with self.engine.connect() as conn:
+            if item_type == "webpage": 
+                try: 
+                    self.process_page(conn, adapter)
+                    conn.commit()
+                except Exception as e: # Keeping this here for debugging 
+                    print("Transaction failed:", e) 
+                    conn.rollback()
+            elif item_type == "file_metadata": 
+                try: 
+                    conn.execute(text('''
+                        INSERT INTO file_metadata (url, title, file_path, date_scraped)
+                        VALUES (:url, :title, :file_path, :date_scraped)
+                    '''), {
+                        'url': adapter['url'],
+                        'title': adapter['title'],
+                        'file_path': adapter['file_path'],
+                        'date_scraped': adapter['date_scraped'],
+                    })
+                    conn.commit()
+                except Exception as e: # Keeping this for debugging
+                    print("Transaction failed:", e)
+                    conn.rollback()
+
         return item
 
-class ItemToSQLitePipeline:
-    def __init__(self):
-        # Connecting to SQLite database
-        self.conn = sqlite3.connect('data/dsi_crawler.db')
-        self.cursor = self.conn.cursor()
-        logging.info('SQLite Connection established')
+    def process_page(self, conn, adapter):
+        result = conn.execute(
+            text('SELECT url, doc_id FROM webpage WHERE url = :url'),
+            {'url': adapter['url']}
+        ).fetchone()
 
-        # Creating tables
-        self.create_tables()
+        if result:
+            url, previous_hash = result
+            if previous_hash == adapter['doc_id']:
+                print(f"Page not modified since last scraped:", adapter["url"])
+                return
+            else:
+                conn.execute(text('DELETE FROM webpage WHERE url = :url'), {'url': url})
 
-    def create_tables(self):
-        try:
-            # Create Webpage table
-            self.cursor.execute('''
-                CREATE TABLE IF NOT EXISTS Webpage (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    origin_url TEXT,
-                    url TEXT,
-                    title TEXT, 
-                    html TEXT, 
-                    date_scraped TEXT
-                )
-            ''')
+        conn.execute(text('''
+            INSERT INTO webpage (doc_id, url, title, content, date_scraped)
+            VALUES (:doc_id, :url, :title, :content, :date_scraped)
+        '''), {
+            'doc_id': adapter['doc_id'],
+            'url': adapter['url'],
+            'title': adapter['title'],
+            'content': adapter['content'],
+            'date_scraped': adapter['date_scraped'],
+        })
 
-            # Create Box table
-            self.cursor.execute('''
-                CREATE TABLE IF NOT EXISTS Box (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    origin_url TEXT,
-                    url TEXT, 
-                    title TEXT, 
-                    html TEXT, 
-                    image_src TEXT, 
-                    image_alt_text TEXT, 
-                    date_scraped TEXT,
-                    FOREIGN KEY (origin_url) REFERENCES Webpage(origin_url)
-                    )
-            ''')
+        # only export item to webpage.jl in the case of reprocessing to postgresdb
+        #self.process_item(adapter, 'webpage')
 
-            # Create CrawlerMetadata table
-            self.cursor.execute('''
-                CREATE TABLE IF NOT EXISTS CrawlerMetadata (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    webpage_id INTEGER,
-                    crawled_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    FOREIGN KEY (webpage_id) REFERENCES Webpage(id)
-                )
-            ''')
+        logging.info(f'Page processed and stored in PostgreSQL: {adapter["url"]}')
 
-            self.cursor.execute('''
-                CREATE TABLE IF NOT EXISTS Links (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    webpage_id INTEGER,
-                    link TEXT,
-                    FOREIGN KEY (webpage_id) REFERENCES Webpage(id)
-                )
-            ''')
+    # temorarily deleted the process_box method (adapt from the pages method if needed again)
 
-            # Commit changes to the database
-            self.conn.commit()
-            logging.info('Tables created successfully')
-
-        except Exception as e:
-            logging.error(f'Error creating tables: {e}')
-
-    def process_item(self, item, spider):
-        adapter = ItemAdapter(item)
-        item_name = item.name
-
-        if item_name == 'pages':
-            # Insert data into Webpage table
-            self.cursor.execute('''
-                INSERT INTO Webpage (origin_url, url, title, html, date_scraped)
-                VALUES (?, ?, ?, ?, ?)
-            ''', (adapter['origin_url'], adapter['url'], adapter['title'],
-                  adapter['html'], adapter['date_scraped']))
-
-            # Retrieve the inserted webpage_id
-            webpage_id = self.cursor.lastrowid
-
-            # Extract links from HTML
-            selector = scrapy.Selector(text=adapter['html'])
-            links = selector.css('a::attr(href)').extract()
-
-            # Insert data into Links table
-            for link in links:
-                self.cursor.execute('''
-                    INSERT INTO Links (webpage_id, link)
-                    VALUES (?, ?)
-                ''', (webpage_id, link))
-
-            # Insert crawler metadata into CrawlerMetadata table
-            self.cursor.execute('''
-                INSERT INTO CrawlerMetadata (webpage_id, crawled_at)
-                VALUES (?, ?)
-            ''', (webpage_id, datetime.now()))
-
-        self.conn.commit()  # Commit changes to the database
-        return item
-
-    def close_spider(self, spider):
-        self.conn.close()
-        logging.info('SQLite Connection closed')

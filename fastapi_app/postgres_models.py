@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pgvector.sqlalchemy import Vector
+from datetime import datetime
 from sqlalchemy import Index, Column, Integer, String, ForeignKey, text, inspect 
 from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass, mapped_column
 

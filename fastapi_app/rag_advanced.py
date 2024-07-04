@@ -79,7 +79,7 @@ class AdvancedRAGChat:
 
         query_text, filters = extract_search_arguments(chat_completion)
 
-        # Retrieve relevant items from the database with the GPT optimized query
+        # Retrieve relevant documents from the database with the GPT optimized query
         vector: list[float] = []
         if vector_search:
             vector = await compute_text_embedding(
@@ -91,7 +91,7 @@ class AdvancedRAGChat:
 
         results = await self.searcher.search(query_text, vector, top, filters)
 
-        sources_content = [f"[{(item.id)}]:{item.to_str_for_rag()}\n\n" for item in results]
+        sources_content = [f"[{(doc.doc_id)}]:{doc.to_str_for_rag()}\n\n" for doc in results]
         content = "\n".join(sources_content)
 
         # Generate a contextual and content specific answer using the search results and chat history
