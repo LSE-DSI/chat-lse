@@ -21,7 +21,6 @@ class PagesScraperItem(scrapy.Item):
     """
     type = 'webpage'
     doc_id = scrapy.Field()
-    origin_url = scrapy.Field()
     url = scrapy.Field()
     title = scrapy.Field()
     content = scrapy.Field()

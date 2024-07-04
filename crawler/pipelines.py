@@ -45,7 +45,7 @@ class ItemExporter(object):
         return pipeline
 
     def spider_opened(self, spider):
-        self.items = ['file_metadata']
+        self.items = ['webpage'] # CHANGE THIS TO ["file_metadata", "webpage"] DEPENDS ON WHICH TABLE YOU WANT TO POPULATE
         self.files = {}
         self.exporters = {}
         for item in self.items:
@@ -97,7 +97,6 @@ class ItemToPostgresPipeline:
             conn.execute(text('''
                 CREATE TABLE IF NOT EXISTS webpage (
                     doc_id TEXT,
-                    origin_url TEXT,
                     url TEXT,
                     title TEXT,
                     content TEXT,
@@ -166,11 +165,10 @@ class ItemToPostgresPipeline:
                 conn.execute(text('DELETE FROM webpage WHERE url = :url'), {'url': url})
 
         conn.execute(text('''
-            INSERT INTO webpage (doc_id, origin_url, url, title, content, date_scraped)
-            VALUES (:doc_id, :origin_url, :url, :title, :content, :date_scraped)
+            INSERT INTO webpage (doc_id, url, title, content, date_scraped)
+            VALUES (:doc_id, :url, :title, :content, :date_scraped)
         '''), {
             'doc_id': adapter['doc_id'],
-            'origin_url': adapter['origin_url'],
             'url': adapter['url'],
             'title': adapter['title'],
             'content': adapter['content'],

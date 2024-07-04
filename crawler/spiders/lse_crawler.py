@@ -57,7 +57,6 @@ class SpiderDSI(scrapy.Spider):
     def parse_linked_page(self, response):
         # Extract data from the linked page
         item = PagesScraperItem()
-        item['origin_url'] = response.meta['origin_url']
         item['url'] = response.url
         item['title'] = response.css('title::text').get().strip()
         item['content'] = response.text
