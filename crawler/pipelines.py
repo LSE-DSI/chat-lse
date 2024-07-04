@@ -45,7 +45,7 @@ class ItemExporter(object):
         return pipeline
 
     def spider_opened(self, spider):
-        self.items = ['webpage']
+        self.items = ['file_metadata']
         self.files = {}
         self.exporters = {}
         for item in self.items:
@@ -105,6 +105,16 @@ class ItemToPostgresPipeline:
                 );
             '''))
 
+            logging.info("Creating file table...")
+            conn.execute(text('''
+                CREATE TABLE IF NOT EXISTS file_metadata (
+                    url TEXT,
+                    title TEXT,
+                    file_path TEXT,
+                    date_scraped TIMESTAMP
+                );
+            '''))
+
             conn.commit()
             logging.info("Database extension and tables created successfully.")
 
@@ -113,14 +123,31 @@ class ItemToPostgresPipeline:
     def process_item(self, item, spider):
         logging.info("ItemToPostgresPipeline process item")
         adapter = ItemAdapter(item)
+        item_type = item.type 
 
         with self.engine.connect() as conn:
-            try: 
-                self.process_page(conn, adapter)
-                conn.commit()
-            except Exception as e: # Keeping this here for debugging 
-                print("Transaction failed:", e) 
-                conn.rollback()
+            if item_type == "webpage": 
+                try: 
+                    self.process_page(conn, adapter)
+                    conn.commit()
+                except Exception as e: # Keeping this here for debugging 
+                    print("Transaction failed:", e) 
+                    conn.rollback()
+            elif item_type == "file_metadata": 
+                try: 
+                    conn.execute(text('''
+                        INSERT INTO file_metadata (url, title, file_path, date_scraped)
+                        VALUES (:url, :title, :file_path, :date_scraped)
+                    '''), {
+                        'url': adapter['url'],
+                        'title': adapter['title'],
+                        'file_path': adapter['file_path'],
+                        'date_scraped': adapter['date_scraped'],
+                    })
+                    conn.commit()
+                except Exception as e: # Keeping this for debugging
+                    print("Transaction failed:", e)
+                    conn.rollback()
 
         return item
 
