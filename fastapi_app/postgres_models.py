@@ -13,7 +13,7 @@ class Base(DeclarativeBase, MappedAsDataclass):
 
 class Doc(Base):
     __tablename__ = "lse_doc"
-    id: Mapped[str] = mapped_column(primary_key=True, autoincrement=True)
+    id: Mapped[str] = mapped_column(primary_key=True)
     doc_id: Mapped[str] = mapped_column()
     chunk_id: Mapped[str] = mapped_column()
     type: Mapped[str] = mapped_column()
