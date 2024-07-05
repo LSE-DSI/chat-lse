@@ -124,36 +124,24 @@ OLLAMA_ENDPOINT=http://<Rizzie IP address>:11434/v1
 
 ## 4. Initialise the database
 
-### 4.1 Create a table from scratch
+### 4.1 Set up for crawler 
 
-**Only run the command below if you are OK with wiping out your entire Postgres database!** We don't yet have a clear routine for simply updating the database, but it will be available soon!
+Add the following to your .env file: 
 
-```bash
-ipython fastapi_app/setup_postgres_database.py
+```
+EMBED_CHUNK_SIZE=512 
+EMBED_OVERLAP_SIZE=128
 ```
 
-### 4.2 (Optional) Produce a JSON with embeddings for a sample of PDF documents
 
-The reason this is optional is that you can just simply download the `seed_lse_data.jsonl` file from [Sharepoint > ChatLSE > pdf-chunking-experiments](https://lsecloud.sharepoint.com/:f:/r/sites/TEAM_DSI-Executive/Shared%20Documents/Computing/ChatLSE/pdf-chunking-experiments?csf=1&web=1&e=pdMAIb) (last updated: 1 July 2024) [^1].
+### 4.2 Run crawler to populate database 
 
-- Open [fastapi_app/setup_seeeddata_lse.py](https://github.com/LSE-DSI/chat-lse/blob/develop/fastapi_app/setup_seeddata_lse.py) 
-- Add the following to your .env file: 
+The following script will take a while for the first time you run it as it crawls through all the files and webpages with lse.ac.uk domain name. Subsequent runs of the crawler should be quicker as it only updates the files and webpages that has changed. 
 
-    ```
-    EMBED_CHUNK_SIZE=512 
-    EMBED_OVERLAP_SIZE=128
-    ```
-
-- Run the script and wait until it is complete (it might take a few minutes).
-
-[^1]: Check [fastapi_app/setup_seeeddata_lse.py](https://github.com/LSE-DSI/chat-lse/blob/develop/fastapi_app/setup_seeddata_lse.py) to understand how the JSON Lines files were created from the sample PDF documents.
-
-### 4.3 Add sample documents to Postgres
-
-Ensure you have the `data/seed_lse_data.jsonl` file and then run:
+Run the following code to start the crawler :
 
 ```bash
-ipython fastapi_app/setup_postgres_seeddata.py
+sh scripts/start_crawlers.sh 
 ```
 
 

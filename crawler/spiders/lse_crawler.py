@@ -55,7 +55,7 @@ class SpiderDSI(scrapy.Spider):
                     
                     # Save metadata for the files to be downloaded 
                     file_item = FilesScraperItem()
-                    file_item["url"] = next_page_url 
+                    file_item["url"] = response.urljoin(next_page_url)
                     file_item["title"] = next_page_url.split('/')[-1]
                     file_item["file_path"] = os.path.join('data/files/', file_item["title"])
                     file_item["date_scraped"] = file_item['date_scraped'] = self.parse_as_datetime(response.headers['Date'].decode())
@@ -95,7 +95,7 @@ class SpiderDSI(scrapy.Spider):
                         
                         # Save metadata for the files to be downloaded 
                         file_item = FilesScraperItem()
-                        file_item["url"] = next_page_url 
+                        file_item["url"] = response.urljoin(next_page_url)
                         file_item["title"] = next_page_url.split('/')[-1]
                         file_item["file_path"] = os.path.join('data/files/', file_item["title"])
                         file_item["date_scraped"] = file_item['date_scraped'] = self.parse_as_datetime(response.headers['Date'].decode())

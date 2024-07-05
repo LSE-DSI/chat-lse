@@ -68,6 +68,29 @@ def clean_text(text):
     return cleaned_text
 
 
+def parse_doc(file_path): 
+    # This function parses a file and returns its cleaned texts as python string
+    # Supported file types: [".pdf", ".doc", ".docx", ".ppt", ".pptx"] 
+    
+    # Parse file for different file types
+    if file_path.endswith(".pdf"):
+        content = read_pdf(file_path)
+        cleaned_content = clean_text(content)
+    elif file_path.endswith(".doc"):
+        pass
+    elif file_path.endswith(".docx"):
+        pass
+    elif file_path.endswith(".ppt"):
+        pass
+    elif file_path.endswith(".pptx"):
+        pass
+
+    doc_id = hashlib.md5(cleaned_content.encode("utf-8")).hexdigest()
+    type = file_path.split(".")[-1]
+
+    return cleaned_content, doc_id, type
+
+
 def embed_text(text, type, url, title, date_scraped, doc_id):
     load_dotenv(override=True)
 
@@ -97,12 +120,10 @@ def embed_text(text, type, url, title, date_scraped, doc_id):
     return output_list
 
 
-def generate_json_entry_for_files(file_path, url, title, date_scraped):
+def generate_json_entry_for_files(text, type, url, title, date_scraped, doc_id):
     """
     This function takes the metadata returned by the `file_downloader`, chunks and embeds
     the files and returns a json entry for input into postgres database. 
-
-    Supported file types: [".pdf", ".doc", ".docx", ".ppt", ".pptx"] 
 
     Output: 
         - doc_id: hashed chunk content 
@@ -114,23 +135,8 @@ def generate_json_entry_for_files(file_path, url, title, date_scraped):
         - date_scraped: datetime of when the data is scraped 
         - embedding: embedded chunk 
     """
-    # Parse file for different file types
-    if file_path.endswith(".pdf"):
-        content = read_pdf(file_path)
-        cleaned_content = clean_text(content)
-    elif file_path.endswith(".doc"):
-        pass
-    elif file_path.endswith(".docx"):
-        pass
-    elif file_path.endswith(".ppt"):
-        pass
-    elif file_path.endswith(".pptx"):
-        pass
 
-    doc_id = hashlib.md5(cleaned_content.encode("utf-8")).hexdigest()
-    type = file_path.split(".")[-1]
-
-    return embed_text(cleaned_content, type, url, title, date_scraped, doc_id)
+    return embed_text(text, type, url, title, date_scraped, doc_id)
 
 
 def generate_json_entry_for_html(text, url, title, date_scraped, doc_id):

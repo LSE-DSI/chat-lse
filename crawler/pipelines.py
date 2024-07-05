@@ -13,7 +13,7 @@ from dotenv import load_dotenv
 
 from fastapi_app.postgres_engine import create_postgres_engine_from_env_sync
 
-from utils.crawler_utils import generate_json_entry_for_files, generate_json_entry_for_html
+from utils.crawler_utils import parse_doc, generate_json_entry_for_files, generate_json_entry_for_html
 # Default is 512 for GTE-large
 EMBED_CHUNK_SIZE = os.getenv("EMBED_CHUNK_SIZE")
 #  Default is 128 as experimented
@@ -95,20 +95,21 @@ class ItemToPostgresPipeline:
             {'url': adapter['url']}
         ).fetchone()
 
-        if result:
-            url, previous_hash = result
-            if previous_hash == adapter['doc_id']:
-                print(f"Page not modified since last scraped:", adapter["url"])
-                return
-            else:
-                conn.execute(
-                    text('DELETE FROM lse_doc WHERE url = :url'), {'url': url})
-
         doc_id = adapter["doc_id"]
         url = adapter["url"]
         title = adapter["title"]
         content = adapter["content"]
         date_scraped = adapter["date_scraped"]
+
+        if result:
+            _, previous_hash = result
+            if previous_hash == doc_id:
+                print(f"Skipping insertion. Page not modified since last scraped:", adapter["url"])
+                return
+            else:
+                conn.execute(
+                    text('DELETE FROM lse_doc WHERE url = :url'), {'url': url})
+
         output_list = generate_json_entry_for_html(content, url, title, date_scraped, doc_id)
         for idx, doc_id, chunk_id, type, url, title, content, date_scraped, embedding in output_list:
             conn.execute(text('''
@@ -137,21 +138,23 @@ class ItemToPostgresPipeline:
             text('SELECT url, doc_id FROM lse_doc WHERE url = :url'),
             {'url': adapter['url']}
         ).fetchone()
-
-        if result:
-            url, previous_hash = result
-            if previous_hash == adapter['doc_id']:
-                print(f"File not modified since last scraped:", adapter["url"])
-                return
-            else:
-                conn.execute(
-                    text('DELETE FROM lse_doc WHERE url = :url'), {'url': url})
         
         url = adapter["url"]
         title = adapter["title"]
         file_path = adapter["file_path"]
         date_scraped = adapter["date_scraped"]
-        output_list = generate_json_entry_for_files(file_path, url, title, date_scraped)
+        content, doc_id, type = parse_doc(file_path)
+
+        if result:
+            _, previous_hash = result
+            if previous_hash == doc_id:
+                print(f"Skipping insertion. File not modified since last scraped:", url)
+                return
+            else:
+                conn.execute(
+                    text('DELETE FROM lse_doc WHERE url = :url'), {'url': url})
+
+        output_list = generate_json_entry_for_files(content, type, url, title, date_scraped, doc_id)
         for idx, doc_id, chunk_id, type, url, title, content, date_scraped, embedding in output_list:
             conn.execute(text('''
                 INSERT INTO lse_doc (id, doc_id, chunk_id, type, url, title, content, date_scraped, embedding)
