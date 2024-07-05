@@ -1,8 +1,10 @@
+import os 
 import scrapy
 import hashlib
-from crawler.items import PagesScraperItem
+from crawler.items import PagesScraperItem, FilesScraperItem
 from dateutil.parser import parse
 
+DATA_FOLDER = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', 'data', 'files')
 
 class SpiderDSI(scrapy.Spider):
     name = 'lse_crawler'
@@ -42,42 +44,73 @@ class SpiderDSI(scrapy.Spider):
     visited = []
 
     def parse(self, response): 
-        # Follow links found on the current page
         for next_page_url in response.css("a.component__link::attr(href)").extract():
             if next_page_url not in visited:
                 visited.append(next_page_url)
-                #print(f"following link: {response.urljoin(next_page_url)}")
-                yield scrapy.Request(
-                    response.urljoin(next_page_url),
-                    callback=self.parse_linked_page,
-                    meta={'depth': 1, 'origin_url': response.url},
-                    errback=self.handle_error
-                )
+
+                # Download linked files 
+                if next_page_url.endswith(('.pdf')): # Keeping only support for .pdf for now 
+                    # Download the linked files 
+                    yield scrapy.Request(response.urljoin(next_page_url), callback=self.save_file)
+                    
+                    # Save metadata for the files to be downloaded 
+                    file_item = FilesScraperItem()
+                    file_item["url"] = next_page_url 
+                    file_item["title"] = next_page_url.split('/')[-1]
+                    file_item["file_path"] = os.path.join('data/files/', file_item["title"])
+                    file_item["date_scraped"] = file_item['date_scraped'] = self.parse_as_datetime(response.headers['Date'].decode())
+
+                    yield file_item 
+
+                # Follow links found on the current page 
+                else: 
+                    yield scrapy.Request(
+                        response.urljoin(next_page_url),
+                        callback=self.parse_linked_page,
+                        meta={'depth': 1, 'origin_url': response.url},
+                        errback=self.handle_error
+                    )
 
     def parse_linked_page(self, response):
         # Extract data from the linked page
-        item = PagesScraperItem()
-        item['url'] = response.url
-        item['title'] = response.css('title::text').get().strip()
-        item['content'] = response.text
-        item['date_scraped'] = self.parse_as_datetime(response.headers['Date'].decode())
-        item['doc_id'] = self.compute_hash(item['content'])
+        webpage_item = PagesScraperItem()
+        webpage_item['url'] = response.url
+        webpage_item['title'] = response.css('title::text').get().strip()
+        webpage_item['content'] = response.text
+        webpage_item['date_scraped'] = self.parse_as_datetime(response.headers['Date'].decode())
+        webpage_item['doc_id'] = self.compute_hash(webpage_item['content'])
 
-        yield item
+        yield webpage_item
 
-        # Follow links found on the linked page if the depth is less than max_depth
         current_depth = response.meta.get('depth', 1)
         if current_depth < self.max_depth:
             for next_page_url in response.css("a.component__link::attr(href)").extract():
                 if next_page_url not in visited:
                     visited.append(next_page_url)
-                    yield scrapy.Request(
-                        response.urljoin(next_page_url),
-                        callback=self.parse_linked_page,
-                        meta={'depth': current_depth + 1,
-                              'origin_url': response.meta['origin_url']},
-                        errback=self.handle_error
-                    )
+
+                    # Download linked files 
+                    if next_page_url.endswith(('.pdf')): # Keeping only support for .pdf for now 
+                        # Download the linked files 
+                        yield scrapy.Request(response.urljoin(next_page_url), callback=self.save_file)
+                        
+                        # Save metadata for the files to be downloaded 
+                        file_item = FilesScraperItem()
+                        file_item["url"] = next_page_url 
+                        file_item["title"] = next_page_url.split('/')[-1]
+                        file_item["file_path"] = os.path.join('data/files/', file_item["title"])
+                        file_item["date_scraped"] = file_item['date_scraped'] = self.parse_as_datetime(response.headers['Date'].decode())
+
+                        yield file_item 
+
+                    # Follow links found on the linked page if the depth is less than max_depth
+                    else: 
+                        yield scrapy.Request(
+                            response.urljoin(next_page_url),
+                            callback=self.parse_linked_page,
+                            meta={'depth': current_depth + 1,
+                                'origin_url': response.meta['origin_url']},
+                            errback=self.handle_error
+                        )
 
     def handle_error(self, failure):
         self.logger.error(repr(failure))
@@ -90,3 +123,14 @@ class SpiderDSI(scrapy.Spider):
     def parse_as_datetime(self, date_str): 
         # Takes a date string and parse it as a datetime object to be fed as TIMESTAMP 
         return parse(date_str).replace(tzinfo=None) 
+    
+    def save_file(self, response):
+        file_name = response.url.split('/')[-1]
+        
+        os.makedirs(DATA_FOLDER, exist_ok=True)
+
+        # Save the file
+        file_path = os.path.join(DATA_FOLDER, file_name)
+        with open(file_path, 'wb') as f:
+            f.write(response.body)
+        self.log(f'Saved file {file_name}')

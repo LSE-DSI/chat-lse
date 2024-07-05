@@ -45,8 +45,6 @@ export const Answer = ({
 
     const sanitizedAnswerHtml = DOMPurify.sanitize(parsedAnswer.answerHtml);
 
-    console.log(JSON.stringify(citations))
-
     return (
         <Stack className={`${styles.answerContainer} ${isSelected && styles.selected}`} verticalAlign="space-between">
             {/* {
@@ -116,7 +114,7 @@ export const Answer = ({
                                 <div>
                                     <span className={styles.citationMarker}>{`${++i}`}</span>
                                     <Link className={styles.citationLink} appearance="subtle" href={x.url} target="_blank">
-                                        {x.name}
+                                        {x.title}
                                     </Link>
                                 </div>
                             );

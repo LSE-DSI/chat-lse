@@ -11,7 +11,8 @@ PyPDF2==3.0.1
 # SQL
 jupysql>=0.10.4
 sqlalchemy>=2.0.23
-psycopg2-binary==2.9.9
+pyscopg2==2.9.9
+pyscopg2-binary==2.9.9
 
 # LLM
 ollama==0.2.1
@@ -28,6 +29,7 @@ ipdb==0.13.13
 tqdm==4.66.4
 jsonlines==4.0.0
 python-dotenv==1.0.1 # Load environment variables from .env file
+python-docx==1.1.2
 
 # Copied from rag-on-postgres with Azure components removed
 # uvloop is commented out due to incompatibility on Windows

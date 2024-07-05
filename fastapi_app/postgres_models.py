@@ -12,15 +12,15 @@ class Base(DeclarativeBase, MappedAsDataclass):
     pass
 
 class Doc(Base):
-    __tablename__ = "docs"
-    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True)
-    doc_id: Mapped[int] = mapped_column()
-    chunk_id: Mapped[int] = mapped_column()
+    __tablename__ = "lse_doc"
+    id: Mapped[str] = mapped_column(primary_key=True)
+    doc_id: Mapped[str] = mapped_column()
+    chunk_id: Mapped[str] = mapped_column()
     type: Mapped[str] = mapped_column()
-    name: Mapped[str] = mapped_column()
-    description: Mapped[str] = mapped_column()
-    content: Mapped[str] = mapped_column()
     url: Mapped[str] = mapped_column()
+    title: Mapped[str] = mapped_column()
+    content: Mapped[str] = mapped_column()
+    date_scraped: Mapped[datetime] = mapped_column()
     embedding: Mapped[Vector] = mapped_column(Vector(1024)) # GTE-large
 
     def to_dict(self, include_embedding: bool = False):
@@ -30,10 +30,9 @@ class Doc(Base):
             "doc_id": self.doc_id, 
             "chunk_id": self.chunk_id, 
             "type": self.type,
-            "name": self.name,
-            "description": self.description,
-            "content": self.content, 
             "url": self.url, 
+            "title": self.title,
+            "content": self.content, 
         }
         if include_embedding:
             # assuming embedding is a list or similar structure
@@ -41,10 +40,10 @@ class Doc(Base):
         return model_dict
 
     def to_str_for_rag(self):
-        return f"Name:{self.name} Description:{self.description} Content: {self.content} Type:{self.type}"
+        return f"Title:{self.title} URL: {self.url} Content: {self.content} Type:{self.type}"
 
     def to_str_for_embedding(self):
-        return f"Name: {self.name} Description: {self.description} Content: {self.content} Type: {self.type}"
+        return f"Title: {self.title} URL: {self.url} Content: {self.content} Type: {self.type}"
 
 
 # Define HNSW index to support vector similarity search through the vector_cosine_ops access method (cosine distance).

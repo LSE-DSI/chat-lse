@@ -14,7 +14,10 @@ class FileDownloaderSpider(scrapy.Spider):
     def parse(self, response):
 
         for file_link in response.css("a::attr(href)").extract():
-            if file_link.endswith(('.pdf', '.doc', '.docx', '.ppt', '.pptx')):
+            if file_link.endswith(('.pdf')): # Keeping only support for .pdf for now 
+                # Download the linked files 
+                yield scrapy.Request(response.urljoin(file_link), callback=self.save_file)
+                
                 # Save metadata for the files to be downloaded 
                 item = FilesScraperItem()
                 item["url"] = file_link 
@@ -23,9 +26,6 @@ class FileDownloaderSpider(scrapy.Spider):
                 item["date_scraped"] = item['date_scraped'] = self.parse_as_datetime(response.headers['Date'].decode())
 
                 yield item 
-
-                # Download the linked files 
-                yield scrapy.Request(response.urljoin(file_link), callback=self.save_file)
     
     def save_file(self, response):
         file_name = response.url.split('/')[-1]

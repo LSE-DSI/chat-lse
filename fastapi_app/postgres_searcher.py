@@ -1,5 +1,5 @@
 from pgvector.utils import to_db
-from sqlalchemy import Float, Integer, select, text
+from sqlalchemy import Float, Integer, String, select, text
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from .postgres_models import Doc
@@ -35,17 +35,17 @@ class PostgresSearcher:
 
         vector_query = f"""
             SELECT id, RANK () OVER (ORDER BY embedding <=> :embedding) AS rank
-                FROM docs
+                FROM lse_doc
                 {filter_clause_where}
                 ORDER BY embedding <=> :embedding
                 LIMIT 20
             """
 
         fulltext_query = f"""
-            SELECT id, RANK () OVER (ORDER BY ts_rank_cd(to_tsvector('english', description), query) DESC)
-                FROM docs, plainto_tsquery('english', :query) query
-                WHERE to_tsvector('english', description) @@ query {filter_clause_and}
-                ORDER BY ts_rank_cd(to_tsvector('english', description), query) DESC
+            SELECT id, RANK () OVER (ORDER BY ts_rank_cd(to_tsvector('english', content), query) DESC)
+                FROM lse_doc, plainto_tsquery('english', :query) query
+                WHERE to_tsvector('english', content) @@ query {filter_clause_and}
+                ORDER BY ts_rank_cd(to_tsvector('english', content), query) DESC
                 LIMIT 20
             """
 
@@ -67,11 +67,11 @@ class PostgresSearcher:
         """
 
         if query_text is not None and len(query_vector) > 0:
-            sql = text(hybrid_query).columns(id=Integer, score=Float)
+            sql = text(hybrid_query).columns(id=String, score=Float)
         elif len(query_vector) > 0:
-            sql = text(vector_query).columns(id=Integer, rank=Integer)
+            sql = text(vector_query).columns(id=String, rank=Integer)
         elif query_text is not None:
-            sql = text(fulltext_query).columns(id=Integer, rank=Integer)
+            sql = text(fulltext_query).columns(id=String, rank=Integer)
         else:
             raise ValueError("Both query text and query vector are empty")
 

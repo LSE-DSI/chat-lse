@@ -3,69 +3,21 @@
 # Don't forget to add your pipeline to the ITEM_PIPELINES setting
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
-import scrapy
 import logging
 import os
-import re
 
-
-from scrapy import signals
-from datetime import datetime
 from itemadapter import ItemAdapter
-from scrapy.exporters import JsonLinesItemExporter
-from bs4 import BeautifulSoup
 
 from sqlalchemy import text
-from sqlalchemy.orm import Session
 from dotenv import load_dotenv
 
 from fastapi_app.postgres_engine import create_postgres_engine_from_env_sync
-from fastapi_app.postgres_models import Doc
-from fastapi_app.embeddings import compute_text_embedding
 
-from llama_index.core.node_parser import SentenceSplitter
-
+from utils.crawler_utils import generate_json_entry_for_files, generate_json_entry_for_html
 # Default is 512 for GTE-large
 EMBED_CHUNK_SIZE = os.getenv("EMBED_CHUNK_SIZE")
 #  Default is 128 as experimented
 EMBED_OVERLAP_SIZE = os.getenv("EMBED_OVERLAP_SIZE")
-
-
-class ItemExporter(object):
-    """ Exports the items to JSON Lines files.
-    The items include boxes and pages, which are exported as individual JSON Lines files"""
-
-    @classmethod
-    def from_crawler(cls, crawler):
-        # Initialize the pipeline
-        pipeline = cls()
-        # Connect signals for opening and closing spider
-        crawler.signals.connect(pipeline.spider_opened, signals.spider_opened)
-        crawler.signals.connect(pipeline.spider_closed, signals.spider_closed)
-        return pipeline
-
-    def spider_opened(self, spider):
-        self.items = ['webpage'] # CHANGE THIS TO ["file_metadata", "webpage"] DEPENDS ON WHICH TABLE YOU WANT TO POPULATE
-        self.files = {}
-        self.exporters = {}
-        for item in self.items:
-            # Open a file for each item type
-            self.files[item] = open(f'data/{item}.jl', 'wb')
-            # Initialize a JsonLinesItemExporter for each item type
-            self.exporters[item] = JsonLinesItemExporter(self.files[item])
-            # Start exporting for each item type
-            self.exporters[item].start_exporting()
-
-    def spider_closed(self, spider):
-        # Close file handlers and exporters when spider is closed
-        for item in self.items:
-            self.exporters[item].finish_exporting()
-            self.files[item].close()
-
-    def process_item(self, item, spider):
-        # Export each item to the corresponding file
-        self.exporters[item.type].export_item(item)
-        return item
 
 
 class ItemToPostgresPipeline:
@@ -93,24 +45,18 @@ class ItemToPostgresPipeline:
             logging.info("Enabling the pgvector extension for Postgres...")
             conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
 
-            logging.info("Creating wepage table...")
+            logging.info("Creating lse_doc table...")
             conn.execute(text('''
-                CREATE TABLE IF NOT EXISTS webpage (
+                CREATE TABLE IF NOT EXISTS lse_doc (
+                    id TEXT, 
                     doc_id TEXT,
+                    chunk_id TEXT, 
+                    type TEXT, 
                     url TEXT,
                     title TEXT,
                     content TEXT,
-                    date_scraped TIMESTAMP
-                );
-            '''))
-
-            logging.info("Creating file table...")
-            conn.execute(text('''
-                CREATE TABLE IF NOT EXISTS file_metadata (
-                    url TEXT,
-                    title TEXT,
-                    file_path TEXT,
-                    date_scraped TIMESTAMP
+                    date_scraped TIMESTAMP, 
+                    embedding VECTOR(1024) 
                 );
             '''))
 
@@ -122,29 +68,22 @@ class ItemToPostgresPipeline:
     def process_item(self, item, spider):
         logging.info("ItemToPostgresPipeline process item")
         adapter = ItemAdapter(item)
-        item_type = item.type 
+        item_type = item.type
 
         with self.engine.connect() as conn:
-            if item_type == "webpage": 
-                try: 
+            if item_type == "webpage":
+                try:
                     self.process_page(conn, adapter)
                     conn.commit()
-                except Exception as e: # Keeping this here for debugging 
-                    print("Transaction failed:", e) 
+                except Exception as e:  # Keeping this here for debugging
+                    print("Transaction failed:", e)
                     conn.rollback()
-            elif item_type == "file_metadata": 
+
+            elif item_type == "file_metadata":
                 try: 
-                    conn.execute(text('''
-                        INSERT INTO file_metadata (url, title, file_path, date_scraped)
-                        VALUES (:url, :title, :file_path, :date_scraped)
-                    '''), {
-                        'url': adapter['url'],
-                        'title': adapter['title'],
-                        'file_path': adapter['file_path'],
-                        'date_scraped': adapter['date_scraped'],
-                    })
+                    self.process_file(conn, adapter)
                     conn.commit()
-                except Exception as e: # Keeping this for debugging
+                except Exception as e:  # Keeping this for debugging
                     print("Transaction failed:", e)
                     conn.rollback()
 
@@ -152,7 +91,7 @@ class ItemToPostgresPipeline:
 
     def process_page(self, conn, adapter):
         result = conn.execute(
-            text('SELECT url, doc_id FROM webpage WHERE url = :url'),
+            text('SELECT url, doc_id FROM lse_doc WHERE url = :url'),
             {'url': adapter['url']}
         ).fetchone()
 
@@ -162,23 +101,71 @@ class ItemToPostgresPipeline:
                 print(f"Page not modified since last scraped:", adapter["url"])
                 return
             else:
-                conn.execute(text('DELETE FROM webpage WHERE url = :url'), {'url': url})
+                conn.execute(
+                    text('DELETE FROM lse_doc WHERE url = :url'), {'url': url})
 
-        conn.execute(text('''
-            INSERT INTO webpage (doc_id, url, title, content, date_scraped)
-            VALUES (:doc_id, :url, :title, :content, :date_scraped)
-        '''), {
-            'doc_id': adapter['doc_id'],
-            'url': adapter['url'],
-            'title': adapter['title'],
-            'content': adapter['content'],
-            'date_scraped': adapter['date_scraped'],
-        })
+        doc_id = adapter["doc_id"]
+        url = adapter["url"]
+        title = adapter["title"]
+        content = adapter["content"]
+        date_scraped = adapter["date_scraped"]
+        output_list = generate_json_entry_for_html(content, url, title, date_scraped, doc_id)
+        for idx, doc_id, chunk_id, type, url, title, content, date_scraped, embedding in output_list:
+            conn.execute(text('''
+                INSERT INTO lse_doc (id, doc_id, chunk_id, type, url, title, content, date_scraped, embedding)
+                VALUES (:id, :doc_id, :chunk_id, :type, :url, :title, :content, :date_scraped, :embedding)
+            '''), {
+                "id": idx, 
+                "doc_id": doc_id,
+                "chunk_id": chunk_id,
+                "type": type,
+                "url": url,
+                "title": title,
+                "content": content,
+                "date_scraped": date_scraped,
+                "embedding": embedding
+            })
 
         # only export item to webpage.jl in the case of reprocessing to postgresdb
-        #self.process_item(adapter, 'webpage')
+        # self.process_item(adapter, 'webpage')
 
-        logging.info(f'Page processed and stored in PostgreSQL: {adapter["url"]}')
+        logging.info(f'Page processed and stored in PostgreSQL {adapter["url"]}')
 
-    # temorarily deleted the process_box method (adapt from the pages method if needed again)
 
+    def process_file(self, conn, adapter): 
+        result = conn.execute(
+            text('SELECT url, doc_id FROM lse_doc WHERE url = :url'),
+            {'url': adapter['url']}
+        ).fetchone()
+
+        if result:
+            url, previous_hash = result
+            if previous_hash == adapter['doc_id']:
+                print(f"File not modified since last scraped:", adapter["url"])
+                return
+            else:
+                conn.execute(
+                    text('DELETE FROM lse_doc WHERE url = :url'), {'url': url})
+        
+        url = adapter["url"]
+        title = adapter["title"]
+        file_path = adapter["file_path"]
+        date_scraped = adapter["date_scraped"]
+        output_list = generate_json_entry_for_files(file_path, url, title, date_scraped)
+        for idx, doc_id, chunk_id, type, url, title, content, date_scraped, embedding in output_list:
+            conn.execute(text('''
+                INSERT INTO lse_doc (id, doc_id, chunk_id, type, url, title, content, date_scraped, embedding)
+                VALUES (:id, :doc_id, :chunk_id, :type, :url, :title, :content, :date_scraped, :embedding)
+            '''), {
+                "id": idx, 
+                "doc_id": doc_id,
+                "chunk_id": chunk_id,
+                "type": type,
+                "url": url,
+                "title": title,
+                "content": content,
+                "date_scraped": date_scraped,
+                "embedding": embedding
+            })
+
+        logging.info(f'File processed and stored in PostgreSQL: {adapter["url"]}')
