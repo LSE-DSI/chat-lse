@@ -12,14 +12,27 @@ from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
-DEFAULT_EMBED_MODEL = "thenlper/gte-large"
+#### Environment variables & Constants ####
 
+# Default is 512 for GTE-large
+EMBED_CHUNK_SIZE = os.getenv("EMBED_CHUNK_SIZE")
+# Default is 128 as experimented
+EMBED_OVERLAP_SIZE = os.getenv("EMBED_OVERLAP_SIZE")
+# Get embedding model 
+EMBED_MODEL = os.getenv("OLLAMA_EMBED_MODEL")
+
+if not EMBED_MODEL:
+    # Use default model if not provided
+    EMBED_MODEL = "thenlper/gte-large"
+
+MODEL_INSTANCE = HuggingFaceEmbedding(EMBED_MODEL)
 
 def compute_text_embedding_sync(
-    q: str, embed_model: str = DEFAULT_EMBED_MODEL
+    q: str, embed_model: str = EMBED_MODEL, model_instance=None
 ):
-    model = HuggingFaceEmbedding(model_name=embed_model) 
-    embedding = model.get_text_embedding(q)
+    if not model_instance:
+        model_instance = HuggingFaceEmbedding(model_name=embed_model)
+    embedding = model_instance.get_text_embedding(q)
 
     return embedding
 
@@ -58,13 +71,6 @@ def clean_text(text):
 def embed_text(text, type, url, title, date_scraped, doc_id):
     load_dotenv(override=True)
 
-    # Default is 512 for GTE-large
-    EMBED_CHUNK_SIZE = os.getenv("EMBED_CHUNK_SIZE")
-    # Default is 128 as experimented
-    EMBED_OVERLAP_SIZE = os.getenv("EMBED_OVERLAP_SIZE")
-    # Get embedding model 
-    EMBED_MODEL = os.getenv("OLLAMA_EMBED_MODEL")
-
     # Chunking and embedding chunks
     splitter = SentenceSplitter(
         chunk_size=EMBED_CHUNK_SIZE if EMBED_CHUNK_SIZE else 512,
@@ -75,7 +81,7 @@ def embed_text(text, type, url, title, date_scraped, doc_id):
     output_list = []
     for chunk_id, chunk_text in enumerate(sentence_chunks):
         id = f"{doc_id}_{chunk_id}"
-        embedding = compute_text_embedding_sync(chunk_text, EMBED_MODEL)
+        embedding = compute_text_embedding_sync(chunk_text, model_instance=MODEL_INSTANCE)
         output_list.append([
             id, 
             doc_id,
