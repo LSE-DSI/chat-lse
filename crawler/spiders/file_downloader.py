@@ -8,7 +8,12 @@ DATA_FOLDER = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '.
 class FileDownloaderSpider(scrapy.Spider):
     name = 'file_downloader'
     start_urls = [
-        'https://info.lse.ac.uk/Staff/Divisions/Human-Resources/A-to-Z'    
+        'https://info.lse.ac.uk/Staff/Divisions/Human-Resources/A-to-Z',
+        'https://info.lse.ac.uk/staff/Services/Policies-and-procedures/AtoZ',
+        'https://info.lse.ac.uk/staff/services/Policies-and-procedures',
+        'https://info.lse.ac.uk/staff/divisions/Human-Resources/A-to-Z',
+        'https://info.lse.ac.uk/staff/divisions/Finance-Division/A-to-Z-of-services-contacts-forms-policies-and-documents',
+        'https://info.lse.ac.uk/staff/divisions/research-and-innovation/a-to-z '
          ]
     
     def parse(self, response):
