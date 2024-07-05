@@ -25,7 +25,7 @@ class FileDownloaderSpider(scrapy.Spider):
                 
                 # Save metadata for the files to be downloaded 
                 item = FilesScraperItem()
-                item["url"] = file_link 
+                item["url"] = response.urljoin(file_link)
                 item["title"] = file_link.split('/')[-1]
                 item["file_path"] = os.path.join(DATA_FOLDER, item["title"])
                 item["date_scraped"] = item['date_scraped'] = self.parse_as_datetime(response.headers['Date'].decode())
