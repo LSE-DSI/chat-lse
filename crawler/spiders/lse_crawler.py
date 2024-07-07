@@ -4,7 +4,7 @@ import hashlib
 from crawler.items import PagesScraperItem, FilesScraperItem
 from dateutil.parser import parse
 
-DATA_FOLDER = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', 'data', 'files')
+DATA_FOLDER = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', 'data')
 
 class SpiderDSI(scrapy.Spider):
     name = 'lse_crawler'
@@ -49,20 +49,20 @@ class SpiderDSI(scrapy.Spider):
                 visited.append(next_page_url)
 
                 # Download linked files 
-                if next_page_url.endswith(('.pdf', '.docx', '.pptx', '.doc', '.ppt')): # Add the new file extensions here
+                if next_page_url.endswith(('.pdf', '.pptx', '.ppt', '.docx', '.doc')): 
                     # Download the linked files 
                     yield scrapy.Request(response.urljoin(next_page_url), callback=self.save_file)
                     
-                    # Save metadata for the files to be downloaded 
+                    # Save metadata for the files to be downloaded 
                     file_item = FilesScraperItem()
                     file_item["url"] = response.urljoin(next_page_url)
                     file_item["title"] = next_page_url.split('/')[-1]
                     file_item["file_path"] = os.path.join('data/files/', file_item["title"])
-                    file_item["date_scraped"] = self.parse_as_datetime(response.headers['Date'].decode())
+                    file_item["date_scraped"] = file_item['date_scraped'] = self.parse_as_datetime(response.headers['Date'].decode())
 
                     yield file_item 
 
-                # Follow links found on the current page 
+                # Follow links found on the current page 
                 else: 
                     yield scrapy.Request(
                         response.urljoin(next_page_url),
@@ -89,16 +89,16 @@ class SpiderDSI(scrapy.Spider):
                     visited.append(next_page_url)
 
                     # Download linked files 
-                    if next_page_url.endswith(('.pdf', '.docx', '.pptx', '.doc', '.ppt')): # Add the new file extensions here
+                    if next_page_url.endswith(('.pdf', '.pptx', '.ppt', '.docx', 'doc')):  
                         # Download the linked files 
                         yield scrapy.Request(response.urljoin(next_page_url), callback=self.save_file)
                         
-                        # Save metadata for the files to be downloaded 
+                        # Save metadata for the files to be downloaded 
                         file_item = FilesScraperItem()
                         file_item["url"] = response.urljoin(next_page_url)
                         file_item["title"] = next_page_url.split('/')[-1]
                         file_item["file_path"] = os.path.join('data/files/', file_item["title"])
-                        file_item["date_scraped"] = self.parse_as_datetime(response.headers['Date'].decode())
+                        file_item["date_scraped"] = file_item['date_scraped'] = self.parse_as_datetime(response.headers['Date'].decode())
 
                         yield file_item 
 
