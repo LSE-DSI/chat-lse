@@ -18,10 +18,10 @@ async def read_json():
     table_html = """
     <html>
     <head>
-        <title>Ingested Data</title>
+        <title>Database Content</title>
     </head>
     <body>
-        <h1>Ingested Data</h1>
+        <h1>Database Content</h1>
         <table border="1">
             <thead>
                 <tr>
