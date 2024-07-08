@@ -10,6 +10,7 @@ from itemadapter import ItemAdapter
 
 from sqlalchemy import text
 from dotenv import load_dotenv
+from crawler.spiders.lse_crawler import error_301, abnormal_error
 
 from fastapi_app.postgres_engine import create_postgres_engine_from_env_sync
 
@@ -18,6 +19,18 @@ from utils.crawler_utils import parse_doc, generate_json_entry_for_files, genera
 EMBED_CHUNK_SIZE = os.getenv("EMBED_CHUNK_SIZE")
 #  Default is 128 as experimented
 EMBED_OVERLAP_SIZE = os.getenv("EMBED_OVERLAP_SIZE")
+
+
+class ErrorHandlingPipeline:
+    # call the global variable error_301 that was defined in the lse_crawler.py file
+    def process_item(self, item, spider):
+        for url in error_301:
+            if item['url'] == url:
+                status = error_301[url]
+                json_output = {
+                    "url": url,
+                    "status": status
+                }
 
 
 class ItemToPostgresPipeline:
@@ -149,8 +162,8 @@ class ItemToPostgresPipeline:
 #                "embedding": embedding
 #            })
 
-        logging.info(f'Page processed and stored in PostgreSQL {
-                     adapter["url"]}')
+        logging.info(
+            f'Page processed and stored in PostgreSQL {adapter["url"]}')
 
     def process_file(self, conn, adapter):
         result = conn.execute(
@@ -202,5 +215,5 @@ class ItemToPostgresPipeline:
 #                "embedding": embedding
 #            })
 
-        logging.info(f'File processed and stored in PostgreSQL: {
-                     adapter["url"]}')
+        logging.info(
+            f'File processed and stored in PostgreSQL: {adapter["url"]}')

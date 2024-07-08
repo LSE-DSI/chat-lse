@@ -7,6 +7,11 @@ from dateutil.parser import parse
 DATA_FOLDER = os.path.join(os.path.dirname(
     os.path.realpath(__file__)), '..', '..', 'data', 'files')
 
+global abnormal_error
+global error_301
+abnormal_error = {}
+error_301 = {}
+
 
 class SpiderDSI(scrapy.Spider):
     name = 'lse_crawler'
@@ -127,6 +132,13 @@ class SpiderDSI(scrapy.Spider):
         print("Error:", repr(failure), "Failed URL:", failure.request.url)
         if failure.value.response.status != 200:
             print("Non-200 http error:", failure.request.url)
+            abnormal_error[
+                f"{failure.request.url}"] = failure.value.response.status
+            print(abnormal_error)
+            if failure.value.response.status == 301:
+                error_301[
+                    f"{failure.request.url}"] = failure.value.response.status
+                print(error_301)
 
     def compute_hash(self, content: str):
         return hashlib.md5(content.encode('utf-8')).hexdigest()
