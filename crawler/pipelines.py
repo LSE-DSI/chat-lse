@@ -5,6 +5,7 @@
 
 import logging
 import os
+import json
 
 from itemadapter import ItemAdapter
 
@@ -24,13 +25,30 @@ EMBED_OVERLAP_SIZE = os.getenv("EMBED_OVERLAP_SIZE")
 class ErrorHandlingPipeline:
     # call the global variable error_301 that was defined in the lse_crawler.py file
     def process_item(self, item, spider):
-        for url in error_301:
-            if item['url'] == url:
-                status = error_301[url]
-                json_output = {
-                    "url": url,
-                    "status": status
-                }
+        for url in error_301.keys():
+            status = error_301[url]
+            json_output = {
+                "url": url,
+                "status": status
+            }
+            # append the json output to a json file in data
+            with open('data/error_301.json', 'a') as f:
+                f.write(json.dumps(json_output))
+                f.write('\n')
+
+        logging.debug("Appending error_301 to error_301.json")
+
+        for url in abnormal_error.keys():
+            status = abnormal_error[url]
+            json_output = {
+                "url": url,
+                "status": status
+            }
+            with open('data/abnormal_error.json', 'a') as f:
+                f.write(json.dumps(json_output))
+                f.write('\n')
+
+        logging.debug("Appending abnormal_error to abnormal_error.json")
 
 
 class ItemToPostgresPipeline:
