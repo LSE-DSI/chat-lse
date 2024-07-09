@@ -28,7 +28,7 @@ async def seed_data(engine):
         # Load JSON data
         # This resolves to the path <workspace>/chat-lse/fastapi_app/setup_postgres_seeddata.py
         current_dir = os.path.dirname(os.path.realpath(__file__))
-        filepath = os.path.join(current_dir, "..", "data", "seed_lse_data.jsonl")
+        filepath = "fastapi_app/seed_lse_data.jsonl"
 
         with open(filepath) as f:
             pdf_data = json.load(f)

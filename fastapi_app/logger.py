@@ -4,7 +4,10 @@ from logtail import LogtailHandler
 import os
 from dotenv import load_dotenv
 
-token = os.getenv('LOGTAIL_TOKEN')
+#load environment variables
+load_dotenv()
+
+token = 'logtail_token'
 
 # get logger
 logger = logging.getLogger()
