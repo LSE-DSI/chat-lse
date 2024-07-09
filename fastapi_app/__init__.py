@@ -10,7 +10,7 @@ from .globals import global_storage
 from .clients import create_chat_client, create_embed_client
 from .postgres_engine import create_postgres_engine_from_env
 
-logger = logging.getLogger("ragapp")
+from logger import logger
 
 
 @contextlib.asynccontextmanager
@@ -46,6 +46,7 @@ def create_app():
         logging.basicConfig(level=logging.WARNING)
 
     app = FastAPI(docs_url="/docs", lifespan=lifespan)
+    logger.info("Starting API...")
 
     from . import api_routes  # noqa
 
