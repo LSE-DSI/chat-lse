@@ -4,16 +4,14 @@ import os
 
 from dotenv import load_dotenv
 from environs import Env
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 
 from .globals import global_storage
 from .clients import create_chat_client, create_embed_client
 from .postgres_engine import create_postgres_engine_from_env
 
 from .logger import logger
-from .middleware import log_middleware
-from starlette.middleware.base import BaseHTTPMiddleware
-
+from .middleware import LogMiddleware  # Updated import
 
 @contextlib.asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -37,7 +35,6 @@ async def lifespan(app: FastAPI):
 
     await engine.dispose()
 
-
 def create_app():
     env = Env()
 
@@ -48,7 +45,7 @@ def create_app():
         logging.basicConfig(level=logging.WARNING)
 
     app = FastAPI(docs_url="/docs", lifespan=lifespan)
-    app.add_middleware(BaseHTTPMiddleware, dispatch = log_middleware)
+    app.add_middleware(LogMiddleware)  # Use updated LogMiddleware
     logger.info("Starting API...")
 
     from . import api_routes  # noqa
@@ -61,4 +58,3 @@ def create_app():
         app.mount("/", frontend_routes.router)
 
     return app
-
