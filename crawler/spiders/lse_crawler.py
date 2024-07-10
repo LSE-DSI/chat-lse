@@ -140,6 +140,7 @@ class SpiderDSI(scrapy.Spider):
                         f"{failure.request.url}"] = failure.value.response.status
         except AttributeError:
             print("Failure object does not have the expected attributes")
+            print(failure.request.url)
             self.logger.error(
                 "Failure object does not have the expected attributes")
 

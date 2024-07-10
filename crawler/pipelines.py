@@ -23,6 +23,7 @@ EMBED_OVERLAP_SIZE = os.getenv("EMBED_OVERLAP_SIZE")
 
 
 class ErrorHandlingPipeline:
+
     # call the global variable error_301 that was defined in the lse_crawler.py file
     def process_item(self, item, spider):
         for url in error_301.keys():
@@ -48,7 +49,20 @@ class ErrorHandlingPipeline:
                 f.write(json.dumps(json_output))
                 f.write('\n')
 
-        logging.debug("Appending abnormal_error to abnormal_error.json")
+            process_error(self, conn, url, status)
+
+            logging.debug("Appending abnormal_error to abnormal_error.json")
+
+    def process_error(self, conn, url, status):
+        conn.execute(text('''
+                INSERT INTO errors (url, status)
+                VALUES (:url, :status)
+            '''), {
+            "url": url,
+            "status": status
+        })
+        logging.info(
+            f'Error processed and stored in PostgreSQL: {url}')
 
 
 class ItemToPostgresPipeline:
@@ -88,6 +102,14 @@ class ItemToPostgresPipeline:
                     content TEXT,
                     date_scraped TIMESTAMP, 
                     embedding VECTOR(1024) 
+                );
+            '''))
+
+            logging.info("Creating non-200 http errors table...")
+            conn.execute(text('''
+                CREAT TABLE IF NOT EXISTS errors (
+                    url TEXT,
+                    status TEXT
                 );
             '''))
 
