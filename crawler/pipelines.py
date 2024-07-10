@@ -22,49 +22,6 @@ EMBED_CHUNK_SIZE = os.getenv("EMBED_CHUNK_SIZE")
 EMBED_OVERLAP_SIZE = os.getenv("EMBED_OVERLAP_SIZE")
 
 
-class ErrorHandlingPipeline:
-
-    # call the global variable error_301 that was defined in the lse_crawler.py file
-    def process_item(self, item, spider):
-        for url in error_301.keys():
-            status = error_301[url]
-            json_output = {
-                "url": url,
-                "status": status
-            }
-            # append the json output to a json file in data
-            with open('data/error_301.json', 'a') as f:
-                f.write(json.dumps(json_output))
-                f.write('\n')
-
-        logging.debug("Appending error_301 to error_301.json")
-
-        for url in abnormal_error.keys():
-            status = abnormal_error[url]
-            json_output = {
-                "url": url,
-                "status": status
-            }
-            with open('data/abnormal_error.json', 'a') as f:
-                f.write(json.dumps(json_output))
-                f.write('\n')
-
-            process_error(self, conn, url, status)
-
-            logging.debug("Appending abnormal_error to abnormal_error.json")
-
-    def process_error(self, conn, url, status):
-        conn.execute(text('''
-                INSERT INTO errors (url, status)
-                VALUES (:url, :status)
-            '''), {
-            "url": url,
-            "status": status
-        })
-        logging.info(
-            f'Error processed and stored in PostgreSQL: {url}')
-
-
 class ItemToPostgresPipeline:
     def __init__(self):
         logging.debug("Init ItemToPostgresPipeline")
@@ -107,7 +64,7 @@ class ItemToPostgresPipeline:
 
             logging.info("Creating non-200 http errors table...")
             conn.execute(text('''
-                CREAT TABLE IF NOT EXISTS errors (
+                CREATE TABLE IF NOT EXISTS errors (
                     url TEXT,
                     status TEXT
                 );
@@ -229,3 +186,41 @@ class ItemToPostgresPipeline:
 
         logging.info(
             f'File processed and stored in PostgreSQL: {adapter["url"]}')
+
+    # call the global variable error_301 that was defined in the lse_crawler.py file
+
+    def process_error(self, conn, url, status):
+        for url in error_301.keys():
+            status = error_301[url]
+            json_output = {
+                "url": url,
+                "status": status
+            }
+            # append the json output to a json file in data
+            with open('data/error_301.json', 'a') as f:
+                f.write(json.dumps(json_output))
+                f.write('\n')
+
+        logging.debug("Appending error_301 to error_301.json")
+
+        for url in abnormal_error.keys():
+            status = abnormal_error[url]
+            json_output = {
+                "url": url,
+                "status": status
+            }
+            with open('data/abnormal_error.json', 'a') as f:
+                f.write(json.dumps(json_output))
+                f.write('\n')
+
+            conn.execute(text('''
+                    INSERT INTO errors (url, status)
+                    VALUES (:url, :status)
+                '''), {
+                "url": url,
+                "status": status
+            })
+            logging.info(
+                f'Error processed and stored in PostgreSQL: {url}')
+
+            logging.debug("Appending abnormal_error to abnormal_error.json")
