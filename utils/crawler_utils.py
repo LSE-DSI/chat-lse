@@ -16,9 +16,9 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 
 # Default is 512 for GTE-large
 EMBED_CHUNK_SIZE = os.getenv("EMBED_CHUNK_SIZE")
-# Default is 128 as experimented
+#  Default is 128 as experimented
 EMBED_OVERLAP_SIZE = os.getenv("EMBED_OVERLAP_SIZE")
-# Get embedding model 
+# Get embedding model
 EMBED_MODEL = os.getenv("OLLAMA_EMBED_MODEL")
 
 if not EMBED_MODEL:
@@ -26,6 +26,7 @@ if not EMBED_MODEL:
     EMBED_MODEL = "thenlper/gte-large"
 
 MODEL_INSTANCE = HuggingFaceEmbedding(EMBED_MODEL)
+
 
 def compute_text_embedding_sync(
     q: str, embed_model: str = EMBED_MODEL, model_instance=None
@@ -68,10 +69,10 @@ def clean_text(text):
     return cleaned_text
 
 
-def parse_doc(file_path): 
+def parse_doc(file_path):
     # This function parses a file and returns its cleaned texts as python string
-    # Supported file types: [".pdf", ".doc", ".docx", ".ppt", ".pptx"] 
-    
+    #  Supported file types: [".pdf", ".doc", ".docx", ".ppt", ".pptx"]
+
     # Parse file for different file types
     if file_path.endswith(".pdf"):
         content = read_pdf(file_path)
@@ -104,9 +105,10 @@ def embed_text(text, type, url, title, date_scraped, doc_id):
     output_list = []
     for chunk_id, chunk_text in enumerate(sentence_chunks):
         id = f"{doc_id}_{chunk_id}"
-        embedding = compute_text_embedding_sync(chunk_text, model_instance=MODEL_INSTANCE)
+        embedding = compute_text_embedding_sync(
+            chunk_text, model_instance=MODEL_INSTANCE)
         output_list.append([
-            id, 
+            id,
             doc_id,
             chunk_id,
             type,
@@ -116,7 +118,7 @@ def embed_text(text, type, url, title, date_scraped, doc_id):
             date_scraped,
             embedding
         ])
-    
+
     return output_list
 
 

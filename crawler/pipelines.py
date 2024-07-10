@@ -79,17 +79,18 @@ class ItemToPostgresPipeline:
             logging.info("Creating lse_doc table...")
             conn.execute(text('''
                 CREATE TABLE IF NOT EXISTS lse_doc (
-                    id TEXT,
+                    id TEXT, 
                     doc_id TEXT,
-                    chunk_id TEXT,
-                    type TEXT,
+                    chunk_id TEXT, 
+                    type TEXT, 
                     url TEXT,
                     title TEXT,
                     content TEXT,
-                    date_scraped TIMESTAMP,
-                    embedding VECTOR(1024)
+                    date_scraped TIMESTAMP, 
+                    embedding VECTOR(1024) 
                 );
             '''))
+
             conn.commit()
             logging.info("Database extension and tables created successfully.")
 
@@ -143,7 +144,6 @@ class ItemToPostgresPipeline:
 
         output_list = generate_json_entry_for_html(
             content, url, title, date_scraped, doc_id)
-
         for idx, doc_id, chunk_id, type, url, title, content, date_scraped, embedding in output_list:
             conn.execute(text('''
                 INSERT INTO lse_doc (id, doc_id, chunk_id, type, url, title, content, date_scraped, embedding)
@@ -159,6 +159,9 @@ class ItemToPostgresPipeline:
                 "date_scraped": date_scraped,
                 "embedding": embedding
             })
+
+        # only export item to webpage.jl in the case of reprocessing to postgresdb
+        # self.process_item(adapter, 'webpage')
 
         logging.info(
             f'Page processed and stored in PostgreSQL {adapter["url"]}')

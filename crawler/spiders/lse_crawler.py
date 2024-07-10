@@ -130,13 +130,18 @@ class SpiderDSI(scrapy.Spider):
         self.logger.error(repr(failure))
         self.logger.error('Failed URL: %s', failure.request.url)
         print("Error:", repr(failure), "Failed URL:", failure.request.url)
-        if failure.value.response.status != 200 and failure.value.response.status != 301:
-            print("Non-200/301 http error:", failure.request.url)
-            abnormal_error[
-                f"{failure.request.url}"] = failure.value.response.status
-            if failure.value.response.status == 301:
-                error_301[
+        try:
+            if failure.value.response.status != 200:
+                print("Non-200/301 http error:", failure.request.url)
+                abnormal_error[
                     f"{failure.request.url}"] = failure.value.response.status
+                if failure.value.response.status == 301:
+                    error_301[
+                        f"{failure.request.url}"] = failure.value.response.status
+        except AttributeError:
+            print("Failure object does not have the expected attributes")
+            self.logger.error(
+                "Failure object does not have the expected attributes")
 
     def compute_hash(self, content: str):
         return hashlib.md5(content.encode('utf-8')).hexdigest()
