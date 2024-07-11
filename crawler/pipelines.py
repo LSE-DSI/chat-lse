@@ -68,14 +68,11 @@ class ItemToPostgresPipeline:
 
         with self.engine.connect() as conn:
             try:
-                result = conn.execute(
-                    text('SELECT url, doc_id FROM lse_doc WHERE url = :url'),
-                    {'url': adapter['url']}
-                ).fetchone()
-
+                # Get data for each item 
                 url = adapter["url"]
                 title = adapter["title"]
                 date_scraped = adapter["date_scraped"]
+
                 if item_type == "webpage": 
                     content = adapter["content"]
                     doc_id = adapter["doc_id"]
@@ -84,15 +81,25 @@ class ItemToPostgresPipeline:
                     file_path = adapter["file_path"]
                     content, doc_id, type = parse_doc(file_path)
 
+                # Check if the url already exists in the database
+                result = conn.execute(
+                    text('SELECT url, doc_id FROM lse_doc WHERE url = :url'),
+                    {'url': url}
+                ).fetchone()
+
+                # If url exists, check if it has changed since last scrape 
                 if result:
                     _, previous_hash = result
+                    # Skipping insertion and return if document has not changed
                     if previous_hash == doc_id:
                         print(f"Skipping insertion. Page not modified since last scraped:", url)
                         return
+                    # Delete old insertions if document has changed
                     else:
                         conn.execute(
                             text('DELETE FROM lse_doc WHERE url = :url'), {'url': url})
 
+                # Insert document into the database (if document not exist or if it has changed)
                 output_list = generate_json_entry(content, type, url, title, date_scraped, doc_id)
                 for idx, doc_id, chunk_id, type, url, title, content, date_scraped, embedding in output_list:
                     conn.execute(text('''
