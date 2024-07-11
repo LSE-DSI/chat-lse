@@ -27,7 +27,7 @@ class PagesScraperItem(scrapy.Item):
     date_scraped = scrapy.Field()
 
 
-class FilesScraperItem(scrapy.Item): 
+class FilesScraperItem(scrapy.Item):
     """
     Represents a file saved from the LSE links 
 
@@ -38,8 +38,20 @@ class FilesScraperItem(scrapy.Item):
         file_path (scrapy.Field): The path where the file is downloaded to the local machine 
         date_scraped (scrapy.Field): The date when the file was downloaded 
     """
-    type = 'file_metadata' 
+    type = 'file_metadata'
     url = scrapy.Field()
     title = scrapy.Field()
     file_path = scrapy.Field()
     date_scraped = scrapy.Field()
+
+
+class Error301ScraperItem(scrapy.Item):
+    type = 'error_301'
+    url = scrapy.Field()
+    status = scrapy.Field()
+
+
+class ErrorScraperItem(scrapy.Item):
+    type = 'error_all'
+    url = scrapy.Field()
+    status = scrapy.Field()
