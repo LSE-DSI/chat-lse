@@ -5,15 +5,18 @@ from typing import (
 )
 
 from openai import AsyncOpenAI
+from openai.types.chat import (
+    ChatCompletion,
+)
 from openai_messages_token_helper import build_messages, get_token_limit
-from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 
 from .api_models import ThoughtStep
+from .embeddings import compute_text_embedding
 from .postgres_searcher import PostgresSearcher
+from .query_rewriter import build_search_function, extract_search_arguments
 
-from chatlse.embeddings import compute_text_embedding
 
-class SimpleRAGChat:
+class AdvancedRAGChat:
 
     def __init__(
         self,
@@ -24,7 +27,7 @@ class SimpleRAGChat:
         chat_deployment: str | None,  # Not needed for non-Azure OpenAI
         embed_client: AsyncOpenAI,
         embed_deployment: str | None,  # Not needed for non-Azure OpenAI or for retrieval_mode="text"
-        embed_model: HuggingFaceEmbedding,
+        embed_model: str,
         embed_dimensions: int,
         context_window_override: int | None # Context window size (default to 4000 if None)
     ):
@@ -38,6 +41,7 @@ class SimpleRAGChat:
         self.embed_dimensions = embed_dimensions
         self.chat_token_limit = context_window_override if context_window_override else get_token_limit(chat_model, default_to_minimum=True)
         current_dir = pathlib.Path(__file__).parent
+        self.query_prompt_template = open(current_dir / "prompts/query.txt").read()
         self.answer_prompt_template = open(current_dir / "prompts/answer.txt").read()
 
     async def run(
@@ -51,19 +55,41 @@ class SimpleRAGChat:
         original_user_query = messages[-1]["content"]
         past_messages = messages[:-1]
 
-        # Retrieve relevant documents from the database
+        # Generate an optimized keyword search query based on the chat history and the last question
+        query_response_token_limit = 500
+        query_messages = build_messages(
+            model=self.chat_model,
+            system_prompt=self.query_prompt_template,
+            new_user_content=original_user_query,
+            past_messages=past_messages,
+            max_tokens=self.chat_token_limit - query_response_token_limit,  # TODO: count functions
+            fallback_to_default=True,
+        )
+
+        chat_completion: ChatCompletion = await self.chat_client.chat.completions.create(
+            messages=query_messages,  # type: ignore
+            # Azure OpenAI takes the deployment name as the model name
+            model=self.chat_deployment if self.chat_deployment else self.chat_model,
+            temperature=0.0,  # Minimize creativity for search query generation
+            max_tokens=query_response_token_limit,  # Setting too low risks malformed JSON, setting too high may affect performance
+            n=1,
+            tools=build_search_function(),
+            tool_choice="auto",
+        )
+
+        query_text, filters = extract_search_arguments(chat_completion)
+
+        # Retrieve relevant documents from the database with the GPT optimized query
         vector: list[float] = []
-        query_text = None
         if vector_search:
             vector = await compute_text_embedding(
                 original_user_query,
-                None,
-                self.embed_model,
+                self.embed_model 
             )
-        if text_search:
-            query_text = original_user_query
+        if not text_search:
+            query_text = None
 
-        results = await self.searcher.search(query_text, vector, top)
+        results = await self.searcher.search(query_text, vector, top, filters)
 
         sources_content = [f"[{(doc.doc_id)}]:{doc.to_str_for_rag()}\n\n" for doc in results]
         content = "\n".join(sources_content)
@@ -93,12 +119,22 @@ class SimpleRAGChat:
             "data_points": {"text": sources_content},
             "thoughts": [
                 ThoughtStep(
-                    title="Search query for database",
+                    title="Prompt to generate search arguments",
+                    description=[str(message) for message in query_messages],
+                    props=(
+                        {"model": self.chat_model, "deployment": self.chat_deployment}
+                        if self.chat_deployment
+                        else {"model": self.chat_model}
+                    ),
+                ),
+                ThoughtStep(
+                    title="Search using generated search arguments",
                     description=query_text,
                     props={
                         "top": top,
                         "vector_search": vector_search,
                         "text_search": text_search,
+                        "filters": filters,
                     },
                 ),
                 ThoughtStep(
