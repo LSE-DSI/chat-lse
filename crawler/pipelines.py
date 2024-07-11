@@ -96,6 +96,7 @@ class ItemToPostgresPipeline:
                         return
                     # Delete old insertions if document has changed
                     else:
+                        print(f"Page modified since last scraped. Deleting previous data for:", url)
                         conn.execute(
                             text('DELETE FROM lse_doc WHERE url = :url'), {'url': url})
 
