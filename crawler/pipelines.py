@@ -106,8 +106,6 @@ class ItemToPostgresPipeline:
                     print("Transaction failed:", e)
                     conn.rollback()
 
-        return item
-
     def process_page(self, conn, adapter):
         result = conn.execute(
             text('SELECT url, doc_id FROM lse_doc WHERE url = :url'),
@@ -207,7 +205,7 @@ class ItemToPostgresPipeline:
         }
 
         try:
-            with jsonlines.open(filename, 'w') as writer:
+            with jsonlines.open(filename, 'a') as writer:
                 for obj in json_data:
                     writer.write(obj)
             print(f"JSON lines successfully written to {filename}")

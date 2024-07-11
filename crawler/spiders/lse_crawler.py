@@ -128,19 +128,17 @@ class SpiderDSI(scrapy.Spider):
         try:
             if failure.value.response.status != 200:
                 print("Non-200/301 http error:", failure.request.url)
-
                 error_item = ErrorScraperItem()
-                error_item['url'] = failure.request.url
-                error_item['status'] = failure.value.response.status
+                error_item["url"] = failure.request.url
+                error_item["status"] = failure.value.response.status
 
                 print(f"Yielding ErrorScraperItem: {error_item}")
                 yield error_item
 
                 if failure.value.response.status == 301:
                     error301_item = Error301ScraperItem()
-                    print("ACCESSED ITEM")
-                    error301_item['url'] = failure.request.url
-                    error301_item['status'] = failure.value.response.status
+                    error301_item["url"] = failure.request.url
+                    error301_item["status"] = failure.value.response.status
                     print(f"Yielding Error301ScraperItem: {error301_item}")
                     yield error301_item
 
@@ -151,9 +149,28 @@ class SpiderDSI(scrapy.Spider):
                 "Failure object does not have the expected attributes")
             error_item = ErrorScraperItem()
             print("EXECUTE")
-            error_item['url'] = failure.request.url
-            error_item['status'] = "Forbidden by robots.txt"
+            error_item["url"] = failure.request.url
+            print(failure.request.url)
+            error_item["status"] = "Forbidden by robots.txt"
 
             print(
-                f"Yielding ErrorScraperItem with status: {error_item['status']}")
+                f"Yielding ErrorScraperItem with status: {error_item}")
             yield error_item
+
+    def compute_hash(self, content: str):
+        return hashlib.md5(content.encode('utf-8')).hexdigest()
+
+    def parse_as_datetime(self, date_str):
+        # Takes a date string and parse it as a datetime object to be fed as TIMESTAMP
+        return parse(date_str).replace(tzinfo=None)
+
+    def save_file(self, response):
+        file_name = response.url.split('/')[-1]
+
+        os.makedirs(DATA_FOLDER, exist_ok=True)
+
+        # Save the file
+        file_path = os.path.join(DATA_FOLDER, file_name)
+        with open(file_path, 'wb') as f:
+            f.write(response.body)
+        self.log(f'Saved file {file_name}')
