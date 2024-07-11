@@ -79,6 +79,8 @@ class SimpleRAGChat:
             fallback_to_default=True,
         )
 
+        print(messages)
+
         chat_completion_response = await self.chat_client.chat.completions.create(
             # Azure OpenAI takes the deployment name as the model name
             model=self.chat_deployment if self.chat_deployment else self.chat_model,
