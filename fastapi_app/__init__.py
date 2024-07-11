@@ -7,8 +7,8 @@ from environs import Env
 from fastapi import FastAPI
 
 from .globals import global_storage
-from .clients import create_chat_client, create_embed_client
-from .postgres_engine import create_postgres_engine_from_env
+from chatlse.clients import create_chat_client, create_embed_client
+from chatlse.postgres_engine import create_postgres_engine_from_env
 
 logger = logging.getLogger("ragapp")
 
