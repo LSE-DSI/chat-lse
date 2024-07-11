@@ -1,3 +1,6 @@
+# ChatLSE package 
+./src/python/
+
 # Data Collection
 requests==2.31.0
 scrapy==2.11.2
@@ -11,8 +14,8 @@ PyPDF2==3.0.1
 # SQL
 jupysql>=0.10.4
 sqlalchemy>=2.0.23
-pyscopg2==2.9.9
-pyscopg2-binary==2.9.9
+psycopg2==2.9.9
+psycopg2-binary==2.9.9
 
 # LLM
 ollama==0.2.1
