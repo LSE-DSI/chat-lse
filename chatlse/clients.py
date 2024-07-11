@@ -9,7 +9,7 @@ DEFAULT_EMBED_MODEL = "thenlper/gte-large"
 
 
 async def create_chat_client():
-    logger.info("Authenticating to OpenAI using Ollama...") 
+    logger.info("Creating Ollama Chat Client") 
     chat_client = openai.AsyncOpenAI(
         base_url=os.getenv("OLLAMA_ENDPOINT"),
         api_key="nokeyneeded",
@@ -20,6 +20,6 @@ async def create_chat_client():
 
 
 async def create_embed_client():
-    logger.info("Authenticating to OpenAI using Ollama...") 
+    logger.info("Initialising Embedding model") 
     embed_model = HuggingFaceEmbedding(model_name=os.getenv("OLLAMA_EMBED_MODEL", DEFAULT_EMBED_MODEL))
     return embed_model
