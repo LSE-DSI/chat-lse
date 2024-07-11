@@ -1,8 +1,11 @@
 import os 
 import scrapy
 import hashlib
+from bs4 import BeautifulSoup
 from crawler.items import PagesScraperItem, FilesScraperItem
 from dateutil.parser import parse
+
+from chatlse.crawler import clean_text
 
 DATA_FOLDER = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '..', 'data', 'files')
 
@@ -72,13 +75,17 @@ class SpiderDSI(scrapy.Spider):
                     )
 
     def parse_linked_page(self, response):
+        # Parse the html content from the linked page 
+        soup = BeautifulSoup(response.text, 'html.parser')
+        cleaned_content = clean_text(soup.get_text())
+
         # Extract data from the linked page
         webpage_item = PagesScraperItem()
         webpage_item['url'] = response.url
         webpage_item['title'] = response.css('title::text').get().strip()
-        webpage_item['content'] = response.text
+        webpage_item['content'] = cleaned_content
         webpage_item['date_scraped'] = self.parse_as_datetime(response.headers['Date'].decode())
-        webpage_item['doc_id'] = self.compute_hash(webpage_item['content'])
+        webpage_item['doc_id'] = self.compute_hash(cleaned_content)
 
         yield webpage_item
 
