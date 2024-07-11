@@ -11,7 +11,7 @@ from itemadapter import ItemAdapter
 
 from sqlalchemy import text
 from dotenv import load_dotenv
-from crawler.spiders.lse_crawler import error_301, abnormal_error
+import jsonlines
 
 from fastapi_app.postgres_engine import create_postgres_engine_from_env_sync
 
@@ -38,6 +38,7 @@ class ItemToPostgresPipeline:
     def close_spider(self, spider):
         logging.debug("ItemToPostgresPipeline close spider")
         self.engine.dispose()
+        self.process_error()
         logging.info('PostgreSQL Connection closed')
 
     def create_tables(self, engine):
@@ -59,14 +60,6 @@ class ItemToPostgresPipeline:
                     content TEXT,
                     date_scraped TIMESTAMP, 
                     embedding VECTOR(1024) 
-                );
-            '''))
-
-            logging.info("Creating non-200 http errors table...")
-            conn.execute(text('''
-                CREATE TABLE IF NOT EXISTS errors (
-                    url TEXT,
-                    status TEXT
                 );
             '''))
 
@@ -94,6 +87,22 @@ class ItemToPostgresPipeline:
                     self.process_file(conn, adapter)
                     conn.commit()
                 except Exception as e:  # Keeping this for debugging
+                    print("Transaction failed:", e)
+                    conn.rollback()
+
+            elif item_type == "error_301":
+                try:
+                    filename = "/Users/jamie/Desktop/chatlse2024/chat-lse/data/error_301.jsonl"
+                    self.process_error(conn, adapter, filename)
+                except Exception as e:  # Keeping this here for debugging
+                    print("Transaction failed:", e)
+                    conn.rollback()
+
+            elif item_type == "error_all":
+                try:
+                    filename = "/Users/jamie/Desktop/chatlse2024/chat-lse/data/error_all.jsonl"
+                    self.process_error(conn, adapter, filename)
+                except Exception as e:  # Keeping this here for debugging
                     print("Transaction failed:", e)
                     conn.rollback()
 
@@ -187,40 +196,21 @@ class ItemToPostgresPipeline:
         logging.info(
             f'File processed and stored in PostgreSQL: {adapter["url"]}')
 
-    # call the global variable error_301 that was defined in the lse_crawler.py file
+    def process_error(self, conn, adapter, filename):
+        print('ENTERED ERROR')
+        url = adapter["url"]
+        status = adapter["status"]
 
-    def process_error(self, conn, url, status):
-        for url in error_301.keys():
-            status = error_301[url]
-            json_output = {
-                "url": url,
-                "status": status
-            }
-            # append the json output to a json file in data
-            with open('data/error_301.json', 'a') as f:
-                f.write(json.dumps(json_output))
-                f.write('\n')
+        json_data = {
+            "url": url,
+            "status": status
+        }
 
-        logging.debug("Appending error_301 to error_301.json")
-
-        for url in abnormal_error.keys():
-            status = abnormal_error[url]
-            json_output = {
-                "url": url,
-                "status": status
-            }
-            with open('data/abnormal_error.json', 'a') as f:
-                f.write(json.dumps(json_output))
-                f.write('\n')
-
-            conn.execute(text('''
-                    INSERT INTO errors (url, status)
-                    VALUES (:url, :status)
-                '''), {
-                "url": url,
-                "status": status
-            })
-            logging.info(
-                f'Error processed and stored in PostgreSQL: {url}')
-
-            logging.debug("Appending abnormal_error to abnormal_error.json")
+        try:
+            with jsonlines.open(filename, 'w') as writer:
+                for obj in json_data:
+                    writer.write(obj)
+            print(f"JSON lines successfully written to {filename}")
+        except Exception as e:
+            print(
+                f"An error occurred while writing JSON lines to file: {e}")
