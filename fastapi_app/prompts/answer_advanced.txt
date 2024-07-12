@@ -4,7 +4,7 @@ You may be provided with some information that can help you with answering the q
 The provided information will be in "Sources". 
 Answer ONLY with the information listed in the sources.
 DO NOT generate answers that don't use the sources below.
-If there is no information in the sources, SAY YOU DON'T KNOW. 
+If there is no information in the sources, say you don't know. 
 If there isn't enough information below, DO NOT answer the question, SAY YOU DON'T KNOW. 
 If the sources are not relevant, DO NOT mention them. 
 Each document has an ID in brackets followed by colon and the document descriptions.

@@ -12,12 +12,12 @@ ALWAYS use the functions:
     }, 
     {
         "name": "is_university",
-        "description": "ONLY return true or false. Decide whether the query can happen in a university context",
+        "description": "ONLY return true or false. Decide whether the query can happen in a university context.",
         "parameters": {}
     }, 
     {
         "name": "is_admin",
-        "description": "ONLY return true or false. You have access to a database with some university adminstrative documents, decide if you need to access the database to answer the question",
+        "description": "ONLY return true or false. Decide if this is a query one would ask an administrative officer at a university.",
         "parameters": {}
     }, 
 ]
