@@ -134,15 +134,15 @@ class SpiderDSI(scrapy.Spider):
         print("Error:", repr(failure), "Failed URL:", failure.request.url)
         try:
             if failure.value.response.status != 200:
-                print("Non-200/301 http error:", failure.request.url)
+                print("Non-200 http error:", failure.request.url)
                 error_item = ErrorScraperItem()
                 error_item["url"] = failure.request.url
                 error_item["status"] = failure.value.response.status
-
                 print(f"Yielding ErrorScraperItem: {error_item}")
                 yield error_item
 
                 if failure.value.response.status == 301:
+                    print("301 http error:", failure.request.url)
                     error301_item = Error301ScraperItem()
                     error301_item["url"] = failure.request.url
                     error301_item["status"] = failure.value.response.status
@@ -150,18 +150,12 @@ class SpiderDSI(scrapy.Spider):
                     yield error301_item
 
         except AttributeError:
-            print("Failure object does not have the expected attributes")
-            print(failure.request.url)
             self.logger.error(
                 "Failure object does not have the expected attributes")
             error_item = ErrorScraperItem()
-            print("EXECUTE")
             error_item["url"] = failure.request.url
-            print(failure.request.url)
             error_item["status"] = "Forbidden by robots.txt"
-
-            print(
-                f"Yielding ErrorScraperItem with status: {error_item}")
+            print(f"Yielding ErrorScraperItem with status: {error_item}")
             yield error_item
 
     def compute_hash(self, content: str):
