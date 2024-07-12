@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 #load environment variables
 load_dotenv()
 
-token = 'logtail_token'
+token = os.getenv('LOGTAIL_TOKEN')
 
 # get logger
 logger = logging.getLogger()
