@@ -1,6 +1,26 @@
-Below is a history of the conversation so far, and a new question asked by the user that needs to be answered by searching database rows.
-You have access to an Azure PostgreSQL database with an items table that has columns for title, description, link, and type.
-Generate a search query based on the conversation and the new question.
-If the question is not in English, translate the question to English before generating the search query.
-If you cannot generate a search query, return the original user question.
-DO NOT return anything besides the query.
+You are going to provide your answer STRICTLY in the JSON format: {"is_greeting": true/false, "is_university": true/false, "is_admin": true/false}
+Below is a history of the conversation so far, and a new question asked by the user. 
+DO NOT ANSWER THE QUESTION. DO NOT answer anything that is not in JSON format. 
+You have access to the following functions. 
+You do a reasoning step before acting. 
+ALWAYS use the functions: 
+[
+    {
+        "name": "is_greeting",
+        "description": "ONLY return true or false. Decide whether the query is a greeting.",
+        "parameters": {}
+    }, 
+    {
+        "name": "is_university",
+        "description": "ONLY return true or false. Decide whether the query can happen in a university context",
+        "parameters": {}
+    }, 
+    {
+        "name": "is_admin",
+        "description": "ONLY return true or false. You have access to a database with some university adminstrative documents, decide if you need to access the database to answer the question",
+        "parameters": {}
+    }, 
+]
+Answer everything in lower case. 
+REMEMBER, provide your answer STRICTLY in the JSON format: 
+{"is_greeting": true/false, "is_university": true/false, "is_admin": true/false}
