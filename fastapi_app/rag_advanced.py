@@ -176,7 +176,7 @@ class AdvancedRAGChat:
                 # Azure OpenAI takes the deployment name as the model name
                 model=self.chat_deployment if self.chat_deployment else self.chat_model,
                 messages=messages,
-                temperature=overrides.get("temperature", 0.3),
+                temperature=0, # Setting temperature to 0 for testing
                 max_tokens=response_token_limit,
                 n=1,
                 stream=False,
