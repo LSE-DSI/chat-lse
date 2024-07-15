@@ -13,7 +13,6 @@ from openai_messages_token_helper import build_messages, get_token_limit
 from .api_models import ThoughtStep
 from chatlse.embeddings import compute_text_embedding
 from .postgres_searcher import PostgresSearcher
-from chatlse.llm_functions import extract_function_calls
 
 
 class AdvancedRAGChat:
@@ -42,7 +41,8 @@ class AdvancedRAGChat:
         self.chat_token_limit = context_window_override if context_window_override else get_token_limit(chat_model, default_to_minimum=True)
         current_dir = pathlib.Path(__file__).parent
         self.query_prompt_template = open(current_dir / "prompts/query.txt").read()
-        self.answer_prompt_template = open(current_dir / "prompts/answer_advanced.txt").read()
+        self.rag_answer_prompt_template = open(current_dir / "prompts/rag_answer_advanced.txt").read()
+        self.no_answer_prompt_template = open(current_dir / "prompts/no_answer_advanced.txt").read()
 
     async def run(
         self, messages: list[dict], overrides: dict[str, Any] = {}
@@ -78,9 +78,10 @@ class AdvancedRAGChat:
         )
 
         # Deciding whether to invoke RAG functionalities via function calling
-        print(chat_completion.choices[0].message.content)
-        is_greeting, is_university, is_admin = extract_function_calls(chat_completion)
-        to_search = (not is_greeting) and (is_university and is_admin)
+        #is_greeting, is_university, is_admin = extract_function_calls(chat_completion)
+        resp = chat_completion.choices[0].message.content
+        print(resp)
+        to_search = resp == "True"
 
         # If the model decides to use the database
         if to_search: 
@@ -105,7 +106,7 @@ class AdvancedRAGChat:
             response_token_limit = 1024
             messages = build_messages(
                 model=self.chat_model,
-                system_prompt=overrides.get("prompt_template") or self.answer_prompt_template,
+                system_prompt=overrides.get("prompt_template") or self.rag_answer_prompt_template,
                 new_user_content=original_user_query + "\n\nSources:\n" + content,
                 past_messages=past_messages,
                 max_tokens=self.chat_token_limit - response_token_limit,
@@ -164,8 +165,8 @@ class AdvancedRAGChat:
             response_token_limit = 1024
             messages = build_messages(
                 model=self.chat_model,
-                system_prompt=overrides.get("prompt_template") or self.answer_prompt_template,
-                new_user_content=original_user_query + "\n\nSources:\n",
+                system_prompt=overrides.get("prompt_template") or self.no_answer_prompt_template,
+                new_user_content=original_user_query,
                 past_messages=past_messages,
                 max_tokens=self.chat_token_limit - response_token_limit,
                 fallback_to_default=True,
@@ -190,9 +191,9 @@ class AdvancedRAGChat:
                         title="Whether RAG functionalities are used",
                         description=to_search,
                         props={
-                            "is_greeting": is_greeting, 
-                            "is_university": is_university, 
-                            "is_admin": is_admin, 
+                            #"is_greeting": is_greeting, 
+                            #"is_university": is_university, 
+                            #"is_admin": is_admin, 
                             "RAG": to_search
                         }
                     ),
