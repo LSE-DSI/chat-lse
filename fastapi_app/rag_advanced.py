@@ -78,9 +78,8 @@ class AdvancedRAGChat:
         )
 
         # Deciding whether to invoke RAG functionalities via function calling
-        #is_greeting, is_university, is_admin = extract_function_calls(chat_completion)
         resp = chat_completion.choices[0].message.content
-        print(resp)
+        #print(resp)
         to_search = resp == "True"
 
         # If the model decides to use the database
@@ -191,9 +190,6 @@ class AdvancedRAGChat:
                         title="Whether RAG functionalities are used",
                         description=to_search,
                         props={
-                            #"is_greeting": is_greeting, 
-                            #"is_university": is_university, 
-                            #"is_admin": is_admin, 
                             "RAG": to_search
                         }
                     ),
