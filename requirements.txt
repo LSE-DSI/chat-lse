@@ -14,7 +14,6 @@ PyPDF2==3.0.1
 # SQL
 jupysql>=0.10.4
 sqlalchemy>=2.0.23
-psycopg2==2.9.9
 psycopg2-binary==2.9.9
 
 # LLM
