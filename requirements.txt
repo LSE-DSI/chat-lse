@@ -99,6 +99,8 @@ idna==3.7
     #   httpx
     #   requests
     #   yarl
+logtail-python==0.3.0
+    # via fastapi_app (pyproject.toml)
 markdown-it-py==3.0.0
     # via rich
 marshmallow==3.21.2
