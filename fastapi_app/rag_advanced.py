@@ -112,6 +112,7 @@ class AdvancedRAGChat:
 
         # If the model decides to use the database
         if to_search: 
+            print("True")
             # Retrieve relevant documents from the database with the GPT optimized query
             vector: list[float] = []
             query_text = None 
@@ -188,6 +189,7 @@ class AdvancedRAGChat:
 
         # If the model decides the query does not require RAG 
         else: 
+            print("False")
             # Generate a contextual and content specific answer using the chat history only 
             response_token_limit = 1024
             messages = build_messages(
