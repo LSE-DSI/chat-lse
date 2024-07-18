@@ -111,7 +111,7 @@ class AdvancedRAGChat:
         # Deciding whether to invoke RAG functionalities 
         resp = chat_completion.choices[0].message.content
         print(resp)
-        to_search = "true" in resp.lower()
+        to_search = resp == "True"
 
 
 
