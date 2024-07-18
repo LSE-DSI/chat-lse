@@ -101,7 +101,7 @@ class AdvancedRAGChat:
             messages=query_messages,  # type: ignore
             # Azure OpenAI takes the deployment name as the model name
             model=self.chat_deployment if self.chat_deployment else self.chat_model,
-            temperature=0.0,  # Minimize creativity for search query generation
+            temperature=0,  # Minimize creativity for search query generation
             max_tokens=20,  # Setting too low risks malformed JSON, setting too high may affect performance
             n=1,
             #tools=build_function(),
@@ -110,8 +110,8 @@ class AdvancedRAGChat:
 
         # Deciding whether to invoke RAG functionalities 
         resp = chat_completion.choices[0].message.content
-        #print(resp)
-        to_search = resp == "True"
+        print(resp)
+        to_search = "true" in resp.lower()
 
 
 
@@ -132,7 +132,7 @@ class AdvancedRAGChat:
 
             results = await self.searcher.search(query_text, vector, top)
 
-            sources_content = [f"[{(doc.doc_id)}]:{doc.to_str_for_rag()}\n\n" for doc in results]
+            sources_content = [f"[{(doc.doc_id)}]: {doc.to_str_for_rag()}\n\n" for doc in results]
             content = "\n".join(sources_content)
 
             # Generate a contextual and content specific answer using the search results and chat history
