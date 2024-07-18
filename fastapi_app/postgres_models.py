@@ -40,7 +40,7 @@ class Doc(Base):
         return model_dict
 
     def to_str_for_rag(self):
-        return f"Title:{self.title} URL: {self.url} Content: {self.content} Type:{self.type}"
+        return f"Title: {self.title} URL: {self.url} Content: {self.content} Type:{self.type}"
 
     def to_str_for_embedding(self):
         return f"Title: {self.title} URL: {self.url} Content: {self.content} Type: {self.type}"

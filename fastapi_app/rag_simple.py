@@ -65,7 +65,7 @@ class SimpleRAGChat:
 
         results = await self.searcher.search(query_text, vector, top)
 
-        sources_content = [f"[{(doc.doc_id)}]:{doc.to_str_for_rag()}\n\n" for doc in results]
+        sources_content = [f"[{(doc.doc_id)}]: {doc.to_str_for_rag()}\n\n" for doc in results]
         content = "\n".join(sources_content)
 
         # Generate a contextual and content specific answer using the search results and chat history
