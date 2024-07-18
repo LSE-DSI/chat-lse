@@ -12,6 +12,11 @@ DATA_FOLDER = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '.
 class SpiderDSI(scrapy.Spider):
     name = 'lse_crawler'
     start_urls = [
+        # General LSE Websites 
+        'https://www.lse.ac.uk', 
+        'https://info.lse.ac.uk/current-students', 
+        'https://info.lse.ac.uk/staff', 
+        # Department Websites 
         'http://www.lse.ac.uk/accounting/Home.aspx',
         'http://www.lse.ac.uk/anthropology/home.aspx',
         'https://www.lse.ac.uk/dsi',
@@ -42,7 +47,7 @@ class SpiderDSI(scrapy.Spider):
         'http://www.lse.ac.uk/sociology/Home.aspx',
         'http://www.lse.ac.uk/statistics/home.aspx'
     ]
-    max_depth = 3
+    max_depth = 6
     global visited
     visited = []
 
