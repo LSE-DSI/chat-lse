@@ -56,6 +56,9 @@ class AdvancedRAGChat:
         original_user_query = messages[-1]["content"]
         past_messages = messages[:-1]
         
+
+
+        ##############################################################################
         # Summarising last chat model output 
         if past_messages: 
             to_summarise = past_messages[-1]["content"] 
@@ -80,10 +83,10 @@ class AdvancedRAGChat:
 
             past_messages[-1]["content"] = chat_completion_response.choices[0].message.content
 
-            print(f"incoming message to be summarised: {to_summarise}")
-            print(f"summarised message: {chat_completion_response.choices[0].message.content}")
 
-        # Generate an optimized keyword search query based on the chat history and the last question
+
+        ##############################################################################
+        # Generate the prompt that asks the model to decide whether it should answer the use query (use rag)
         query_response_token_limit = 500
         query_messages = build_messages(
             model=self.chat_model,
@@ -105,14 +108,16 @@ class AdvancedRAGChat:
             #tool_choice={"type": "function", "function": {"name": "if_search_database"}},
         )
 
-        # Deciding whether to invoke RAG functionalities via function calling
+        # Deciding whether to invoke RAG functionalities 
         resp = chat_completion.choices[0].message.content
-        print(resp)
+        #print(resp)
         to_search = resp == "True"
 
+
+
+        ##############################################################################
         # If the model decides to use the database
         if to_search: 
-            print("True")
             # Retrieve relevant documents from the database with the GPT optimized query
             vector: list[float] = []
             query_text = None 
@@ -189,7 +194,6 @@ class AdvancedRAGChat:
 
         # If the model decides the query does not require RAG 
         else: 
-            print("False")
             # Generate a contextual and content specific answer using the chat history only 
             response_token_limit = 1024
             messages = build_messages(
