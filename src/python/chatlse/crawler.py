@@ -1,11 +1,8 @@
 # This file contains util functions for the crawler
 import os
 import re
-import asyncio
 import hashlib
 from PyPDF2 import PdfReader
-from dotenv import load_dotenv
-from bs4 import BeautifulSoup
 from llama_index.core.node_parser import SentenceSplitter
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 import json
@@ -114,8 +111,7 @@ def generate_json_entry(text, type, url, title, date_scraped, doc_id):
     output_list = []
     for chunk_id, chunk_text in enumerate(sentence_chunks):
         id = f"{doc_id}_{chunk_id}"
-        embedding = compute_text_embedding_sync(
-            chunk_text, model_instance=MODEL_INSTANCE)
+        embedding = compute_text_embedding_sync(chunk_text, model_instance=MODEL_INSTANCE)
         output_list.append([
             id,
             doc_id,

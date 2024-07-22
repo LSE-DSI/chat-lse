@@ -34,16 +34,17 @@ export const Answer = ({
     const parsedAnswer = useMemo(() => parseAnswerToHtml(messageContent, isStreaming, onCitationClicked), [answer]);
     const thoughts = answer.choices[0].context.thoughts.find((item)=>item.title==="Search results")?.description
     const seen_doc_ids = new Set<number>();
-    const citations = thoughts.filter((element: Record<string, any>) => {
-            if (parsedAnswer.citations.includes(String(element.doc_id)) && !seen_doc_ids.has(element.doc_id)) {
-                seen_doc_ids.add(element.doc_id);
-                return true;
-            }
-            return false;
+    const citations = thoughts ? thoughts.filter((element: Record<string, any>) => {
+        if (parsedAnswer.citations.includes(String(element.doc_id)) && !seen_doc_ids.has(element.doc_id)) {
+            seen_doc_ids.add(element.doc_id);
+            return true;
         }
-    );    
+        return false;
+    }) : null;
 
     const sanitizedAnswerHtml = DOMPurify.sanitize(parsedAnswer.answerHtml);
+
+    console.log(JSON.stringify(thoughts))
 
     return (
         <Stack className={`${styles.answerContainer} ${isSelected && styles.selected}`} verticalAlign="space-between">
@@ -99,7 +100,7 @@ export const Answer = ({
                 </Stack.Item>
             )} */}
 
-            {!!citations.length && (
+            {citations && !!citations.length && (
                 <Stack.Item>
                     <Stack wrap tokens={{ childrenGap: 5 }}>
                         <span className={styles.citationLearnMore}>Citations:</span>
