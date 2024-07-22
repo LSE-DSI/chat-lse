@@ -12,7 +12,8 @@ from dotenv import load_dotenv
 
 from chatlse.postgres_engine import create_postgres_engine_from_env_sync
 
-from chatlse.crawler import parse_doc, generate_json_entry_for_files, generate_json_entry_for_html, generate_list_ingested_data
+from chatlse.crawler import parse_doc, generate_json_entry, generate_list_ingested_data
+
 
 
 class ItemToPostgresPipeline:
@@ -43,7 +44,7 @@ class ItemToPostgresPipeline:
             logging.info("Creating lse_doc table...")
             conn.execute(text('''
                 CREATE TABLE IF NOT EXISTS lse_doc (
-                    id TEXT, 
+                    id TEXT PRIMARY KEY, 
                     doc_id TEXT,
                     chunk_id TEXT, 
                     type TEXT, 
@@ -66,114 +67,69 @@ class ItemToPostgresPipeline:
         item_type = item.type
 
         with self.engine.connect() as conn:
-            if item_type == "webpage":
-                try:
-                    self.process_page(conn, adapter)
-                    conn.commit()
-                except Exception as e:  # Keeping this here for debugging
-                    print("Transaction failed:", e)
-                    conn.rollback()
+            try:
+                # Get data for each item 
+                url = adapter["url"]
+                title = adapter["title"]
+                date_scraped = adapter["date_scraped"]
 
-            elif item_type == "file_metadata":
-                try:
-                    self.process_file(conn, adapter)
-                    conn.commit()
-                except Exception as e:  # Keeping this for debugging
-                    print("Transaction failed:", e)
-                    conn.rollback()
+                # Get specific fields from webpages 
+                if item_type == "webpage": 
+                    content = adapter["content"]
+                    doc_id = adapter["doc_id"]
+                    type = "webpage"
+                # Get specific fields from PDF files 
+                elif item_type == "file_metadata": 
+                    file_path = adapter["file_path"]
+                    content, doc_id, type = parse_doc(file_path)
+
+                # Check if the url already exists in the database
+                result = conn.execute(
+                    text('SELECT url, doc_id FROM lse_doc WHERE url = :url'),
+                    {'url': url}
+                ).fetchone()
+
+                # If url exists, check if it has changed since last scrape 
+                if result:
+                    _, previous_hash = result
+                    # Skipping insertion and return if document has not changed
+                    if previous_hash == doc_id:
+                        print(f"Skipping insertion. Page not modified since last scraped:", url)
+                        return
+                    # Delete old insertions if document has changed
+                    else:
+                        print(f"Page modified since last scraped. Deleting previous data for:", url)
+                        conn.execute(
+                            text('DELETE FROM lse_doc WHERE url = :url'), {'url': url})
+
+                # Insert document into the database (if document not exist or if it has changed)
+                output_list = generate_json_entry(content, type, url, title, date_scraped, doc_id)
+                for idx, doc_id, chunk_id, type, url, title, content, date_scraped, embedding in output_list:
+                    conn.execute(text('''
+                        INSERT INTO lse_doc (id, doc_id, chunk_id, type, url, title, content, date_scraped, embedding)
+                        VALUES (:id, :doc_id, :chunk_id, :type, :url, :title, :content, :date_scraped, :embedding)
+                    '''), {
+                        "id": idx, 
+                        "doc_id": doc_id,
+                        "chunk_id": chunk_id,
+                        "type": type,
+                        "url": url,
+                        "title": title,
+                        "content": content,
+                        "date_scraped": date_scraped,
+                        "embedding": embedding
+                    })
+
+                logging.info(f'Item processed and stored in PostgreSQL {adapter["url"]}')
+
+                generate_list_ingested_data("data/ingested_data.json", idx, type, url, title, date_scraped)
+
+                logging.info(f'File saved to list of ingested data: {adapter["url"]}')
+                
+                conn.commit()
+
+            except Exception as e:  # Keeping this here for debugging
+                print("Transaction failed:", e)
+                conn.rollback()
 
         return item
-
-    def process_page(self, conn, adapter):
-        result = conn.execute(
-            text('SELECT url, doc_id FROM lse_doc WHERE url = :url'),
-            {'url': adapter['url']}
-        ).fetchone()
-
-        doc_id = adapter["doc_id"]
-        url = adapter["url"]
-        title = adapter["title"]
-        content = adapter["content"]
-        date_scraped = adapter["date_scraped"]
-
-        if result:
-            _, previous_hash = result
-            if previous_hash == doc_id:
-                print(
-                    f"Skipping insertion. Page not modified since last scraped:", adapter["url"])
-                return
-            else:
-                conn.execute(
-                    text('DELETE FROM lse_doc WHERE url = :url'), {'url': url})
-
-        output_list = generate_json_entry_for_html(
-            content, url, title, date_scraped, doc_id)
-        for idx, doc_id, chunk_id, type, url, title, content, date_scraped, embedding in output_list:
-            conn.execute(text('''
-                INSERT INTO lse_doc (id, doc_id, chunk_id, type, url, title, content, date_scraped, embedding)
-                VALUES (:id, :doc_id, :chunk_id, :type, :url, :title, :content, :date_scraped, :embedding)
-            '''), {
-                "id": idx,
-                "doc_id": doc_id,
-                "chunk_id": chunk_id,
-                "type": type,
-                "url": url,
-                "title": title,
-                "content": content,
-                "date_scraped": date_scraped,
-                "embedding": embedding
-            })
-
-        logging.info(
-            f"Page processed and stored in PostgreSQL {adapter['url']}"
-        )
-        generate_list_ingested_data(
-            "data/ingested_data.json", idx, type, url, title, date_scraped)
-
-        logging.info(f'File saved to list of ingested data: {adapter["url"]}')
-
-    def process_file(self, conn, adapter):
-        result = conn.execute(
-            text('SELECT url, doc_id FROM lse_doc WHERE url = :url'),
-            {'url': adapter['url']}
-        ).fetchone()
-
-        url = adapter["url"]
-        title = adapter["title"]
-        file_path = adapter["file_path"]
-        date_scraped = adapter["date_scraped"]
-        content, doc_id, type = parse_doc(file_path)
-
-        if result:
-            _, previous_hash = result
-            if previous_hash == doc_id:
-                print(f"Skipping insertion. File not modified since last scraped:", url)
-                return
-            else:
-                conn.execute(
-                    text('DELETE FROM lse_doc WHERE url = :url'), {'url': url})
-
-        output_list = generate_json_entry_for_files(
-            content, type, url, title, date_scraped, doc_id)
-        for idx, doc_id, chunk_id, type, url, title, content, date_scraped, embedding in output_list:
-            conn.execute(text('''
-                INSERT INTO lse_doc (id, doc_id, chunk_id, type, url, title, content, date_scraped, embedding)
-                VALUES (:id, :doc_id, :chunk_id, :type, :url, :title, :content, :date_scraped, :embedding)
-            '''), {
-                "id": idx,
-                "doc_id": doc_id,
-                "chunk_id": chunk_id,
-                "type": type,
-                "url": url,
-                "title": title,
-                "content": content,
-                "date_scraped": date_scraped,
-                "embedding": embedding
-            })
-        logging.info(
-            f'File processed and stored in PostgreSQL: {adapter["url"]}'
-        )
-        generate_list_ingested_data(
-            "data/ingested_data.json", idx, type, url, title, date_scraped)
-
-        logging.info(f'File saved to list of ingested data: {adapter["url"]}')

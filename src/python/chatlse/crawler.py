@@ -88,8 +88,21 @@ def parse_doc(file_path):
     return cleaned_content, doc_id, type
 
 
-def embed_json(text, type, url, title, date_scraped, doc_id):
-    load_dotenv(override=True)
+def generate_json_entry(text, type, url, title, date_scraped, doc_id):
+    """
+    This function takes the metadata returned by the `file_downloader`, chunks and embeds
+    the files and returns a json entry for input into postgres database. 
+
+    Output: 
+        - doc_id: hashed chunk content 
+        - chunk_id: id of the file chunk 
+        - type: type of the file 
+        - url: url of the file 
+        - title: title of the file 
+        - content: chunked content of the file 
+        - date_scraped: datetime of when the data is scraped 
+        - embedding: embedded chunk 
+    """
 
     # Chunking and embedding chunks
     splitter = SentenceSplitter(
@@ -118,51 +131,11 @@ def embed_json(text, type, url, title, date_scraped, doc_id):
     return output_list
 
 
-def generate_json_entry_for_files(text, type, url, title, date_scraped, doc_id):
-    """
-    This function takes the metadata returned by the `file_downloader`, chunks and embeds
-    the files and returns a json entry for input into postgres database.
-
-    Output:
-        - doc_id: hashed chunk content
-        - chunk_id: id of the file chunk
-        - type: type of the file
-        - url: url of the file
-        - title: title of the file
-        - content: chunked content of the file
-        - date_scraped: datetime of when the data is scraped
-        - embedding: embedded chunk
-    """
-
-    return embed_json(text, type, url, title, date_scraped, doc_id)
-
-
-def generate_json_entry_for_html(text, url, title, date_scraped, doc_id):
-    """
-    This function takes the metadata returned by the lse_crawler, parses, chunks and embeds
-    the html and returns a list entry for input into postgres database.
-
-    Output:
-        - doc_id: hashed html content
-        - chunk_id: id of the text chunk
-        - type: type of the file
-        - url: url of the webpage
-        - title: title of the webpage
-        - content: chunked content of the html
-        - date_scraped: datetime of when the data is scraped
-        - embedding: embedded chunk
-    """
-
-    # Parse the html content
-    soup = BeautifulSoup(text, 'html.parser')
-    cleaned_content = clean_text(soup.get_text())
-
-    return embed_json(cleaned_content, "webpage", url, title, date_scraped, doc_id)
-
-
 def generate_list_ingested_data(file_path, idx, type, url, title, date_scraped):
     """
-    This functions takes the metadata about the data ingested into the database and returns a json file which stores the metadata about which pages and files have been ingested. The json entry is appended to the `ingested_data.json` file.
+    This functions takes the metadata about the data ingested into the database and returns a json file 
+    which stores the metadata about which pages and files have been ingested. The json entry is appended 
+    to the `ingested_data.json` file.
     """
     json_entry = {"id": idx,
                   "type": type,
