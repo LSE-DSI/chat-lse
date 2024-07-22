@@ -21,7 +21,7 @@ class Doc(Base):
     title: Mapped[str] = mapped_column()
     content: Mapped[str] = mapped_column()
     date_scraped: Mapped[datetime] = mapped_column()
-    embedding: Mapped[Vector] = mapped_column(Vector(1024)) # GTE-large
+    attended_embedding: Mapped[Vector] = mapped_column(Vector(1024)) # GTE-large
 
     def to_dict(self, include_embedding: bool = False):
         # Manually construct the dictionary
@@ -49,7 +49,7 @@ class Doc(Base):
 # Define HNSW index to support vector similarity search through the vector_cosine_ops access method (cosine distance).
 index = Index(
     "hnsw_index_for_innerproduct_doc_embedding",
-    Doc.embedding,
+    Doc.attended_embedding,
     postgresql_using="hnsw",
     postgresql_with={"m": 16, "ef_construction": 64},
     postgresql_ops={"embedding": "vector_ip_ops"},
