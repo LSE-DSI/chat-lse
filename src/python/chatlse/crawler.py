@@ -33,6 +33,10 @@ if not EMBED_MODEL:
 
 MODEL_INSTANCE = HuggingFaceEmbedding(EMBED_MODEL)
 
+# Initialize the cross-chunk attention mechanism
+CROSS_CHUNK_ATTENTION_INSTANCE = ShiftedCrossChunkAttention(EMBED_DIM if EMBED_DIM else 1024) # Set default embed_dim to 1024
+
+
 
 #### Util Functions ####
 
@@ -115,10 +119,6 @@ def generate_json_entry(text, type, url, title, date_scraped, doc_id):
     sentence_chunks = splitter.split_text(text)
     chunk_embeddings = []
 
-    # Initialize the cross-chunk attention mechanism
-    embed_dim = EMBED_DIM if EMBED_DIM else 1024 # Set default embed_dim to 1024
-    cross_chunk_attention = ShiftedCrossChunkAttention(embed_dim)
-
     # Compute initial embeddings for each chunk
     for chunk_text in sentence_chunks:
         embedding = compute_text_embedding_sync(chunk_text, model_instance=MODEL_INSTANCE)
@@ -130,7 +130,7 @@ def generate_json_entry(text, type, url, title, date_scraped, doc_id):
     chunk_embeddings = chunk_embeddings.view(num_chunks, 1, embed_dim)  # Reshape to (num_chunks, chunk_size=1, embed_dim)
 
     # Apply cross-chunk attention
-    attended_embeddings = cross_chunk_attention(chunk_embeddings)
+    attended_embeddings = CROSS_CHUNK_ATTENTION_INSTANCE(chunk_embeddings)
     attended_embeddings = attended_embeddings.view(num_chunks, embed_dim).tolist()  # Reshape back to (num_chunks, embed_dim)
 
     # Generate output list with attended embeddings
