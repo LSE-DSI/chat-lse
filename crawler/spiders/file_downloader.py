@@ -13,7 +13,8 @@ class FileDownloaderSpider(scrapy.Spider):
         'https://info.lse.ac.uk/staff/services/Policies-and-procedures',
         'https://info.lse.ac.uk/staff/divisions/Human-Resources/A-to-Z',
         'https://info.lse.ac.uk/staff/divisions/Finance-Division/A-to-Z-of-services-contacts-forms-policies-and-documents',
-        'https://info.lse.ac.uk/staff/divisions/research-and-innovation/a-to-z '
+        'https://info.lse.ac.uk/staff/divisions/research-and-innovation/a-to-z', 
+        'https://info.lse.ac.uk/current-students/services/assessment-and-results/results/understanding-results', 
          ]
     
     def parse(self, response):

@@ -43,6 +43,7 @@ class AdvancedRAGChat:
         self.query_prompt_template = open(current_dir / "prompts/query.txt").read()
         self.rag_answer_prompt_template = open(current_dir / "prompts/rag_answer_advanced.txt").read()
         self.no_answer_prompt_template = open(current_dir / "prompts/no_answer_advanced.txt").read()
+        self.summarise_prompt_template = open(current_dir / "prompts/summarize.txt").read()
 
     async def run(
         self, messages: list[dict], overrides: dict[str, Any] = {}
@@ -54,8 +55,38 @@ class AdvancedRAGChat:
 
         original_user_query = messages[-1]["content"]
         past_messages = messages[:-1]
+        
 
-        # Generate an optimized keyword search query based on the chat history and the last question
+
+        ##############################################################################
+        # Summarising last chat model output 
+        if past_messages: 
+            to_summarise = past_messages[-1]["content"] 
+            response_token_limit = 1024
+            messages = build_messages(
+                model=self.chat_model,
+                system_prompt=self.summarise_prompt_template,
+                new_user_content=to_summarise,
+                max_tokens=self.chat_token_limit - response_token_limit,
+                fallback_to_default=True,
+            )
+
+            chat_completion_response = await self.chat_client.chat.completions.create(
+                # Azure OpenAI takes the deployment name as the model name
+                model=self.chat_deployment if self.chat_deployment else self.chat_model,
+                messages=messages,
+                temperature=0, # Setting temperature to 0 for testing
+                max_tokens=response_token_limit,
+                n=1,
+                stream=False,
+            )
+
+            past_messages[-1]["content"] = chat_completion_response.choices[0].message.content
+
+
+
+        ##############################################################################
+        # Generate the prompt that asks the model to decide whether it should answer the use query (use rag)
         query_response_token_limit = 500
         query_messages = build_messages(
             model=self.chat_model,
@@ -70,18 +101,21 @@ class AdvancedRAGChat:
             messages=query_messages,  # type: ignore
             # Azure OpenAI takes the deployment name as the model name
             model=self.chat_deployment if self.chat_deployment else self.chat_model,
-            temperature=0.0,  # Minimize creativity for search query generation
+            temperature=0,  # Minimize creativity for search query generation
             max_tokens=20,  # Setting too low risks malformed JSON, setting too high may affect performance
             n=1,
             #tools=build_function(),
             #tool_choice={"type": "function", "function": {"name": "if_search_database"}},
         )
 
-        # Deciding whether to invoke RAG functionalities via function calling
+        # Deciding whether to invoke RAG functionalities 
         resp = chat_completion.choices[0].message.content
-        #print(resp)
+        print(resp)
         to_search = resp == "True"
 
+
+
+        ##############################################################################
         # If the model decides to use the database
         if to_search: 
             # Retrieve relevant documents from the database with the GPT optimized query
@@ -98,7 +132,7 @@ class AdvancedRAGChat:
 
             results = await self.searcher.search(query_text, vector, top)
 
-            sources_content = [f"[{(doc.doc_id)}]:{doc.to_str_for_rag()}\n\n" for doc in results]
+            sources_content = [f"[{(doc.doc_id)}]: {doc.to_str_for_rag()}\n\n" for doc in results]
             content = "\n".join(sources_content)
 
             # Generate a contextual and content specific answer using the search results and chat history
@@ -214,3 +248,4 @@ class AdvancedRAGChat:
             }
 
         return chat_resp
+
