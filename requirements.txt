@@ -32,6 +32,7 @@ tqdm==4.66.4
 jsonlines==4.0.0
 python-dotenv==1.0.1 # Load environment variables from .env file
 python-docx==1.1.2
+logtail-python==0.3.0 # Logging 
 
 # Copied from rag-on-postgres with Azure components removed
 # uvloop is commented out due to incompatibility on Windows
@@ -98,6 +99,8 @@ idna==3.7
     #   httpx
     #   requests
     #   yarl
+logtail-python==0.3.0
+    # via fastapi_app (pyproject.toml)
 markdown-it-py==3.0.0
     # via rich
 marshmallow==3.21.2
