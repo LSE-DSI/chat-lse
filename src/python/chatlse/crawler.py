@@ -24,6 +24,8 @@ EMBED_CHUNK_SIZE = os.getenv("EMBED_CHUNK_SIZE")
 EMBED_OVERLAP_SIZE = os.getenv("EMBED_OVERLAP_SIZE")
 # Get embedding model 
 EMBED_MODEL = os.getenv("OLLAMA_EMBED_MODEL")
+# Get embedding dimension 
+EMBED_DIM = os.getenv("EMBED_DIM")
 
 if not EMBED_MODEL:
     # Use default model if not provided
@@ -102,7 +104,7 @@ def embed_json(text, type, url, title, date_scraped, doc_id):
     chunk_embeddings = []
 
     # Initialize the cross-chunk attention mechanism
-    embed_dim = 1024  # Assuming your embeddings are of dimension 1024
+    embed_dim = EMBED_DIM if EMBED_DIM else 1024 # Set default embed_dim to 1024
     cross_chunk_attention = ShiftedCrossChunkAttention(embed_dim)
 
     # Compute initial embeddings for each chunk
