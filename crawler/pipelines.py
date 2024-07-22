@@ -41,10 +41,10 @@ class ItemToPostgresPipeline:
             logging.info("Enabling the pgvector extension for Postgres...")
             conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
 
-            logging.info("Creating lse_doc table...")
+            logging.info("Creating lse_doc_scca table...")
             conn.execute(text('''
-                CREATE TABLE IF NOT EXISTS lse_doc (
-                    id TEXT, 
+                CREATE TABLE IF NOT EXISTS lse_doc_scca (
+                    id TEXT PRIMARY KEY, 
                     doc_id TEXT,
                     chunk_id TEXT, 
                     type TEXT, 
@@ -87,7 +87,7 @@ class ItemToPostgresPipeline:
 
     def process_page(self, conn, adapter):
         result = conn.execute(
-            text('SELECT url, doc_id FROM lse_doc WHERE url = :url'),
+            text('SELECT url, doc_id FROM lse_doc_scca WHERE url = :url'),
             {'url': adapter['url']}
         ).fetchone()
 
@@ -104,12 +104,12 @@ class ItemToPostgresPipeline:
                 return
             else:
                 conn.execute(
-                    text('DELETE FROM lse_doc WHERE url = :url'), {'url': url})
+                    text('DELETE FROM lse_doc_scca WHERE url = :url'), {'url': url})
 
         output_list = generate_json_entry_for_html(content, url, title, date_scraped, doc_id)
         for idx, doc_id, chunk_id, type, url, title, content, date_scraped, embedding in output_list:
             conn.execute(text('''
-                INSERT INTO lse_doc (id, doc_id, chunk_id, type, url, title, content, date_scraped, embedding)
+                INSERT INTO lse_doc_scca (id, doc_id, chunk_id, type, url, title, content, date_scraped, embedding)
                 VALUES (:id, :doc_id, :chunk_id, :type, :url, :title, :content, :date_scraped, :embedding)
             '''), {
                 "id": idx, 
@@ -131,7 +131,7 @@ class ItemToPostgresPipeline:
 
     def process_file(self, conn, adapter): 
         result = conn.execute(
-            text('SELECT url, doc_id FROM lse_doc WHERE url = :url'),
+            text('SELECT url, doc_id FROM lse_doc_scca WHERE url = :url'),
             {'url': adapter['url']}
         ).fetchone()
         
@@ -148,12 +148,12 @@ class ItemToPostgresPipeline:
                 return
             else:
                 conn.execute(
-                    text('DELETE FROM lse_doc WHERE url = :url'), {'url': url})
+                    text('DELETE FROM lse_doc_scca WHERE url = :url'), {'url': url})
 
         output_list = generate_json_entry_for_files(content, type, url, title, date_scraped, doc_id)
         for idx, doc_id, chunk_id, type, url, title, content, date_scraped, embedding in output_list:
             conn.execute(text('''
-                INSERT INTO lse_doc (id, doc_id, chunk_id, type, url, title, content, date_scraped, embedding)
+                INSERT INTO lse_doc_scca (id, doc_id, chunk_id, type, url, title, content, date_scraped, embedding)
                 VALUES (:id, :doc_id, :chunk_id, :type, :url, :title, :content, :date_scraped, :embedding)
             '''), {
                 "id": idx, 
