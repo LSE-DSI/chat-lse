@@ -10,6 +10,9 @@ from .globals import global_storage
 from chatlse.clients import create_chat_client, create_embed_client
 from chatlse.postgres_engine import create_postgres_engine_from_env
 
+from .logger import logger 
+from .middleware import LogMiddleware 
+
 logger = logging.getLogger("ragapp")
 
 
@@ -46,6 +49,8 @@ def create_app():
         logging.basicConfig(level=logging.WARNING)
 
     app = FastAPI(docs_url="/docs", lifespan=lifespan)
+    app.add_middleware(LogMiddleware)
+    logger.info("Start API ...")
 
     from . import api_routes  # noqa
 

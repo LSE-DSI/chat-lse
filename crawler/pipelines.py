@@ -9,10 +9,10 @@ from itemadapter import ItemAdapter
 
 from sqlalchemy import text
 from dotenv import load_dotenv
+import jsonlines
 
 from chatlse.postgres_engine import create_postgres_engine_from_env_sync
-
-from chatlse.crawler import parse_doc, generate_json_entry_for_files, generate_json_entry_for_html
+from chatlse.crawler import parse_doc, generate_json_entry, generate_list_ingested_data
 
 
 
@@ -67,104 +67,106 @@ class ItemToPostgresPipeline:
         item_type = item.type
 
         with self.engine.connect() as conn:
-            if item_type == "webpage":
+            if item_type == "error_301":
                 try:
-                    self.process_page(conn, adapter)
-                    conn.commit()
+                    filename = "data/error_301.jsonl"
+                    self.process_error(conn, adapter, filename)
                 except Exception as e:  # Keeping this here for debugging
                     print("Transaction failed:", e)
                     conn.rollback()
 
-            elif item_type == "file_metadata":
-                try: 
-                    self.process_file(conn, adapter)
+            elif item_type == "error_all":
+                try:
+                    filename = "data/error_all.jsonl"
+                    self.process_error(conn, adapter, filename)
+                except Exception as e:  # Keeping this here for debugging
+                    print("Transaction failed:", e)
+                    conn.rollback()
+            else:
+                try:
+                    # Get data for each item
+                    url = adapter["url"]
+                    title = adapter["title"]
+                    date_scraped = adapter["date_scraped"]
+
+                    # Get specific fields from webpages 
+                    if item_type == "webpage": 
+                        content = adapter["content"]
+                        doc_id = adapter["doc_id"]
+                        type = "webpage"
+                    # Get specific fields from PDF files 
+                    elif item_type == "file_metadata": 
+                        file_path = adapter["file_path"]
+                        content, doc_id, type = parse_doc(file_path)
+
+                    # Check if the url already exists in the database
+                    result = conn.execute(
+                        text('SELECT url, doc_id FROM lse_doc_scca WHERE url = :url'),
+                        {'url': url}
+                    ).fetchone()
+
+                    # If url exists, check if it has changed since last scrape
+                    if result:
+                        _, previous_hash = result
+                        # Skipping insertion and return if document has not changed
+                        if previous_hash == doc_id:
+                            print(f"Skipping insertion. Page not modified since last scraped:", url)
+                            return
+                        # Delete old insertions if document has changed
+                        else:
+                            print(f"Page modified since last scraped. Deleting previous data for:", url)
+                            conn.execute(text('DELETE FROM lse_doc_scca WHERE url = :url'), {'url': url})
+
+                    # Insert document into the database (if document not exist or if it has changed)
+                    output_list = generate_json_entry(content, type, url, title, date_scraped, doc_id)
+                    for idx, doc_id, chunk_id, type, url, title, content, date_scraped, embedding in output_list:
+                        conn.execute(text('''
+                            INSERT INTO lse_doc_scca (id, doc_id, chunk_id, type, url, title, content, date_scraped, embedding)
+                            VALUES (:id, :doc_id, :chunk_id, :type, :url, :title, :content, :date_scraped, :embedding)
+                        '''), {
+                            "id": idx,
+                            "doc_id": doc_id,
+                            "chunk_id": chunk_id,
+                            "type": type,
+                            "url": url,
+                            "title": title,
+                            "content": content,
+                            "date_scraped": date_scraped,
+                            "embedding": embedding
+                        })
+
+                    logging.info(f'Item processed and stored in PostgreSQL {adapter["url"]}')
+
+                    generate_list_ingested_data("data/ingested_data.json", idx, type, url, title, date_scraped)
+
+                    logging.info(f'File saved to list of ingested data: {adapter["url"]}')
+
                     conn.commit()
-                except Exception as e:  # Keeping this for debugging
+
+                except Exception as e:  # Keeping this here for debugging
                     print("Transaction failed:", e)
                     conn.rollback()
 
         return item
 
-    def process_page(self, conn, adapter):
-        result = conn.execute(
-            text('SELECT url, doc_id FROM lse_doc_scca WHERE url = :url'),
-            {'url': adapter['url']}
-        ).fetchone()
+    def process_error(self, conn, adapter, filename):
+        print('ENTERED ERROR')
+        print(f"Adapter contents: {adapter}")  # Debug statement
+        if "url" in adapter and "status" in adapter:
+            url = adapter["url"]
+            status = adapter["status"]
 
-        doc_id = adapter["doc_id"]
-        url = adapter["url"]
-        title = adapter["title"]
-        content = adapter["content"]
-        date_scraped = adapter["date_scraped"]
-
-        if result:
-            _, previous_hash = result
-            if previous_hash == doc_id:
-                print(f"Skipping insertion. Page not modified since last scraped:", adapter["url"])
-                return
-            else:
-                conn.execute(
-                    text('DELETE FROM lse_doc_scca WHERE url = :url'), {'url': url})
-
-        output_list = generate_json_entry_for_html(content, url, title, date_scraped, doc_id)
-        for idx, doc_id, chunk_id, type, url, title, content, date_scraped, embedding in output_list:
-            conn.execute(text('''
-                INSERT INTO lse_doc_scca (id, doc_id, chunk_id, type, url, title, content, date_scraped, embedding)
-                VALUES (:id, :doc_id, :chunk_id, :type, :url, :title, :content, :date_scraped, :embedding)
-            '''), {
-                "id": idx, 
-                "doc_id": doc_id,
-                "chunk_id": chunk_id,
-                "type": type,
+            json_data = {
                 "url": url,
-                "title": title,
-                "content": content,
-                "date_scraped": date_scraped,
-                "embedding": embedding
-            })
+                "status": status
+            }
 
-        # only export item to webpage.jl in the case of reprocessing to postgresdb
-        # self.process_item(adapter, 'webpage')
-
-        logging.info(f'Page processed and stored in PostgreSQL {adapter["url"]}')
-
-
-    def process_file(self, conn, adapter): 
-        result = conn.execute(
-            text('SELECT url, doc_id FROM lse_doc_scca WHERE url = :url'),
-            {'url': adapter['url']}
-        ).fetchone()
-        
-        url = adapter["url"]
-        title = adapter["title"]
-        file_path = adapter["file_path"]
-        date_scraped = adapter["date_scraped"]
-        content, doc_id, type = parse_doc(file_path)
-
-        if result:
-            _, previous_hash = result
-            if previous_hash == doc_id:
-                print(f"Skipping insertion. File not modified since last scraped:", url)
-                return
-            else:
-                conn.execute(
-                    text('DELETE FROM lse_doc_scca WHERE url = :url'), {'url': url})
-
-        output_list = generate_json_entry_for_files(content, type, url, title, date_scraped, doc_id)
-        for idx, doc_id, chunk_id, type, url, title, content, date_scraped, embedding in output_list:
-            conn.execute(text('''
-                INSERT INTO lse_doc_scca (id, doc_id, chunk_id, type, url, title, content, date_scraped, embedding)
-                VALUES (:id, :doc_id, :chunk_id, :type, :url, :title, :content, :date_scraped, :embedding)
-            '''), {
-                "id": idx, 
-                "doc_id": doc_id,
-                "chunk_id": chunk_id,
-                "type": type,
-                "url": url,
-                "title": title,
-                "content": content,
-                "date_scraped": date_scraped,
-                "embedding": embedding
-            })
-
-        logging.info(f'File processed and stored in PostgreSQL: {adapter["url"]}')
+            try:
+                with jsonlines.open(filename, 'a') as writer:
+                    # Write the entire dictionary at once
+                    writer.write(json_data)
+                print(f"JSON lines successfully written to {filename}")
+            except Exception as e:
+                print(f"An error occurred while writing JSON lines to file: {e}")
+        else:
+            print("url or status not found in adapter")

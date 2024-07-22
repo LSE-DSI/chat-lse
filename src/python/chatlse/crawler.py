@@ -1,13 +1,13 @@
 # This file contains util functions for the crawler
 import os
 import re
-import asyncio
 import hashlib
 from PyPDF2 import PdfReader
-from dotenv import load_dotenv
-from bs4 import BeautifulSoup
 from llama_index.core.node_parser import SentenceSplitter
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+import json
+from datetime import datetime
+
 
 from chatlse.embeddings import compute_text_embedding_sync
 from chatlse.cross_chunk_attention import ShiftedCrossChunkAttention
@@ -20,9 +20,9 @@ import torch
 
 # Default is 512 for GTE-large
 EMBED_CHUNK_SIZE = os.getenv("EMBED_CHUNK_SIZE")
-# Default is 128 as experimented
+#  Default is 128 as experimented
 EMBED_OVERLAP_SIZE = os.getenv("EMBED_OVERLAP_SIZE")
-# Get embedding model 
+# Get embedding model
 EMBED_MODEL = os.getenv("OLLAMA_EMBED_MODEL")
 # Get embedding dimension 
 EMBED_DIM = os.getenv("EMBED_DIM")
@@ -32,7 +32,6 @@ if not EMBED_MODEL:
     EMBED_MODEL = "thenlper/gte-large"
 
 MODEL_INSTANCE = HuggingFaceEmbedding(EMBED_MODEL)
-
 
 
 #### Util Functions ####
@@ -68,10 +67,10 @@ def clean_text(text):
     return cleaned_text
 
 
-def parse_doc(file_path): 
+def parse_doc(file_path):
     # This function parses a file and returns its cleaned texts as python string
-    # Supported file types: [".pdf", ".doc", ".docx", ".ppt", ".pptx"] 
-    
+    #  Supported file types: [".pdf", ".doc", ".docx", ".ppt", ".pptx"]
+
     # Parse file for different file types
     if file_path.endswith(".pdf"):
         content = read_pdf(file_path)
@@ -91,8 +90,21 @@ def parse_doc(file_path):
     return cleaned_content, doc_id, type
 
 
-def embed_json(text, type, url, title, date_scraped, doc_id):
-    load_dotenv(override=True)
+def generate_json_entry(text, type, url, title, date_scraped, doc_id):
+    """
+    This function takes the metadata returned by the `file_downloader`, chunks and embeds
+    the files and returns a json entry for input into postgres database. 
+
+    Output: 
+        - doc_id: hashed chunk content 
+        - chunk_id: id of the file chunk 
+        - type: type of the file 
+        - url: url of the file 
+        - title: title of the file 
+        - content: chunked content of the file 
+        - date_scraped: datetime of when the data is scraped 
+        - embedding: embedded chunk 
+    """
 
     # Chunking the document
     splitter = SentenceSplitter(
@@ -136,48 +148,37 @@ def embed_json(text, type, url, title, date_scraped, doc_id):
             date_scraped,
             attended_embedding
         ])
-    
+
     return output_list
 
 
-
-def generate_json_entry_for_files(text, type, url, title, date_scraped, doc_id):
+def generate_list_ingested_data(file_path, idx, type, url, title, date_scraped):
     """
-    This function takes the metadata returned by the `file_downloader`, chunks and embeds
-    the files and returns a json entry for input into postgres database. 
-
-    Output: 
-        - doc_id: hashed chunk content 
-        - chunk_id: id of the file chunk 
-        - type: type of the file 
-        - url: url of the file 
-        - title: title of the file 
-        - content: chunked content of the file 
-        - date_scraped: datetime of when the data is scraped 
-        - embedding: embedded chunk 
+    This functions takes the metadata about the data ingested into the database and returns a json file 
+    which stores the metadata about which pages and files have been ingested. The json entry is appended 
+    to the `ingested_data.json` file.
     """
+    json_entry = {"id": idx,
+                  "type": type,
+                  "url": url,
+                  "title": title,
+                  "date_scraped": date_scraped.isoformat() if isinstance(date_scraped, datetime) else date_scraped}
 
-    return embed_json(text, type, url, title, date_scraped, doc_id)
+    # for a given title, if the id is the same, then delete the existing entry and insert the new one
+    if os.path.exists(file_path):
+        with open(file_path, "r") as file:
+            lines = file.readlines()
+            for line in lines:
+                data = json.loads(line)
+                if data["title"] == title and data["id"] == idx:
+                    lines.remove(line)
+                    break
+        with open(file_path, "a") as file:
+            file.write(json.dumps(json_entry))
+            file.write("\n")
+    else:
+        with open(file_path, "a") as file:
+            file.write(json.dumps(json_entry))
+            file.write("\n")
 
-
-def generate_json_entry_for_html(text, url, title, date_scraped, doc_id):
-    """
-    This function takes the metadata returned by the lse_crawler, parses, chunks and embeds
-    the html and returns a list entry for input into postgres database. 
-
-    Output: 
-        - doc_id: hashed html content 
-        - chunk_id: id of the text chunk 
-        - type: type of the file 
-        - url: url of the webpage 
-        - title: title of the webpage 
-        - content: chunked content of the html 
-        - date_scraped: datetime of when the data is scraped 
-        - embedding: embedded chunk 
-    """
-
-    # Parse the html content
-    soup = BeautifulSoup(text, 'html.parser')
-    cleaned_content = clean_text(soup.get_text())
-
-    return embed_json(cleaned_content, "webpage", url, title, date_scraped, doc_id)
+    print(f"Data ingested: {url}")
