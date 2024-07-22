@@ -35,7 +35,7 @@ export const Answer = ({
     const thoughts = answer.choices[0].context.thoughts.find((item)=>item.title==="Search results")?.description
     const seen_doc_ids = new Set<number>();
     const citations = thoughts ? thoughts.filter((element: Record<string, any>) => {
-        if (parsedAnswer.citations.includes(String(element.doc_id)) && !seen_doc_ids.has(element.doc_id)) {
+        if (!seen_doc_ids.has(element.doc_id)) {
             seen_doc_ids.add(element.doc_id);
             return true;
         }
@@ -44,7 +44,7 @@ export const Answer = ({
 
     const sanitizedAnswerHtml = DOMPurify.sanitize(parsedAnswer.answerHtml);
 
-    console.log(JSON.stringify(thoughts))
+    //console.log(JSON.stringify(citations))
 
     return (
         <Stack className={`${styles.answerContainer} ${isSelected && styles.selected}`} verticalAlign="space-between">
