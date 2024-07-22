@@ -12,9 +12,9 @@ from sentence_transformers import SentenceTransformer
 from sqlalchemy import Table, Column, Integer, String, LargeBinary, MetaData
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from fastapi_app.clients import create_embed_client
+from chatlse.clients import create_embed_client
 from llama_index.core.node_parser import SentenceSplitter 
-from fastapi_app.postgres_engine import create_postgres_engine_from_env
+from chatlse.postgres_engine import create_postgres_engine_from_env
 
 import PyPDF2
 import re

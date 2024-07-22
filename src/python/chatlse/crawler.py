@@ -1,6 +1,7 @@
 # This file contains util functions for the crawler
 import os
 import re
+import asyncio
 import hashlib
 from PyPDF2 import PdfReader
 from dotenv import load_dotenv
@@ -11,9 +12,9 @@ import json
 from datetime import datetime
 
 
-# Filter unnecessary FutureWarning thrown by HuggingFaceEmbedding
-import warnings
-warnings.simplefilter(action='ignore', category=FutureWarning)
+from chatlse.embeddings import compute_text_embedding_sync
+
+
 
 #### Environment variables & Constants ####
 
@@ -31,15 +32,7 @@ if not EMBED_MODEL:
 MODEL_INSTANCE = HuggingFaceEmbedding(EMBED_MODEL)
 
 
-def compute_text_embedding_sync(
-    q: str, embed_model: str = EMBED_MODEL, model_instance=None
-):
-    if not model_instance:
-        model_instance = HuggingFaceEmbedding(model_name=embed_model)
-    embedding = model_instance.get_text_embedding(q)
-
-    return embedding
-
+#### Util Functions ####
 
 def read_pdf(file_path):
     # Initialize a variable to hold all the text
@@ -95,7 +88,7 @@ def parse_doc(file_path):
     return cleaned_content, doc_id, type
 
 
-def embed_text(text, type, url, title, date_scraped, doc_id):
+def embed_json(text, type, url, title, date_scraped, doc_id):
     load_dotenv(override=True)
 
     # Chunking and embedding chunks
@@ -141,7 +134,7 @@ def generate_json_entry_for_files(text, type, url, title, date_scraped, doc_id):
         - embedding: embedded chunk
     """
 
-    return embed_text(text, type, url, title, date_scraped, doc_id)
+    return embed_json(text, type, url, title, date_scraped, doc_id)
 
 
 def generate_json_entry_for_html(text, url, title, date_scraped, doc_id):
@@ -164,7 +157,7 @@ def generate_json_entry_for_html(text, url, title, date_scraped, doc_id):
     soup = BeautifulSoup(text, 'html.parser')
     cleaned_content = clean_text(soup.get_text())
 
-    return embed_text(cleaned_content, "webpage", url, title, date_scraped, doc_id)
+    return embed_json(cleaned_content, "webpage", url, title, date_scraped, doc_id)
 
 
 def generate_list_ingested_data(file_path, idx, type, url, title, date_scraped):

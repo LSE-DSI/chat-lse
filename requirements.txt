@@ -1,3 +1,6 @@
+# ChatLSE package 
+./src/python/
+
 # Data Collection
 requests==2.31.0
 scrapy==2.11.2

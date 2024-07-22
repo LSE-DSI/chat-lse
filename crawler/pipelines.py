@@ -4,20 +4,15 @@
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
 import logging
-import os
 
 from itemadapter import ItemAdapter
 
 from sqlalchemy import text
 from dotenv import load_dotenv
 
-from fastapi_app.postgres_engine import create_postgres_engine_from_env_sync
+from chatlse.postgres_engine import create_postgres_engine_from_env_sync
 
-from utils.crawler_utils import parse_doc, generate_json_entry_for_files, generate_json_entry_for_html, generate_list_ingested_data
-# Default is 512 for GTE-large
-EMBED_CHUNK_SIZE = os.getenv("EMBED_CHUNK_SIZE")
-#  Default is 128 as experimented
-EMBED_OVERLAP_SIZE = os.getenv("EMBED_OVERLAP_SIZE")
+from chatlse.crawler import parse_doc, generate_json_entry_for_files, generate_json_entry_for_html, generate_list_ingested_data
 
 
 class ItemToPostgresPipeline:
