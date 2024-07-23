@@ -37,11 +37,10 @@ class LsesuCrawlerSpider(scrapy.Spider):
         # Parse the html content from the linked page 
         soup = BeautifulSoup(response.text, 'html.parser')
         cleaned_content = clean_text(soup.get_text())
-        cleaned_excluded = cleaned_content.replace(''' Saw Swee Hock Student Centre, 
- 1 Sheffield Street,
- London WC2A 2AP
- Registered Charity Number: 1143103
- Company Number: 7710669We are a London Living Wage employerLSESU FacebookLSESU TwitterLSESU InstagramLSESU YouTubeLSESU LinkedIn''', '')
+        cleaned_excluded = cleaned_content.replace('''Saw Swee Hock Student Centre, \r 1 Sheffield Street,\r London WC2A 2AP\r Registered Charity Number: 1143103\r Company Number: 7710669We are a London Living Wage employerLSESU''', " " )
+        cleaned_excluded = cleaned_excluded.replace('''FacebookLSESU TwitterLSESU InstagramLSESU YouTubeLSESU LinkedIn''', " " )
+        cleaned_excluded = cleaned_excluded.replace('''Return to LSESU site Controls Admin Basket Sign InHomeStudent Voice Student RepresentativesAcademic RepresentationElectionsDemocracy CommitteeDemocracy ReviewStudent Town HallsStudent PanelsSubmit a Policy Proposal!Campaigns & PolicyTeaching AwardsCommunities SocietiesRAGStudent MediaSports and RecreationMarshall BuildingCommittee HubWhat's on Upcoming EventsThe Three TunsDenning Learning CaféGymActive LifestyleWind Down WednesdaysSupport Advice ServiceGuidance on The Middle EastCovid-19 UpdatesFundingStudent Check - InBME MentoringReporting Racism at LSEConsent EdReally Useful StuffLead LSESearchHomeSupport Funding''', " " )
+        print(f"Cleaned content: {cleaned_excluded}")
     
 
 
