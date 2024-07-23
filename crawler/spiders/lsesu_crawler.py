@@ -3,7 +3,7 @@ import scrapy
 import os
 import hashlib
 from bs4 import BeautifulSoup
-from crawler.items import PagesScraperItem, FilesScraperItem, ErrorScraperItem, Error301ScraperItem
+from crawler.items import SUPagesScraperItem, ErrorScraperItem, Error301ScraperItem
 from dateutil.parser import parse
 
 from chatlse.crawler import clean_text
@@ -16,48 +16,59 @@ class LsesuCrawlerSpider(scrapy.Spider):
     start_urls = ["https://www.lsesu.com"]
 
     max_depth = 6
-    global visited
-    visited = []
+
+    def __init__(self, *args, **kwargs):
+        super(LsesuCrawlerSpider, self).__init__(*args, **kwargs)
+        self.visited = []
 
     def parse(self, response):
-        for next_page_url in response.css("a.nav-link::attr(href)").extract_all():
-            if next_page_url not in visited:
-                visited.append(next_page_url)
+        for next_page_url in response.css("a.nav-link::attr(href)").extract():
+#            if next_page_url not in visited:
+            self.visited.append(next_page_url)
 
-                yield scrapy.Request(
-                    response.urljoin(next_page_url),
-                    callback=self.parse_linked_page,
-                    meta={'depth': 1, 'origin_url': response.url},
-                    errback=self.handle_error
-                )
+            yield scrapy.Request(
+                response.urljoin(next_page_url),
+                callback=self.parse_linked_page,
+                meta={'depth': 1, 'origin_url': response.url},
+                errback=self.handle_error
+            )
     
     def parse_linked_page(self, response):
         # Parse the html content from the linked page 
         soup = BeautifulSoup(response.text, 'html.parser')
         cleaned_content = clean_text(soup.get_text())
+        cleaned_excluded = cleaned_content.replace(''' Saw Swee Hock Student Centre, 
+ 1 Sheffield Street,
+ London WC2A 2AP
+ Registered Charity Number: 1143103
+ Company Number: 7710669We are a London Living Wage employerLSESU FacebookLSESU TwitterLSESU InstagramLSESU YouTubeLSESU LinkedIn''', '')
+    
+
 
         # Extract data from the linked page
-        webpage_item = PagesScraperItem()
+        webpage_item = SUPagesScraperItem()
         webpage_item['url'] = response.url
-        webpage_item['title'] = response.css('a.nav-link::text').get().strip()
-        webpage_item['content'] = cleaned_content
+        webpage_item['title'] = response.css('title::text').get().strip()
+        webpage_item['content'] = cleaned_excluded
         webpage_item['date_scraped'] = self.parse_as_datetime(response.headers['Date'].decode())
         webpage_item['doc_id'] = self.compute_hash(cleaned_content)
+
+        print(f"Yielding PagesScraperItem: {webpage_item}")
 
         yield webpage_item
 
         current_depth = response.meta.get('depth', 1)
         if current_depth < self.max_depth:
-            for next_page_url in response.css("mal-imagenav-page::attr(href)").extract():
-                if next_page_url not in visited:
-                    visited.append(next_page_url)
+            for next_page_url in response.css("a.msl-imagenav-page::attr(href)").extract():
+#               if next_page_url not in visited:
+                self.visited.append(next_page_url)
 
-                    yield scrapy.Request(
-                        response.urljoin(next_page_url),
-                        callback=self.parse_linked_page,
-                        meta={'depth': current_depth + 1, 'origin_url': response.meta['origin_url']},
-                        errback=self.handle_error
-                    )
+                yield scrapy.Request(
+                    response.urljoin(next_page_url),
+                    callback=self.parse_linked_page,
+                    meta={'depth': current_depth + 1, 'origin_url': response.meta['origin_url']},
+                    errback=self.handle_error
+                )
 
     def handle_error(self, failure):
         self.logger.error(repr(failure))
