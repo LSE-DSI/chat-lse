@@ -3,7 +3,7 @@ import scrapy
 import os
 import hashlib
 from bs4 import BeautifulSoup
-from crawler.items import SUPagesScraperItem, ErrorScraperItem, Error301ScraperItem
+from crawler.items import SUPagesScraperItem, FilesScraperItem, ErrorScraperItem, Error301ScraperItem
 from dateutil.parser import parse
 
 from chatlse.crawler import clean_text
@@ -12,8 +12,10 @@ DATA_FOLDER = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '.
 
 class LsesuCrawlerSpider(scrapy.Spider):
     name = "lsesu_crawler"
-    allowed_domains = ["www.lsesu.com"]
-    start_urls = ["https://www.lsesu.com"]
+    start_urls = [#"https://www.lsesu.com",
+#                 "https://www.lsesu.com/news/",
+                  "https://www.lsesu.com/union/"
+                  ]
 
     max_depth = 6
 
@@ -22,24 +24,97 @@ class LsesuCrawlerSpider(scrapy.Spider):
         self.visited = []
 
     def parse(self, response):
-        for next_page_url in response.css("a.nav-link::attr(href)").extract():
-#            if next_page_url not in visited:
-            self.visited.append(next_page_url)
+        
+        # Extract all the links and yield new requests for each link
+        for next_page_url in response.css("a.msl-imagenav-page::attr(href)").extract():
+            next_page_url = response.urljoin(next_page_url)
+            if next_page_url not in self.visited:
+                self.visited.append(next_page_url)
+                if next_page_url.endswith(('.pdf')):
+                    # Download the linked files
+                    yield scrapy.Request(response.urljoin(next_page_url), callback=self.save_file)
 
-            yield scrapy.Request(
-                response.urljoin(next_page_url),
-                callback=self.parse_linked_page,
-                meta={'depth': 1, 'origin_url': response.url},
-                errback=self.handle_error
-            )
+                    #  Save metadata for the files to be downloaded
+                    file_item = FilesScraperItem()
+                    file_item["url"] = response.urljoin(next_page_url)
+                    file_item["title"] = next_page_url.split('/')[-1]
+                    file_item["file_path"] = os.path.join(
+                        'data/files/', file_item["title"])
+                    file_item["date_scraped"] = file_item['date_scraped'] = self.parse_as_datetime(
+                        response.headers['Date'].decode())
+
+                    yield file_item
+                
+                else:
+                    yield scrapy.Request(
+                        next_page_url,
+                        callback=self.parse_linked_page,
+                        meta={'depth': 1, 'origin_url': response.url},
+                        errback=self.handle_error
+                    )
+        for next_page_url in response.css("a.nav-link::attr(href)").extract():
+            next_page_url = response.urljoin(next_page_url)
+            if next_page_url not in self.visited:
+                self.visited.append(next_page_url)
+                if next_page_url.endswith(('.pdf')):
+                    # Download the linked files
+                    yield scrapy.Request(response.urljoin(next_page_url), callback=self.save_file)
+
+                    #  Save metadata for the files to be downloaded
+                    file_item = FilesScraperItem()
+                    file_item["url"] = response.urljoin(next_page_url)
+                    file_item["title"] = next_page_url.split('/')[-1]
+                    file_item["file_path"] = os.path.join(
+                        'data/files/', file_item["title"])
+                    file_item["date_scraped"] = file_item['date_scraped'] = self.parse_as_datetime(
+                        response.headers['Date'].decode())
+
+                    yield file_item
+                
+                else:
+                    yield scrapy.Request(
+                        next_page_url,
+                        callback=self.parse_linked_page,
+                        meta={'depth': 1, 'origin_url': response.url},
+                        errback=self.handle_error
+                    )
+        # Extract all the links and yield new requests for each link
+        for next_page_url in response.css("#footer-links > ul > li > a::attr(href)").extract():
+            next_page_url = response.urljoin(next_page_url)
+            if next_page_url not in self.visited:
+                self.visited.append(next_page_url)
+                if next_page_url.endswith(('.pdf')):
+                    # Download the linked files
+                    yield scrapy.Request(response.urljoin(next_page_url), callback=self.save_file)
+
+                    #  Save metadata for the files to be downloaded
+                    file_item = FilesScraperItem()
+                    file_item["url"] = response.urljoin(next_page_url)
+                    file_item["title"] = next_page_url.split('/')[-1]
+                    file_item["file_path"] = os.path.join(
+                        'data/files/', file_item["title"])
+                    file_item["date_scraped"] = file_item['date_scraped'] = self.parse_as_datetime(
+                        response.headers['Date'].decode())
+
+                    yield file_item
+                
+                else:
+                    yield scrapy.Request(
+                        next_page_url,
+                        callback=self.parse_linked_page,
+                        meta={'depth': 1, 'origin_url': response.url},
+                        errback=self.handle_error
+                    )
+
     
     def parse_linked_page(self, response):
         # Parse the html content from the linked page 
         soup = BeautifulSoup(response.text, 'html.parser')
         cleaned_content = clean_text(soup.get_text())
-        cleaned_excluded = cleaned_content.replace('''Saw Swee Hock Student Centre, \r 1 Sheffield Street,\r London WC2A 2AP\r Registered Charity Number: 1143103\r Company Number: 7710669We are a London Living Wage employerLSESU''', " " )
-        cleaned_excluded = cleaned_excluded.replace('''FacebookLSESU TwitterLSESU InstagramLSESU YouTubeLSESU LinkedIn''', " " )
-        cleaned_excluded = cleaned_excluded.replace('''Return to LSESU site Controls Admin Basket Sign InHomeStudent Voice Student RepresentativesAcademic RepresentationElectionsDemocracy CommitteeDemocracy ReviewStudent Town HallsStudent PanelsSubmit a Policy Proposal!Campaigns & PolicyTeaching AwardsCommunities SocietiesRAGStudent MediaSports and RecreationMarshall BuildingCommittee HubWhat's on Upcoming EventsThe Three TunsDenning Learning CaféGymActive LifestyleWind Down WednesdaysSupport Advice ServiceGuidance on The Middle EastCovid-19 UpdatesFundingStudent Check - InBME MentoringReporting Racism at LSEConsent EdReally Useful StuffLead LSESearchHomeSupport Funding''', " " )
+        cleaned_excluded = cleaned_content.replace('''Saw Swee Hock Student Centre, \r 1 Sheffield Street,\r London WC2A 2AP\r Registered Charity Number: 1143103\r Company Number: 7710669We are a London Living Wage employerLSESU''', "" )
+        cleaned_excluded = cleaned_excluded.replace('''FacebookLSESU TwitterLSESU InstagramLSESU YouTubeLSESU LinkedIn''', "" )
+        cleaned_excluded = cleaned_excluded.replace('''Return to LSESU site Controls Admin Basket Sign InHomeStudent Voice Student RepresentativesAcademic RepresentationElectionsDemocracy CommitteeDemocracy ReviewStudent Town HallsStudent PanelsSubmit a Policy Proposal!Campaigns & PolicyTeaching AwardsCommunities SocietiesRAGStudent MediaSports and RecreationMarshall BuildingCommittee HubWhat's on Upcoming EventsThe Three TunsDenning Learning CaféGymActive LifestyleWind Down WednesdaysSupport Advice ServiceGuidance on The Middle EastCovid-19 UpdatesFundingStudent Check - InBME MentoringReporting Racism at LSEConsent EdReally Useful StuffLead''', "" )
+        cleaned_excluded = cleaned_excluded.replace('''Skip to content''' , "" )
         print(f"Cleaned content: {cleaned_excluded}")
     
 
@@ -59,15 +134,31 @@ class LsesuCrawlerSpider(scrapy.Spider):
         current_depth = response.meta.get('depth', 1)
         if current_depth < self.max_depth:
             for next_page_url in response.css("a.msl-imagenav-page::attr(href)").extract():
-#               if next_page_url not in visited:
-                self.visited.append(next_page_url)
+                if next_page_url not in self.visited:
+                    self.visited.append(next_page_url)
 
-                yield scrapy.Request(
-                    response.urljoin(next_page_url),
-                    callback=self.parse_linked_page,
-                    meta={'depth': current_depth + 1, 'origin_url': response.meta['origin_url']},
-                    errback=self.handle_error
-                )
+                    if next_page_url.endswith(('.pdf')):
+                        # Download the linked files
+                        yield scrapy.Request(response.urljoin(next_page_url), callback=self.save_file)
+
+                        #  Save metadata for the files to be downloaded
+                        file_item = FilesScraperItem()
+                        file_item["url"] = response.urljoin(next_page_url)
+                        file_item["title"] = next_page_url.split('/')[-1]
+                        file_item["file_path"] = os.path.join(
+                            'data/files/', file_item["title"])
+                        file_item["date_scraped"] = file_item['date_scraped'] = self.parse_as_datetime(
+                            response.headers['Date'].decode())
+
+                        yield file_item
+                    
+                    else:
+                        yield scrapy.Request(
+                            response.urljoin(next_page_url),
+                            callback=self.parse_linked_page,
+                            meta={'depth': current_depth + 1, 'origin_url': response.meta['origin_url']},
+                            errback=self.handle_error
+                        )
 
     def handle_error(self, failure):
         self.logger.error(repr(failure))
@@ -106,5 +197,15 @@ class LsesuCrawlerSpider(scrapy.Spider):
         # Takes a date string and parse it as a datetime object to be fed as TIMESTAMP
         return parse(date_str).replace(tzinfo=None)
             
-        
+
+    def save_file(self, response):
+        file_name = response.url.split('/')[-1]
+
+        os.makedirs(DATA_FOLDER, exist_ok=True)
+
+        # Save the file
+        file_path = os.path.join(DATA_FOLDER, file_name)
+        with open(file_path, 'wb') as f:
+            f.write(response.body)
+        self.log(f'Saved file {file_name}')
 
