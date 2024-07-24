@@ -3,22 +3,23 @@ import os
 import re
 import hashlib
 from PyPDF2 import PdfReader
-from dotenv import load_dotenv
-from bs4 import BeautifulSoup
 from llama_index.core.node_parser import SentenceSplitter
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+import json
+from datetime import datetime
 
-# Filter unnecessary FutureWarning thrown by HuggingFaceEmbedding
-import warnings
-warnings.simplefilter(action='ignore', category=FutureWarning)
+
+from chatlse.embeddings import compute_text_embedding_sync
+
+
 
 #### Environment variables & Constants ####
 
 # Default is 512 for GTE-large
 EMBED_CHUNK_SIZE = os.getenv("EMBED_CHUNK_SIZE")
-# Default is 128 as experimented
+#  Default is 128 as experimented
 EMBED_OVERLAP_SIZE = os.getenv("EMBED_OVERLAP_SIZE")
-# Get embedding model 
+# Get embedding model
 EMBED_MODEL = os.getenv("OLLAMA_EMBED_MODEL")
 
 if not EMBED_MODEL:
@@ -27,15 +28,8 @@ if not EMBED_MODEL:
 
 MODEL_INSTANCE = HuggingFaceEmbedding(EMBED_MODEL)
 
-def compute_text_embedding_sync(
-    q: str, embed_model: str = EMBED_MODEL, model_instance=None
-):
-    if not model_instance:
-        model_instance = HuggingFaceEmbedding(model_name=embed_model)
-    embedding = model_instance.get_text_embedding(q)
 
-    return embedding
-
+#### Util Functions ####
 
 def read_pdf(file_path):
     # Initialize a variable to hold all the text
@@ -68,10 +62,10 @@ def clean_text(text):
     return cleaned_text
 
 
-def parse_doc(file_path): 
+def parse_doc(file_path):
     # This function parses a file and returns its cleaned texts as python string
-    # Supported file types: [".pdf", ".doc", ".docx", ".ppt", ".pptx"] 
-    
+    #  Supported file types: [".pdf", ".doc", ".docx", ".ppt", ".pptx"]
+
     # Parse file for different file types
     if file_path.endswith(".pdf"):
         content = read_pdf(file_path)
@@ -91,36 +85,7 @@ def parse_doc(file_path):
     return cleaned_content, doc_id, type
 
 
-def embed_text(text, type, url, title, date_scraped, doc_id):
-    load_dotenv(override=True)
-
-    # Chunking and embedding chunks
-    splitter = SentenceSplitter(
-        chunk_size=EMBED_CHUNK_SIZE if EMBED_CHUNK_SIZE else 512,
-        chunk_overlap=EMBED_OVERLAP_SIZE if EMBED_OVERLAP_SIZE else 128
-    )
-
-    sentence_chunks = splitter.split_text(text)
-    output_list = []
-    for chunk_id, chunk_text in enumerate(sentence_chunks):
-        id = f"{doc_id}_{chunk_id}"
-        embedding = compute_text_embedding_sync(chunk_text, model_instance=MODEL_INSTANCE)
-        output_list.append([
-            id, 
-            doc_id,
-            chunk_id,
-            type,
-            url,
-            title,
-            chunk_text,
-            date_scraped,
-            embedding
-        ])
-    
-    return output_list
-
-
-def generate_json_entry_for_files(text, type, url, title, date_scraped, doc_id):
+def generate_json_entry(text, type, url, title, date_scraped, doc_id):
     """
     This function takes the metadata returned by the `file_downloader`, chunks and embeds
     the files and returns a json entry for input into postgres database. 
@@ -136,27 +101,59 @@ def generate_json_entry_for_files(text, type, url, title, date_scraped, doc_id):
         - embedding: embedded chunk 
     """
 
-    return embed_text(text, type, url, title, date_scraped, doc_id)
+    # Chunking and embedding chunks
+    splitter = SentenceSplitter(
+        chunk_size=EMBED_CHUNK_SIZE if EMBED_CHUNK_SIZE else 512,
+        chunk_overlap=EMBED_OVERLAP_SIZE if EMBED_OVERLAP_SIZE else 128
+    )
+
+    sentence_chunks = splitter.split_text(text)
+    output_list = []
+    for chunk_id, chunk_text in enumerate(sentence_chunks):
+        id = f"{doc_id}_{chunk_id}"
+        embedding = compute_text_embedding_sync(chunk_text, model_instance=MODEL_INSTANCE)
+        output_list.append([
+            id,
+            doc_id,
+            chunk_id,
+            type,
+            url,
+            title,
+            chunk_text,
+            date_scraped,
+            embedding
+        ])
+
+    return output_list
 
 
-def generate_json_entry_for_html(text, url, title, date_scraped, doc_id):
+def generate_list_ingested_data(file_path, idx, type, url, title, date_scraped):
     """
-    This function takes the metadata returned by the lse_crawler, parses, chunks and embeds
-    the html and returns a list entry for input into postgres database. 
-
-    Output: 
-        - doc_id: hashed html content 
-        - chunk_id: id of the text chunk 
-        - type: type of the file 
-        - url: url of the webpage 
-        - title: title of the webpage 
-        - content: chunked content of the html 
-        - date_scraped: datetime of when the data is scraped 
-        - embedding: embedded chunk 
+    This functions takes the metadata about the data ingested into the database and returns a json file 
+    which stores the metadata about which pages and files have been ingested. The json entry is appended 
+    to the `ingested_data.json` file.
     """
+    json_entry = {"id": idx,
+                  "type": type,
+                  "url": url,
+                  "title": title,
+                  "date_scraped": date_scraped.isoformat() if isinstance(date_scraped, datetime) else date_scraped}
 
-    # Parse the html content
-    soup = BeautifulSoup(text, 'html.parser')
-    cleaned_content = clean_text(soup.get_text())
+    # for a given title, if the id is the same, then delete the existing entry and insert the new one
+    if os.path.exists(file_path):
+        with open(file_path, "r") as file:
+            lines = file.readlines()
+            for line in lines:
+                data = json.loads(line)
+                if data["title"] == title and data["id"] == idx:
+                    lines.remove(line)
+                    break
+        with open(file_path, "a") as file:
+            file.write(json.dumps(json_entry))
+            file.write("\n")
+    else:
+        with open(file_path, "a") as file:
+            file.write(json.dumps(json_entry))
+            file.write("\n")
 
-    return embed_text(cleaned_content, "webpage", url, title, date_scraped, doc_id)
+    print(f"Data ingested: {url}")

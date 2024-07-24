@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from pgvector.sqlalchemy import Vector
 from datetime import datetime
-from sqlalchemy import Index, Column, Integer, String, ForeignKey, text, inspect 
+from sqlalchemy import Index 
 from sqlalchemy.orm import DeclarativeBase, Mapped, MappedAsDataclass, mapped_column
 
 
@@ -40,7 +40,7 @@ class Doc(Base):
         return model_dict
 
     def to_str_for_rag(self):
-        return f"Title:{self.title} URL: {self.url} Content: {self.content} Type:{self.type}"
+        return f"Title: {self.title} URL: {self.url} Content: {self.content} Type:{self.type}"
 
     def to_str_for_embedding(self):
         return f"Title: {self.title} URL: {self.url} Content: {self.content} Type: {self.type}"
