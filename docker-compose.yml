@@ -1,0 +1,31 @@
+version: '3'
+services:
+  model:
+    container_name: chatlse-ollama
+    image: ollama/ollama:0.1.48
+    ports:
+      - "11435:11434"
+    restart: "always"
+    environment:
+      - OLLAMA_KEEP_ALIVE=-1
+    volumes:
+      - /mnt/data/chat_lse/data/prod/ollama:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['1']
+              capabilities: [gpu]
+  db:
+    container_name: chatlse-postgres
+    image: pgvector/pgvector:0.7.1-pg16
+    ports:
+      - "5433:5432"
+    restart: "always"
+    environment:
+      - POSTGRES_DB=chatlse
+      - POSTGRES_USER=chatlse
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - /mnt/data/chat_lse/data/prod/postgres-data:/var/lib/postgresql/data
