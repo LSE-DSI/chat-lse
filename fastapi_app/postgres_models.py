@@ -12,7 +12,7 @@ class Base(DeclarativeBase, MappedAsDataclass):
     pass
 
 class Doc(Base):
-    __tablename__ = "lse_doc_scca_no_overlap"
+    __tablename__ = "lse_doc_scca"
     id: Mapped[str] = mapped_column(primary_key=True)
     doc_id: Mapped[str] = mapped_column()
     chunk_id: Mapped[str] = mapped_column()

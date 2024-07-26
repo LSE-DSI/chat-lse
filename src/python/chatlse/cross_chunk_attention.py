@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 class ShiftedCrossChunkAttention(nn.Module):
-    def __init__(self, embed_dim, num_heads=8, shift_size=1):
+    def __init__(self, embed_dim, num_heads=1, shift_size=1):
         super(ShiftedCrossChunkAttention, self).__init__()
         self.attention = nn.MultiheadAttention(embed_dim=embed_dim, num_heads=num_heads)
         self.shift_size = shift_size
