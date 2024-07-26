@@ -18,6 +18,11 @@ class LogMiddleware(BaseHTTPMiddleware):
         }
         logger.info("Request received", extra=log_dict)
 
+        # Exclude static files from logging.
+        if request.url.path.startswith("/favicon") or request.url.path.startswith("/assets"):
+            response = await call_next(request)
+            return response
+
         if request.method in ("POST", "PUT", "PATCH"):
             try:
                 body = await request.json()
