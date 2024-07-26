@@ -113,7 +113,7 @@ def generate_json_entry(text, type, url, title, date_scraped, doc_id):
     # Chunking the document
     splitter = SentenceSplitter(
         chunk_size=EMBED_CHUNK_SIZE if EMBED_CHUNK_SIZE else 512,
-        chunk_overlap=EMBED_OVERLAP_SIZE if EMBED_OVERLAP_SIZE else 128
+        chunk_overlap=0
     )
 
     sentence_chunks = splitter.split_text(text)
