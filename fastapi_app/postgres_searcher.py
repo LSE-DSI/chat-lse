@@ -35,7 +35,7 @@ class PostgresSearcher:
 
         vector_query = f"""
             SELECT id, RANK () OVER (ORDER BY embedding <=> :embedding) AS rank
-                FROM lse_doc_scca
+                FROM lse_doc
                 {filter_clause_where}
                 ORDER BY embedding <=> :embedding
                 LIMIT 20
@@ -43,7 +43,7 @@ class PostgresSearcher:
 
         fulltext_query = f"""
             SELECT id, RANK () OVER (ORDER BY ts_rank_cd(to_tsvector('english', content), query) DESC)
-                FROM lse_doc_scca, plainto_tsquery('english', :query) query
+                FROM lse_doc, plainto_tsquery('english', :query) query
                 WHERE to_tsvector('english', content) @@ query {filter_clause_and}
                 ORDER BY ts_rank_cd(to_tsvector('english', content), query) DESC
                 LIMIT 20
