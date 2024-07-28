@@ -10,6 +10,10 @@ from datetime import datetime
 
 
 from chatlse.embeddings import compute_text_embedding_sync
+from chatlse.multihead_attention import MultiHeadAttention
+from chatlse.cross_chunk_attention import ShiftedCrossChunkAttention
+
+import torch
 
 
 
@@ -21,12 +25,18 @@ EMBED_CHUNK_SIZE = os.getenv("EMBED_CHUNK_SIZE")
 EMBED_OVERLAP_SIZE = os.getenv("EMBED_OVERLAP_SIZE")
 # Get embedding model
 EMBED_MODEL = os.getenv("OLLAMA_EMBED_MODEL")
+# Get embedding dimension 
+EMBED_DIM = os.getenv("EMBED_DIM")
 
 if not EMBED_MODEL:
     # Use default model if not provided
     EMBED_MODEL = "thenlper/gte-large"
 
 MODEL_INSTANCE = HuggingFaceEmbedding(EMBED_MODEL)
+
+# Initialize the cross-chunk attention mechanism
+MULTIHEAD_ATTENTION_INSTANCE = MultiHeadAttention(EMBED_DIM if EMBED_DIM else 1024) # Set default embed_dim to 1024
+CROSS_CHUNK_ATTENTION_INSTANCE = ShiftedCrossChunkAttention(EMBED_DIM if EMBED_DIM else 1024)
 
 
 #### Util Functions ####
@@ -101,27 +111,43 @@ def generate_json_entry(text, type, url, title, date_scraped, doc_id):
         - embedding: embedded chunk 
     """
 
-    # Chunking and embedding chunks
+    # Chunking the document
     splitter = SentenceSplitter(
         chunk_size=EMBED_CHUNK_SIZE if EMBED_CHUNK_SIZE else 512,
-        chunk_overlap=EMBED_OVERLAP_SIZE if EMBED_OVERLAP_SIZE else 128
+        chunk_overlap=0
     )
 
     sentence_chunks = splitter.split_text(text)
-    output_list = []
-    for chunk_id, chunk_text in enumerate(sentence_chunks):
-        id = f"{doc_id}_{chunk_id}"
+    chunk_embeddings = []
+
+    # Compute initial embeddings for each chunk
+    for chunk_text in sentence_chunks:
         embedding = compute_text_embedding_sync(chunk_text, model_instance=MODEL_INSTANCE)
+        chunk_embeddings.append(embedding)
+
+    # Convert to tensor and reshape for the attention mechanism
+    chunk_embeddings = torch.tensor(chunk_embeddings)
+    num_chunks, embed_dim = chunk_embeddings.size()
+    chunk_embeddings = chunk_embeddings.view(num_chunks, 1, embed_dim)  # Reshape to (num_chunks, chunk_size=1, embed_dim)
+
+    # Apply -chunk attention
+    attended_embeddings = CROSS_CHUNK_ATTENTION_INSTANCE(chunk_embeddings) # Change to MULTIHEAD_ATTENTION_INSTANCE if want to test no shiftinbg
+    attended_embeddings = attended_embeddings.view(num_chunks, embed_dim).tolist()  # Reshape back to (num_chunks, embed_dim)
+
+    # Generate output list with attended embeddings
+    output_list = []
+    for chunk_id, attended_embedding in enumerate(attended_embeddings):
+        id = f"{doc_id}_{chunk_id}"
         output_list.append([
-            id,
+            id, 
             doc_id,
             chunk_id,
             type,
             url,
             title,
-            chunk_text,
+            sentence_chunks[chunk_id],
             date_scraped,
-            embedding
+            attended_embedding
         ])
 
     return output_list
