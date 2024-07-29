@@ -41,9 +41,9 @@ class ItemToPostgresPipeline:
             logging.info("Enabling the pgvector extension for Postgres...")
             conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
 
-            logging.info("Creating lsesu_doc table...")
+            logging.info("Creating lse_doc table...")
             conn.execute(text('''
-                CREATE TABLE IF NOT EXISTS lsesu_doc (
+                CREATE TABLE IF NOT EXISTS lse_doc (
                     id TEXT PRIMARY KEY, 
                     doc_id TEXT,
                     chunk_id TEXT, 
@@ -105,7 +105,7 @@ class ItemToPostgresPipeline:
 
                     # Check if the url already exists in the database
                     result = conn.execute(
-                        text('SELECT url, doc_id FROM lsesu_doc WHERE url = :url'),
+                        text('SELECT url, doc_id FROM lse_doc WHERE url = :url'),
                         {'url': url}
                     ).fetchone()
 
@@ -119,13 +119,13 @@ class ItemToPostgresPipeline:
                         # Delete old insertions if document has changed
                         else:
                             print(f"Page modified since last scraped. Deleting previous data for:", url)
-                            conn.execute(text('DELETE FROM lsesu_doc WHERE url = :url'), {'url': url})
+                            conn.execute(text('DELETE FROM lse_doc WHERE url = :url'), {'url': url})
 
                     # Insert document into the database (if document not exist or if it has changed)
                     output_list = generate_json_entry(content, type, url, title, date_scraped, doc_id)
                     for idx, doc_id, chunk_id, type, url, title, content, date_scraped, embedding in output_list:
                         conn.execute(text('''
-                            INSERT INTO lsesu_doc (id, doc_id, chunk_id, type, url, title, content, date_scraped, embedding)
+                            INSERT INTO lse_doc (id, doc_id, chunk_id, type, url, title, content, date_scraped, embedding)
                             VALUES (:id, :doc_id, :chunk_id, :type, :url, :title, :content, :date_scraped, :embedding)
                         '''), {
                             "id": idx,
