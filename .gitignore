@@ -300,3 +300,6 @@ static/
 
 .vscode
 .DS_Store
+
+/chatlse/notebooks/experiments/scca_test_data.csv
+
