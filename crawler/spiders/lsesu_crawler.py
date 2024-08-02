@@ -32,7 +32,18 @@ class LsesuCrawlerSpider(scrapy.Spider):
             if next_page_url.endswith(('.pdf')):
                 if next_page_url not in self.visited:
                     yield scrapy.Request(response.urljoin(next_page_url), callback=self.save_file)
-                    self.extract_file(next_page_url, response)
+                            #  Save metadata for the files to be downloaded
+                    file_item = FilesScraperItem()
+                    file_item["url"] = response.urljoin(next_page_url)
+                    file_item["title"] = next_page_url.split('/')[-1]
+                    file_item["file_path"] = os.path.join(
+                        'data/files/', file_item["title"])
+                    file_item["date_scraped"] = file_item['date_scraped'] = self.parse_as_datetime(
+                        response.headers['Date'].decode())
+
+                    yield file_item
+            
+                   
                 
                 else:
                     yield scrapy.Request(
@@ -48,7 +59,17 @@ class LsesuCrawlerSpider(scrapy.Spider):
                 if next_page_url.endswith(('.pdf')):
                 # Download the linked files
                     yield scrapy.Request(response.urljoin(next_page_url), callback=self.save_file)
-                    self.extract_file(next_page_url, response)
+                            #  Save metadata for the files to be downloaded
+                    file_item = FilesScraperItem()
+                    file_item["url"] = response.urljoin(next_page_url)
+                    file_item["title"] = next_page_url.split('/')[-1]
+                    file_item["file_path"] = os.path.join(
+                        'data/files/', file_item["title"])
+                    file_item["date_scraped"] = file_item['date_scraped'] = self.parse_as_datetime(
+                        response.headers['Date'].decode())
+
+                    yield file_item
+            
                 
                 else:
                     yield scrapy.Request(
@@ -64,7 +85,17 @@ class LsesuCrawlerSpider(scrapy.Spider):
                 self.visited.append(next_page_url)
                 if next_page_url.endswith(('.pdf')):
                     yield scrapy.Request(response.urljoin(next_page_url), callback=self.save_file)
-                    self.extract_file(next_page_url, response)
+                            #  Save metadata for the files to be downloaded
+                    file_item = FilesScraperItem()
+                    file_item["url"] = response.urljoin(next_page_url)
+                    file_item["title"] = next_page_url.split('/')[-1]
+                    file_item["file_path"] = os.path.join(
+                        'data/files/', file_item["title"])
+                    file_item["date_scraped"] = file_item['date_scraped'] = self.parse_as_datetime(
+                        response.headers['Date'].decode())
+
+                    yield file_item
+            
                 
                 else:
                     yield scrapy.Request(
@@ -80,7 +111,17 @@ class LsesuCrawlerSpider(scrapy.Spider):
                 self.visited.append(next_page_url)
                 if next_page_url.endswith(('.pdf')):
                         yield scrapy.Request(response.urljoin(next_page_url), callback=self.save_file)
-                        self.extract_file(next_page_url, response)
+                                #  Save metadata for the files to be downloaded
+                        file_item = FilesScraperItem()
+                        file_item["url"] = response.urljoin(next_page_url)
+                        file_item["title"] = next_page_url.split('/')[-1]
+                        file_item["file_path"] = os.path.join(
+                            'data/files/', file_item["title"])
+                        file_item["date_scraped"] = file_item['date_scraped'] = self.parse_as_datetime(
+                            response.headers['Date'].decode())
+
+                        yield file_item
+            
                 
                 else:
                     yield scrapy.Request(
@@ -124,7 +165,17 @@ class LsesuCrawlerSpider(scrapy.Spider):
 
                     if next_page_url.endswith(('.pdf')):
                         yield scrapy.Request(response.urljoin(next_page_url), callback=self.save_file)
-                        self.extract_file(next_page_url, response)
+                                #  Save metadata for the files to be downloaded
+                        file_item = FilesScraperItem()
+                        file_item["url"] = response.urljoin(next_page_url)
+                        file_item["title"] = next_page_url.split('/')[-1]
+                        file_item["file_path"] = os.path.join(
+                            'data/files/', file_item["title"])
+                        file_item["date_scraped"] = file_item['date_scraped'] = self.parse_as_datetime(
+                            response.headers['Date'].decode())
+
+                        yield file_item
+            
 
                     
                     else:
@@ -140,7 +191,17 @@ class LsesuCrawlerSpider(scrapy.Spider):
                     self.visited.append(next_page_url)
                     if next_page_url.endswith(('.pdf')):
                         yield scrapy.Request(response.urljoin(next_page_url), callback=self.save_file)
-                        self.extract_file(next_page_url, response)
+                        #  Save metadata for the files to be downloaded
+                        file_item = FilesScraperItem()
+                        file_item["url"] = response.urljoin(next_page_url)
+                        file_item["title"] = next_page_url.split('/')[-1]
+                        file_item["file_path"] = os.path.join(
+                            'data/files/', file_item["title"])
+                        file_item["date_scraped"] = file_item['date_scraped'] = self.parse_as_datetime(
+                            response.headers['Date'].decode())
+
+                        yield file_item
+            
                     
                     else:
                         yield scrapy.Request(
@@ -156,7 +217,17 @@ class LsesuCrawlerSpider(scrapy.Spider):
                     self.visited.append(next_page_url)
                     if next_page_url.endswith(('.pdf')):
                         yield scrapy.Request(response.urljoin(next_page_url), callback=self.save_file)
-                        self.extract_file(next_page_url, response)
+                                #  Save metadata for the files to be downloaded
+                        file_item = FilesScraperItem()
+                        file_item["url"] = response.urljoin(next_page_url)
+                        file_item["title"] = next_page_url.split('/')[-1]
+                        file_item["file_path"] = os.path.join(
+                            'data/files/', file_item["title"])
+                        file_item["date_scraped"] = file_item['date_scraped'] = self.parse_as_datetime(
+                            response.headers['Date'].decode())
+
+                        yield file_item
+            
                     else:
                         yield scrapy.Request(
                             next_page_url,
