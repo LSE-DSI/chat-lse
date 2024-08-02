@@ -13,8 +13,8 @@ DATA_FOLDER = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '.
 class LsesuCrawlerSpider(scrapy.Spider):
     name = "lsesu_crawler"
     start_urls = ["https://www.lsesu.com",
-                 "https://www.lsesu.com/news/",
-                  "https://www.lsesu.com/union/" 
+                "https://www.lsesu.com/news/",
+                "https://www.lsesu.com/union/" 
                   ]
 
     max_depth = 6
@@ -89,6 +89,8 @@ class LsesuCrawlerSpider(scrapy.Spider):
                         meta={'depth': 1, 'origin_url': response.url},
                         errback=self.handle_error
                     )
+        
+
     
     def parse_linked_page(self, response):
         # Parse the html content from the linked page 
@@ -144,10 +146,25 @@ class LsesuCrawlerSpider(scrapy.Spider):
                         yield scrapy.Request(
                             next_page_url,
                             callback=self.parse_linked_page,
-                            meta={'depth': 1, 'origin_url': response.url},
+                            meta={'depth': current_depth + 1, 'origin_url': response.url},
                             errback=self.handle_error
                         )
                     
+            for next_page_url in response.css("a.native-awu-btn.native-awu-btn--hero").extract():
+                next_page_url = response.urljoin(next_page_url)
+                if next_page_url not in self.visited:
+                    self.visited.append(next_page_url)
+                    if next_page_url.endswith(('.pdf')):
+                        yield scrapy.Request(response.urljoin(next_page_url), callback=self.save_file)
+                        self.extract_file(next_page_url, response)
+                    else:
+                        yield scrapy.Request(
+                            next_page_url,
+                            callback=self.parse_linked_page,
+                            meta={'depth': 1, 'origin_url': response.url},
+                            errback=self.handle_error
+                        )
+    
 
     def handle_error(self, failure):
         self.logger.error(repr(failure))
