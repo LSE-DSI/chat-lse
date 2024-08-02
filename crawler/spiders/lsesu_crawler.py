@@ -12,8 +12,8 @@ DATA_FOLDER = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '.
 
 class LsesuCrawlerSpider(scrapy.Spider):
     name = "lsesu_crawler"
-    start_urls = [#"https://www.lsesu.com",
-#                 "https://www.lsesu.com/news/",
+    start_urls = ["https://www.lsesu.com",
+                 "https://www.lsesu.com/news/",
                   "https://www.lsesu.com/union/" 
                   ]
 
@@ -26,77 +26,53 @@ class LsesuCrawlerSpider(scrapy.Spider):
     def parse(self, response):
         
         # Extract all the links and yield new requests for each link
-#        for next_page_url in response.css("a.msl-imagenav-page::attr(href)").extract():
-#            next_page_url = response.urljoin(next_page_url)
-#                self.visited.append(next_page_url)
-#                if next_page_url.endswith(('.pdf')):
-#            if next_page_url not in self.visited:
-#                    yield scrapy.Request(response.urljoin(next_page_url), callback=self.save_file)
-#                    file_item = FilesScraperItem()
-#                    file_item["url"] = response.urljoin(next_page_url)
-#                    file_item["title"] = next_page_url.split('/')[-1]
-#                    file_item["file_path"] = os.path.join(
-#                    file_item["date_scraped"] = file_item['date_scraped'] = self.parse_as_datetime(
-#                        response.headers['Date'].decode())
-#                        'data/files/', file_item["title"])
-
-#                    yield file_item
+        for next_page_url in response.css("a.msl-imagenav-page::attr(href)").extract():
+            next_page_url = response.urljoin(next_page_url)
+            self.visited.append(next_page_url)
+            if next_page_url.endswith(('.pdf')):
+                if next_page_url not in self.visited:
+                    yield scrapy.Request(response.urljoin(next_page_url), callback=self.save_file)
+                    self.extract_file(next_page_url, response)
                 
-#                else:
-#                    yield scrapy.Request(
-#                        next_page_url,
-#                        callback=self.parse_linked_page,
-#                        meta={'depth': 1, 'origin_url': response.url},
-#                        errback=self.handle_error
-#                    )
-#        for next_page_url in response.css("a.nav-link::attr(href)").extract():
-#            next_page_url = response.urljoin(next_page_url)
-#            if next_page_url not in self.visited:
-#                self.visited.append(next_page_url)
-#                if next_page_url.endswith(('.pdf')):
-#                # Download the linked files
-#                    yield scrapy.Request(response.urljoin(next_page_url), callback=self.save_file)
-#                    file_item = FilesScraperItem()
-#                    file_item["url"] = response.urljoin(next_page_url)
-#                    file_item["title"] = next_page_url.split('/')[-1]
-#                    file_item["file_path"] = os.path.join(
-#                        'data/files/', file_item["title"])
-#                    file_item["date_scraped"] = file_item['date_scraped'] = self.parse_as_datetime(
-#                        response.headers['Date'].decode())
-
-#                    yield file_item
+                else:
+                    yield scrapy.Request(
+                        next_page_url,
+                        callback=self.parse_linked_page,
+                        meta={'depth': 1, 'origin_url': response.url},
+                        errback=self.handle_error
+                    )
+        for next_page_url in response.css("a.nav-link::attr(href)").extract():
+            next_page_url = response.urljoin(next_page_url)
+            if next_page_url not in self.visited:
+                self.visited.append(next_page_url)
+                if next_page_url.endswith(('.pdf')):
+                # Download the linked files
+                    yield scrapy.Request(response.urljoin(next_page_url), callback=self.save_file)
+                    self.extract_file(next_page_url, response)
                 
-#                else:
-#                    yield scrapy.Request(
-#                        next_page_url,
-#                        callback=self.parse_linked_page,
-#                        meta={'depth': 1, 'origin_url': response.url},
-#                        errback=self.handle_error
-#                    )
+                else:
+                    yield scrapy.Request(
+                        next_page_url,
+                        callback=self.parse_linked_page,
+                        meta={'depth': 1, 'origin_url': response.url},
+                        errback=self.handle_error
+                    )
         # Extract all the links and yield new requests for each link
-#        for next_page_url in response.css("#footer-links > ul > li > a::attr(href)").extract():
-#            next_page_url = response.urljoin(next_page_url)
-#            if next_page_url not in self.visited:
-#                self.visited.append(next_page_url)
-#                if next_page_url.endswith(('.pdf')):
-#                    yield scrapy.Request(response.urljoin(next_page_url), callback=self.save_file)
-#                    file_item = FilesScraperItem()
-#                    file_item["title"] = next_page_url.split('/')[-1]
-#                    file_item["url"] = response.urljoin(next_page_url)
-#                    file_item["file_path"] = os.path.join(
-#                        'data/files/', file_item["title"])
-#                    file_item["date_scraped"] = file_item['date_scraped'] = self.parse_as_datetime(
-#                        response.headers['Date'].decode())
-
-#                    yield file_item
+        for next_page_url in response.css("#footer-links > ul > li > a::attr(href)").extract():
+            next_page_url = response.urljoin(next_page_url)
+            if next_page_url not in self.visited:
+                self.visited.append(next_page_url)
+                if next_page_url.endswith(('.pdf')):
+                    yield scrapy.Request(response.urljoin(next_page_url), callback=self.save_file)
+                    self.extract_file(next_page_url, response)
                 
-#                else:
-#                    yield scrapy.Request(
-#                        next_page_url,
-#                        callback=self.parse_linked_page,
-#                        meta={'depth': 1, 'origin_url': response.url},
-#                        errback=self.handle_error
-#                    )
+                else:
+                    yield scrapy.Request(
+                        next_page_url,
+                        callback=self.parse_linked_page,
+                        meta={'depth': 1, 'origin_url': response.url},
+                        errback=self.handle_error
+                    )
 
         for next_page_url in response.css("a.btn.btn-link.btn-download::attr(href)").extract():
             next_page_url = response.urljoin(next_page_url)
@@ -104,15 +80,7 @@ class LsesuCrawlerSpider(scrapy.Spider):
                 self.visited.append(next_page_url)
                 if next_page_url.endswith(('.pdf')):
                         yield scrapy.Request(response.urljoin(next_page_url), callback=self.save_file)
-                        file_item = FilesScraperItem()
-                        file_item["url"] = response.urljoin(next_page_url)
-                        file_item["title"] = next_page_url.split('/')[-1]
-                        file_item["file_path"] = os.path.join(
-                            'data/file/', file_item["title"])
-                        file_item["date_scraped"] = file_item['date_scraped'] = self.parse_as_datetime(
-                            response.headers['Date'].decode())
-
-                        yield file_item
+                        self.extract_file(next_page_url, response)
                 
                 else:
                     yield scrapy.Request(
@@ -148,45 +116,29 @@ class LsesuCrawlerSpider(scrapy.Spider):
 
         current_depth = response.meta.get('depth', 1)
         if current_depth < self.max_depth:
-#            for next_page_url in response.css("a.msl-imagenav-page::attr(href)").extract():
-#                if next_page_url not in self.visited:
-#                    self.visited.append(next_page_url)
+            for next_page_url in response.css("a.msl-imagenav-page::attr(href)").extract():
+                if next_page_url not in self.visited:
+                    self.visited.append(next_page_url)
 
-#                    if next_page_url.endswith(('.pdf')):
-#                        yield scrapy.Request(response.urljoin(next_page_url), callback=self.save_file)
-#                        file_item = FilesScraperItem()
-#                        file_item["url"] = response.urljoin(next_page_url)
-#                        file_item["title"] = next_page_url.split('/')[-1]
-#                        file_item["file_path"] = os.path.join(
-#                            'data/files/', file_item["title"])
-#                        file_item["date_scraped"] = file_item['date_scraped'] = self.parse_as_datetime(
-#                            response.headers['Date'].decode())
-
-#                        yield file_item
+                    if next_page_url.endswith(('.pdf')):
+                        yield scrapy.Request(response.urljoin(next_page_url), callback=self.save_file)
+                        self.extract_file(next_page_url, response)
 
                     
-  #                  else:
-  #                      yield scrapy.Request(
-  #                          response.urljoin(next_page_url),
-  #                          callback=self.parse_linked_page,
-  #                          meta={'depth': current_depth + 1, 'origin_url': response.meta['origin_url']},
-  #                          errback=self.handle_error
-   #                     )
+                    else:
+                        yield scrapy.Request(
+                            response.urljoin(next_page_url),
+                            callback=self.parse_linked_page,
+                            meta={'depth': current_depth + 1, 'origin_url': response.meta['origin_url']},
+                            errback=self.handle_error
+                        )
             for next_page_url in response.css("a.btn btn-link btn-download::attr(href)").extract():
                 next_page_url = response.urljoin(next_page_url)
                 if next_page_url not in self.visited:
                     self.visited.append(next_page_url)
                     if next_page_url.endswith(('.pdf')):
                         yield scrapy.Request(response.urljoin(next_page_url), callback=self.save_file)
-                        file_item = FilesScraperItem()
-                        file_item["url"] = response.urljoin(next_page_url)
-                        file_item["title"] = next_page_url.split('/')[-1]
-                        file_item["file_path"] = os.path.join(
-                            'data/files/', file_item["title"])
-                        file_item["date_scraped"] = file_item['date_scraped'] = self.parse_as_datetime(
-                            response.headers['Date'].decode())
-
-                        yield file_item
+                        self.extract_file(next_page_url, response)
                     
                     else:
                         yield scrapy.Request(
