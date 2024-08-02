@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 import jsonlines
 
 from chatlse.postgres_engine import create_postgres_engine_from_env_sync
-from chatlse.crawler import parse_doc, generate_json_entry, generate_list_ingested_data
+from chatlse.crawler import parse_doc, generate_json_entry, generate_list_ingested_data, clean_text, read_pdf
 
 
 
