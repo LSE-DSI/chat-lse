@@ -8,15 +8,21 @@ logger = logging.getLogger("ragapp")
 DEFAULT_EMBED_MODEL = "thenlper/gte-large"
 
 
-async def create_chat_client():
+async def create_chat_client(): 
     logger.info("Creating Ollama Chat Client") 
     chat_client = openai.AsyncOpenAI(
         base_url=os.getenv("OLLAMA_ENDPOINT"),
         api_key="nokeyneeded",
     )
-    chat_model = os.getenv("OLLAMA_CHAT_MODEL")
+    return chat_client
+
+async def create_chat_model(model=None):
+    if model:
+        chat_model = model
+    else:
+        chat_model = os.getenv("OLLAMA_CHAT_MODEL")
     
-    return chat_client, chat_model
+    return chat_model
 
 
 async def create_embed_client():

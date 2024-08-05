@@ -7,7 +7,7 @@ from environs import Env
 from fastapi import FastAPI
 
 from .globals import global_storage
-from chatlse.clients import create_chat_client, create_embed_client
+from .clients import create_chat_client, create_embed_client, create_chat_model
 from chatlse.postgres_engine import create_postgres_engine_from_env
 
 from .logger import logger 
@@ -23,7 +23,8 @@ async def lifespan(app: FastAPI):
     engine = await create_postgres_engine_from_env()
     global_storage.engine = engine
 
-    chat_client, chat_model = await create_chat_client()
+    chat_client = await create_chat_client()
+    chat_model = await create_chat_model()
     global_storage.chat_client = chat_client
     global_storage.chat_model = chat_model
 

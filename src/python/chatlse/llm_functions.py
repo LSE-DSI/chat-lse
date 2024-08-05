@@ -6,14 +6,29 @@ from openai.types.chat import (
 )
 
 def extract_function_calls(chat_completion: ChatCompletion, key: str): 
-    response_message = chat_completion.choices[0].message.tool_calls[0].function.arguments
-    args = json.loads(response_message)
-    return args[key]
+    try: 
+        if chat_completion.choices[0].message.tool_calls[0].function.arguments is not None:
+            response_message = chat_completion.choices[0].message.tool_calls[0].function.arguments
+        else:
+            response_message = chat_completion.choices[0].message.content
+        args = json.loads(response_message)
+        return args[key]
+    except:
+        e = "Error: Could not extract function call"
+        return e
 
 def extract_context(chat_completion: ChatCompletion):
-    args = json.loads(chat_completion.choices[0].message.tool_calls[0].function.arguments)
-    args_str = str(args)
-    return args_str 
+    try:
+        if chat_completion.choices[0].message.tool_calls[0].function.arguments is not None:
+            response_message = chat_completion.choices[0].message.tool_calls[0].function.arguments
+        else:
+            response_message = chat_completion.choices[0].message.content
+        args = json.loads(response_message)
+        args_str = str(args)
+        return args_str 
+    except:
+        e = "Error: Could not extract function call"
+        return e
 
 
 
