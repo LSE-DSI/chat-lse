@@ -15,7 +15,7 @@ from .globals import global_storage
 from .api_models import ThoughtStep
 from .postgres_searcher import PostgresSearcher
 from chatlse.embeddings import compute_text_embedding
-from chatlse.llm_functions import build_filter_function, extract_function_calls
+from chatlse.llm_functions import build_filter_function, extract_function_calls, build_context_function, extract_context, build_response_function
 
 
 class AdvancedRAGChat:
@@ -48,8 +48,12 @@ class AdvancedRAGChat:
         self.rag_answer_prompt_template = open(current_dir / "prompts/rag_answer_advanced.txt").read()
         self.no_answer_prompt_template = open(current_dir / "prompts/no_answer_advanced.txt").read()
         self.follow_up_prompt_template = open(current_dir / "prompts/follow_up.txt").read()
+        self.get_context_prompt_template = open(current_dir / "prompts/get_context.txt").read()
         self.require_clarification_prompt_template = open(current_dir / "prompts/clarification.txt").read()
         self.farewell_prompt_template = open(current_dir / "prompts/farewell.txt").read()
+        self.clarification_response_prompt_template = open(current_dir / "prompts/clarification_response.txt").read()
+        self.clar_response_prompt_template = open(current_dir / "prompts/clar_response.txt").read()
+        self.first_message = open(current_dir / "prompts/first_question.txt").read()
         #self.summarise_prompt_template = open(current_dir / "prompts/summarize.txt").read()
 
     async def run(
@@ -97,14 +101,29 @@ class AdvancedRAGChat:
 
         ############################################################################################################################################################
         # Generate the prompt that asks the model to decide whether it should answer the use query (use rag)
-        query_response_token_limit = 500
 
+        ### Define extract_json function to extract the json object from the response message
+
+        def extract_json(chat_response: ChatCompletion):
+            to_greet = extract_function_calls(chat_completion_resp_filter, "is_greeting") # Judge if query is a greeting 
+            is_follow_up = extract_function_calls(chat_completion_resp_filter, "is_follow_up") # Judge if query is a follow up question like why, how, more information, etc. 
+            is_reference = extract_function_calls(chat_completion_resp_filter, "is_reference") # Judge if the query references the previous model response 
+            is_relevant = extract_function_calls(chat_completion_resp_filter, "is_relevant") # Judge if the query is relevant to the scope of ChatLSE 
+            requires_clarification = extract_function_calls(chat_completion_resp_filter, "requires_clarification") # Judge if the query requires clarification
+            is_farewell = extract_function_calls(chat_completion_resp_filter, "is_farewell") # Judge if the query is a farewell message
+
+            return to_greet, is_follow_up, is_reference, is_relevant, requires_clarification, is_farewell
+        
+
+        first_message = not past_messages
+
+        query_response_token_limit = 500
         try: 
             query_messages = build_messages(
                 model=self.chat_model,
                 system_prompt=self.query_prompt_template,
                 new_user_content=original_user_query,
-                past_messages=[past_messages[-1]],
+                past_messages= past_messages,
                 max_tokens=self.chat_token_limit - query_response_token_limit,  # TODO: count functions
                 fallback_to_default=True,
             )
@@ -116,7 +135,35 @@ class AdvancedRAGChat:
                 max_tokens=self.chat_token_limit - query_response_token_limit,  # TODO: count functions
                 fallback_to_default=True,
             )
+        
+        if first_message:
+            print("ABOUT TO MAKE CONTEXT CALL!")
+            message = build_messages(
+                model=self.chat_model,
+                system_prompt=self.get_context_prompt_template,
+                new_user_content=original_user_query,
+                max_tokens=self.chat_token_limit - query_response_token_limit,
+                fallback_to_default=True,
+            )
+            print("ABOUT TO CALL CONTEXT FUNCTION!")
+            chat_completion_context_response = await self.chat_client.chat.completions.create(
+                    # Azure OpenAI takes the deployment name as the model name
+                    model=self.chat_deployment if self.chat_deployment else self.chat_model,
+                    messages=message,  # type: ignore
+                    temperature=0, # Setting temperature to 0 for testing
+                    max_tokens=100,
+                    n=1,
+                    tools=build_context_function(),
+                    tool_choice="required",
+                    response_format = {"type": "json_object"},
+                    stream=False,
+                )
+            user_context = extract_context(chat_completion_context_response)
+            global_storage.user_context = user_context
+            print(f"USER CONTEXT: {user_context}")
+            
 
+        
         chat_completion_resp_filter: ChatCompletion = await self.chat_client.chat.completions.create(
             messages=query_messages,  # type: ignore
             # Azure OpenAI takes the deployment name as the model name
@@ -128,31 +175,82 @@ class AdvancedRAGChat:
             tool_choice="required",
             response_format = {"type": "json_object"}
         )
+        print(chat_completion_resp_filter)
+        print("FILTER FUNCTION RESPONSE")
+
+        to_greet, is_follow_up, is_reference, is_relevant, requires_clarification, is_farewell = extract_json(chat_completion_resp_filter)
+
+
+        print (f"LENGTH OF PAST MESSAGES: {len(past_messages)}")
+        print(f"To greet: {to_greet}, is_follow_up: {is_follow_up}, is_reference: {is_reference}, is_relevant: {is_relevant}, requires_clarification: {requires_clarification}, is_farewell: {is_farewell}")
+
+
+        to_search = is_relevant and (not requires_clarification) and (not first_message) and (not is_follow_up) # whether model uses RAG functionality 
+        print(f"To search: {to_search}")
+        to_follow_up = is_follow_up and (not first_message) and (not requires_clarification) and (not clarification_response) # Whether model considers the query a follow up question that requires expanding on revious answer 
+        print(f"To follow_up: {to_follow_up}")
+    
+        
+
+
 
         # Deciding whether to invoke RAG functionalities 
-        print(chat_completion_resp_filter)
-        
-        to_greet = extract_function_calls(chat_completion_resp_filter, "is_greeting") # Judge if query is a greeting 
-        is_follow_up = extract_function_calls(chat_completion_resp_filter, "is_follow_up") # Judge if query is a follow up question like why, how, more information, etc. 
-        is_reference = extract_function_calls(chat_completion_resp_filter, "is_reference") # Judge if the query references the previous model response 
-        is_relevant = extract_function_calls(chat_completion_resp_filter, "is_relevant") # Judge if the query is relevant to the scope of ChatLSE 
-        requires_clarification = extract_function_calls(chat_completion_resp_filter, "requires_clarification") # Judge if the query requires clarification in order to give a precise response
-        print(is_relevant)
-        is_domain_knowledge = extract_function_calls(chat_completion_resp_filter, "is_domain_knowledge") # Judge if the query requires domain knowledge to answer 
-        print(is_domain_knowledge)
-        is_farewell = extract_function_calls(chat_completion_resp_filter, "is_farewell")
-        
-        to_search = is_relevant and (not is_domain_knowledge) and (not requires_clarification) # whether model uses RAG functionality 
-        print(to_search)
-        to_follow_up = is_follow_up or (is_relevant and is_reference) # Whether model considers the query a follow up question that requires expanding on revious answer 
-        print(to_follow_up)
+
+
+
+
+
 
 
         ############################################################################################################################################################
         # Inserting different system prompts for model based on specific functionalities required 
         response_token_limit = 1024
 
-        if to_greet: 
+        if global_storage.requires_clarification:
+            print("ENTERED GLOBAL STORAGE CLARIFICATION")
+            print(global_storage.requires_clarification)
+            messages = build_messages(
+                model=self.chat_model,
+                system_prompt=self.clarification_response_prompt_template,
+                new_user_content=original_user_query,
+                past_messages=past_messages,
+                max_tokens=self.chat_token_limit - response_token_limit,
+                fallback_to_default=True
+            )
+
+            chat_completion_clar_response = await self.chat_client.chat.completions.create(
+                # Azure OpenAI takes the deployment name as the model name
+                model=self.chat_deployment if self.chat_deployment else self.chat_model,
+                messages=messages,
+                temperature=0, # Setting temperature to 0 for testing
+                max_tokens=response_token_limit,
+                n=1,
+                tools=build_response_function(),
+                tool_choice="required",
+                response_format = {"type": "json_object"},
+                stream=False,
+            )
+
+            clarification_response = extract_context(chat_completion_clar_response)
+            #reset global storage until next requires_clarification occurs.
+            global_storage.requires_clarification = False
+        
+        else:
+            clarification_response = False
+
+
+        if first_message:  
+            print("BUILDING FIRST MESSAGE")
+            messages = build_messages(
+                model=self.chat_model,
+                system_prompt=self.first_message,
+                new_user_content=original_user_query,
+                max_tokens=self.chat_token_limit - response_token_limit,
+                fallback_to_default=True,
+            )
+
+        elif to_greet and not first_message:
+            print("ENTERED GREETING")
             messages = build_messages(
                 model=self.chat_model,
                 system_prompt=self.greeting_prompt_template,
@@ -162,19 +260,21 @@ class AdvancedRAGChat:
                 fallback_to_default=True,
             )
 
-        elif to_follow_up: 
+        elif to_follow_up and not first_message: 
+            print("ENTERED FOLLOW UP OR CLARIFICATION")
+
             content = global_storage.rag_results[-1]
 
             messages = build_messages(
                 model=self.chat_model,
                 system_prompt=self.follow_up_prompt_template,
-                new_user_content=original_user_query + "\n\nSources:\n" + content,
+                new_user_content=original_user_query + "\n\nUser Context:\n" + global_storage.user_context + "\n\nSources:\n" + content,
                 past_messages=[past_messages[-1]], 
                 max_tokens=self.chat_token_limit - response_token_limit,
                 fallback_to_default=True,
             )
 
-        elif requires_clarification:
+        elif requires_clarification and not first_message:
             messages = build_messages(
                 model = self.chat_model,
                 system_prompt = self.require_clarification_prompt_template,
@@ -183,7 +283,10 @@ class AdvancedRAGChat:
                 max_tokens=self.chat_token_limit - response_token_limit,
                 fallback_to_default=True,
             )
-        elif is_farewell:
+            global_storage.requires_clarification = True
+        
+
+        elif is_farewell and not first_message:
             messages = build_messages(
                 model = self.chat_model,
                 system_prompt = self.farewell_prompt_template,
@@ -193,16 +296,26 @@ class AdvancedRAGChat:
                 fallback_to_default=True,
             )
 
-        elif to_search: 
+        elif to_search and (not requires_clarification and not to_greet and not first_message) or clarification_response: 
             # Retrieve relevant documents from the database with the GPT optimized query
             vector: list[float] = []
             query_text = None 
             if vector_search:
-                vector = await compute_text_embedding(
-                    original_user_query,
-                    None,
-                    self.embed_model 
-                )
+                if clarification_response:
+                    print(f"Entering clarification response vector search with query text: {past_messages[-2]['content']}")
+                    vector = await compute_text_embedding(
+                        past_messages[-2]["content"],
+                        None,
+                        self.embed_model
+                    )
+                elif to_search:
+                    print(f"Entering vector search with query text: {original_user_query}")
+                    vector = await compute_text_embedding(
+                        original_user_query,
+                        None,
+                        self.embed_model 
+                    )
+
             if not text_search:
                 query_text = None
 
@@ -211,15 +324,27 @@ class AdvancedRAGChat:
             sources_content = [f"[{(doc.doc_id)}]: {doc.to_str_for_rag()}\n\n" for doc in results]
             content = "\n".join(sources_content)
             global_storage.rag_results.append(content)
+ 
+            if clarification_response:
+                messages = build_messages(
+                    model = self.chat_model,
+                    system_prompt = self.clar_response_prompt_template,
+                    new_user_content = original_user_query,
+                    past_messages= past_messages,
+                    max_tokens=self.chat_token_limit - response_token_limit,
+                    fallback_to_default=True,
+                )
 
-            messages = build_messages(
-                model=self.chat_model,
-                system_prompt=self.rag_answer_prompt_template,
-                new_user_content=original_user_query + "\n\nSources:\n" + content,
-                past_messages=past_messages,
-                max_tokens=self.chat_token_limit - response_token_limit,
-                fallback_to_default=True,
-            )
+            else:
+                messages = build_messages(
+                    model=self.chat_model,
+                    system_prompt=self.rag_answer_prompt_template,
+                    new_user_content=original_user_query + "\n\nUser Context:\n" + global_storage.user_context + "\n\nSources:\n" + content,
+                    past_messages=past_messages,
+                    max_tokens=self.chat_token_limit - response_token_limit,
+                    fallback_to_default=True,
+                )
+
 
         # If the model decides the query does not require RAG 
         else: 
@@ -229,11 +354,12 @@ class AdvancedRAGChat:
                 new_user_content=original_user_query,
                 max_tokens=self.chat_token_limit - response_token_limit,
                 fallback_to_default=True,
-            )
+           )
 
         ############################################################################################################################################################
         
         # Generate answer to user query 
+
         chat_completion_response = await self.chat_client.chat.completions.create(
                 # Azure OpenAI takes the deployment name as the model name
                 model=self.chat_deployment if self.chat_deployment else self.chat_model,
@@ -246,10 +372,8 @@ class AdvancedRAGChat:
         
         chat_resp = chat_completion_response.model_dump()
 
-        ############################################################################################################################################################
-
         # Include ThoughtStep data for display in frontend 
-        if to_search: 
+        if to_search and (not requires_clarification and not to_greet and not first_message): 
             chat_resp["choices"][0]["context"] = {
                 "data_points": {"text": sources_content},
                 "thoughts": [
@@ -290,9 +414,9 @@ class AdvancedRAGChat:
                 "thoughts": [
                     ThoughtStep(
                         title="Whether RAG functionalities are used",
-                        description=to_search,
+                        description=False,
                         props={
-                            "RAG": to_search
+                            "RAG":False
                         }
                     ),
                     ThoughtStep(
@@ -316,4 +440,4 @@ class AdvancedRAGChat:
             }
 
         return chat_resp
-
+    

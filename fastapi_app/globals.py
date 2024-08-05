@@ -10,6 +10,8 @@ class Global:
         self.embed_deployment = None
         self.context_window_override = None 
         self.rag_results = []
+        self.user_context = None
+        self.requires_clarification = None
 
 
 global_storage = Global()
