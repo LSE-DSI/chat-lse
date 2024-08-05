@@ -5,7 +5,6 @@ from .globals import global_storage
 from .postgres_searcher import PostgresSearcher
 from .logger import logger # Ensure logger is imported here
 
-from .rag_simple import SimpleRAGChat
 from .rag_advanced import AdvancedRAGChat
 
 router = fastapi.APIRouter()
@@ -26,12 +25,12 @@ async def chat_handler(chat_request: ChatRequest):
     )
 
     messages = [message.model_dump() for message in chat_request.messages]
-    logger.info(f"Received messages: {messages}")
+    #logger.info(f"Received messages: {messages}")
     
     overrides = chat_request.context.get("overrides", {})
-    logger.info(f"Overrides: {overrides}")
+    #logger.info(f"Overrides: {overrides}")
 
     response = await ragchat.run(messages, overrides=overrides)
-    logger.info(f"Response: {response}")
+    #logger.info(f"Response: {response}")
 
     return response

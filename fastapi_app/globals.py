@@ -9,6 +9,7 @@ class Global:
         self.chat_deployment = None
         self.embed_deployment = None
         self.context_window_override = None 
+        self.rag_results = []
 
 
 global_storage = Global()
