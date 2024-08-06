@@ -11,7 +11,7 @@ import random
 
 from .rag_advanced import AdvancedRAGChat, AdvancedRAGChatMistral, AdvancedRAGChatSummariser, AdvancedRAGChatMistralSummariser
 
-router = fastapi.APIRouter()
+
 
 BACKENDS = {
     "llama31": AdvancedRAGChat,
@@ -27,10 +27,37 @@ CHATMODELS = {
 
 model_list = ["llama31", "mistral"]
 
+choices = [
+    ("llama31_summariser", "llama31"),
+    ("llama31", "llama31"),
+    ("mistral_summariser", "mistral")
+    ("mistral", "mistral")
+]
+
+
+# Global variables to store the selected backend and chat model
+selected_backend = None
+selected_chatmodel = None
+
+def randomize_selection():
+    global selected_backend, selected_chatmodel
+    selected_choice = random.choice(choices)
+    selected_backend, selected_chatmodel = selected_choice
+    print(f"Selected Backend: {selected_backend}")
+    print(f"Selected Chat Model: {selected_chatmodel}")
+
+# Perform the random selection when the application starts
+randomize_selection()
+
+router = fastapi.APIRouter()
 
 @router.post("/chat")
-async def chat_handler(chat_request: ChatRequest, backend = "llama31_summariser", chatmodel = "llama31"):
+async def chat_handler(chat_request: ChatRequest, backend = BACKENDS[selected_backend], chatmodel = CHATMODELS[selected_chatmodel]):
     load_dotenv(override=True)
+
+    print(f"Selected Backend: {backend}")
+    print(f"Selected Chat Model: {chatmodel}")
+
     ChatClass = BACKENDS.get(backend)
     if not ChatClass:
         raise ValueError(f"Invalid backend: {backend}")
