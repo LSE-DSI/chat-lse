@@ -3,6 +3,7 @@ from collections.abc import AsyncGenerator
 from typing import (
     Any,
 )
+from .logger import logger
 
 from openai import AsyncOpenAI
 from openai.types.chat import (
@@ -18,7 +19,7 @@ from chatlse.embeddings import compute_text_embedding
 from chatlse.llm_functions import build_filter_function, extract_function_calls, build_context_function, extract_context, build_response_function
 
 
-class AdvancedRAGChat:
+class AdvancedRAGChatLlama:
 
     def __init__(
         self,
@@ -181,8 +182,8 @@ class AdvancedRAGChat:
         to_greet, is_follow_up, is_reference, is_relevant, requires_clarification, is_farewell = extract_json(chat_completion_resp_filter)
 
 
-        print (f"LENGTH OF PAST MESSAGES: {len(past_messages)}")
-        print(f"To greet: {to_greet}, is_follow_up: {is_follow_up}, is_reference: {is_reference}, is_relevant: {is_relevant}, requires_clarification: {requires_clarification}, is_farewell: {is_farewell}")
+        print(f"LENGTH OF PAST MESSAGES: {len(past_messages)}")
+        logger.info(f"To greet: {to_greet}, is_follow_up: {is_follow_up}, is_reference: {is_reference}, is_relevant: {is_relevant}, requires_clarification: {requires_clarification}, is_farewell: {is_farewell}")
 
 
         ############################################################################################################################################################
@@ -222,9 +223,9 @@ class AdvancedRAGChat:
             clarification_response = False
 
         to_search = is_relevant and (not requires_clarification) and (not first_message) and (not is_follow_up) # whether model uses RAG functionality 
-        print(f"To search: {to_search}")
+        logger.info(f"To search: {to_search}")
         to_follow_up = is_follow_up and (not first_message) and (not requires_clarification) and (not clarification_response) # Whether model considers the query a follow up question that requires expanding on revious answer 
-        print(f"To follow_up: {to_follow_up}")
+        logger.info(f"To follow_up: {to_follow_up}")
     
 
         if first_message:  
@@ -590,8 +591,8 @@ class AdvancedRAGChatMistral:
         to_greet, is_follow_up, is_reference, is_relevant, requires_clarification, is_farewell = extract_json(chat_completion_resp_filter)
 
 
-        print (f"LENGTH OF PAST MESSAGES: {len(past_messages)}")
-        print(f"To greet: {to_greet}, is_follow_up: {is_follow_up}, is_reference: {is_reference}, is_relevant: {is_relevant}, requires_clarification: {requires_clarification}, is_farewell: {is_farewell}")
+        print(f"LENGTH OF PAST MESSAGES: {len(past_messages)}")
+        logger.info(f"To greet: {to_greet}, is_follow_up: {is_follow_up}, is_reference: {is_reference}, is_relevant: {is_relevant}, requires_clarification: {requires_clarification}, is_farewell: {is_farewell}")
 
 
         ############################################################################################################################################################
@@ -630,9 +631,9 @@ class AdvancedRAGChatMistral:
             clarification_response = False
 
         to_search = is_relevant and (not requires_clarification) and (not first_message) and (not is_follow_up) # whether model uses RAG functionality 
-        print(f"To search: {to_search}")
+        logger.info(f"To search: {to_search}")
         to_follow_up = is_follow_up and (not first_message) and (not requires_clarification) and (not clarification_response) # Whether model considers the query a follow up question that requires expanding on revious answer 
-        print(f"To follow_up: {to_follow_up}")
+        logger.info(f"To follow_up: {to_follow_up}")
     
 
 
@@ -838,7 +839,7 @@ class AdvancedRAGChatMistral:
 
         return chat_resp
     
-class AdvancedRAGChatSummariser:
+class AdvancedRAGChatLlamaSummariser:
     def __init__(
         self,
         *,
@@ -1002,8 +1003,8 @@ class AdvancedRAGChatSummariser:
         to_greet, is_follow_up, is_reference, is_relevant, requires_clarification, is_farewell = extract_json(chat_completion_resp_filter)
 
 
-        print (f"LENGTH OF PAST MESSAGES: {len(past_messages)}")
-        print(f"To greet: {to_greet}, is_follow_up: {is_follow_up}, is_reference: {is_reference}, is_relevant: {is_relevant}, requires_clarification: {requires_clarification}, is_farewell: {is_farewell}")
+        print(f"LENGTH OF PAST MESSAGES: {len(past_messages)}")
+        logger.info(f"To greet: {to_greet}, is_follow_up: {is_follow_up}, is_reference: {is_reference}, is_relevant: {is_relevant}, requires_clarification: {requires_clarification}, is_farewell: {is_farewell}")
 
 
         ############################################################################################################################################################
@@ -1043,9 +1044,9 @@ class AdvancedRAGChatSummariser:
             clarification_response = False
 
         to_search = is_relevant and (not requires_clarification) and (not first_message) and (not is_follow_up) # whether model uses RAG functionality 
-        print(f"To search: {to_search}")
+        logger.info(f"To search: {to_search}")
         to_follow_up = is_follow_up and (not first_message) and (not requires_clarification) and (not clarification_response) # Whether model considers the query a follow up question that requires expanding on revious answer 
-        print(f"To follow_up: {to_follow_up}")
+        logger.info(f"To follow_up: {to_follow_up}")
     
 
         if first_message:  
@@ -1457,9 +1458,9 @@ class AdvancedRAGChatMistralSummariser:
             clarification_response = False
 
         to_search = is_relevant and (not requires_clarification) and (not first_message) and (not is_follow_up) # whether model uses RAG functionality 
-        print(f"To search: {to_search}")
+        logger.info(f"To search: {to_search}")
         to_follow_up = is_follow_up and (not first_message) and (not requires_clarification) and (not clarification_response) # Whether model considers the query a follow up question that requires expanding on revious answer 
-        print(f"To follow_up: {to_follow_up}")
+        logger.info(f"To follow_up: {to_follow_up}")
     
 
 

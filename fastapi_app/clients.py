@@ -3,6 +3,7 @@ import openai
 import logging
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 
+
 logger = logging.getLogger("ragapp")
 
 DEFAULT_EMBED_MODEL = "thenlper/gte-large"

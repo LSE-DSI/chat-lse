@@ -9,14 +9,14 @@ from dotenv import load_dotenv
 import random
 
 
-from .rag_advanced import AdvancedRAGChat, AdvancedRAGChatMistral, AdvancedRAGChatSummariser, AdvancedRAGChatMistralSummariser
+from .rag_advanced import AdvancedRAGChatLlama, AdvancedRAGChatMistral, AdvancedRAGChatLlamaSummariser, AdvancedRAGChatMistralSummariser
 
 
 
 BACKENDS = {
-    "llama31": AdvancedRAGChat,
+    "llama31": AdvancedRAGChatLlama,
     "mistral": AdvancedRAGChatMistral,
-    "llama31_summariser": AdvancedRAGChatSummariser,
+    "llama31_summariser": AdvancedRAGChatLlamaSummariser,
     "mistral_summariser": AdvancedRAGChatMistralSummariser
 }
 
@@ -30,7 +30,7 @@ model_list = ["llama31", "mistral"]
 choices = [
     ("llama31_summariser", "llama31"),
     ("llama31", "llama31"),
-    ("mistral_summariser", "mistral")
+    ("mistral_summariser", "mistral"),
     ("mistral", "mistral")
 ]
 
@@ -55,17 +55,17 @@ router = fastapi.APIRouter()
 async def chat_handler(chat_request: ChatRequest, backend = BACKENDS[selected_backend], chatmodel = CHATMODELS[selected_chatmodel]):
     load_dotenv(override=True)
 
-    print(f"Selected Backend: {backend}")
-    print(f"Selected Chat Model: {chatmodel}")
+    logger.info(f"Selected Backend: {backend}")
+    logger.info(f"Selected Chat Model: {chatmodel}")
 
-    ChatClass = BACKENDS.get(backend)
+    ChatClass = backend
     if not ChatClass:
         raise ValueError(f"Invalid backend: {backend}")
     
     ragchat = ChatClass(
         searcher=PostgresSearcher(global_storage.engine),
         chat_client=global_storage.chat_client,
-        chat_model= await create_chat_model(CHATMODELS.get(chatmodel)),
+        chat_model= await create_chat_model(chatmodel),
         #chat_model=global_storage.chat_model,
         chat_deployment=global_storage.chat_deployment,
         embed_client=global_storage.embed_client,
@@ -76,12 +76,12 @@ async def chat_handler(chat_request: ChatRequest, backend = BACKENDS[selected_ba
     )
 
     messages = [message.model_dump() for message in chat_request.messages]
-    #logger.info(f"Received messages: {messages}")
+    logger.info(f"Received messages: {messages[0]['content']}")
     
     overrides = chat_request.context.get("overrides", {})
-    #logger.info(f"Overrides: {overrides}")
+    logger.info(f"Overrides: {overrides}")
 
     response = await ragchat.run(messages, overrides=overrides)
-    #logger.info(f"Response: {response}")
+    logger.info(f"Response: {response['choices'][0]['message']['content']}")
 
     return response
