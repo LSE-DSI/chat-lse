@@ -14,8 +14,8 @@ from .rag_advanced import AdvancedRAGChatLlama, AdvancedRAGChatMistral, Advanced
 
 
 BACKENDS = {
-    "llama31": AdvancedRAGChatLlama,
-    "mistral": AdvancedRAGChatMistral,
+    "llama31_without_summariser": AdvancedRAGChatLlama,
+    "mistral_without_summariser": AdvancedRAGChatMistral,
     "llama31_summariser": AdvancedRAGChatLlamaSummariser,
     "mistral_summariser": AdvancedRAGChatMistralSummariser
 }
@@ -29,9 +29,9 @@ model_list = ["llama31", "mistral"]
 
 choices = [
     ("llama31_summariser", "llama31"),
-    ("llama31", "llama31"),
+    ("llama31_without_summariser", "llama31"),
     ("mistral_summariser", "mistral"),
-    ("mistral", "mistral")
+    ("mistral_without_summariser", "mistral")
 ]
 
 
