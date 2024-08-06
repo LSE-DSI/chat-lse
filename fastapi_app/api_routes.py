@@ -9,13 +9,15 @@ from dotenv import load_dotenv
 import random
 
 
-from .rag_advanced import AdvancedRAGChat, AdvancedRAGChatMistral
+from .rag_advanced import AdvancedRAGChat, AdvancedRAGChatMistral, AdvancedRAGChatSummariser, AdvancedRAGChatMistralSummariser
 
 router = fastapi.APIRouter()
 
 BACKENDS = {
     "llama31": AdvancedRAGChat,
-    "mistral": AdvancedRAGChatMistral
+    "mistral": AdvancedRAGChatMistral,
+    "llama31_summariser": AdvancedRAGChatSummariser,
+    "mistral_summariser": AdvancedRAGChatMistralSummariser
 }
 
 CHATMODELS = {
@@ -27,7 +29,7 @@ model_list = ["llama31", "mistral"]
 
 
 @router.post("/chat")
-async def chat_handler(chat_request: ChatRequest, backend = random.choice(create_chat_model), chatmodel = "mistral"):
+async def chat_handler(chat_request: ChatRequest, backend = "llama31_summariser", chatmodel = "llama31"):
     load_dotenv(override=True)
     ChatClass = BACKENDS.get(backend)
     if not ChatClass:
@@ -36,7 +38,7 @@ async def chat_handler(chat_request: ChatRequest, backend = random.choice(create
     ragchat = ChatClass(
         searcher=PostgresSearcher(global_storage.engine),
         chat_client=global_storage.chat_client,
-        chat_model= await create_chat_model(CHATMODELS.get("mistral")),
+        chat_model= await create_chat_model(CHATMODELS.get(chatmodel)),
         #chat_model=global_storage.chat_model,
         chat_deployment=global_storage.chat_deployment,
         embed_client=global_storage.embed_client,

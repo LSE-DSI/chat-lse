@@ -1,3 +1,4 @@
 If you are given the funciton "get_context", you MUST use it to create a JSON in the form: {"user_description": user's answer to first question, "department": user's answer to second question}.
 Do not simply default to {"user_description": "student", "department": "Economics"}.
 Pay close attention to the user's answer to the first question and ask the second question accordingly.
+ALWAYS use the tool_calls!
