@@ -26,13 +26,35 @@ class CustomFormatter(logging.Formatter):
 formatter = CustomFormatter("%(asctime)s - %(levelname)s - Model: %(model)s - Summariser: %(summariser)s - %(message)s")
 
 # create ExcludeWarningsFilter class to remove unneccessary logs (e.g. "defaulting to Cl100k")
-class ExcludeWarningsFilter(logging.Filter):
+class ExcludeWarningsAndHTTPFilter(logging.Filter):
     def filter(self, record):
         # Allow INFO, ERROR, and CRITICAL, but not WARNING
         if record.levelno == logging.WARNING:
             return False
-        return True
+        if record.getMessage().startswith("HTTP Request"):
+            return False
+    
+        sensitive_keywords = [
+            "Authenticating to PostgreSQL",
+            "Creating Ollama Chat Client",
+            "Initialising Embedding model",
+            "Load pretrained SentenceTransformer",
+            "prompts are loaded"
+        ]
+        sensitive_paths = [
+            "/sentence_transformers/SentenceTransformer.py",
+            "/chatlse/clients.py",
+            "/chatlse/postgres_engine.py"
+        ]
 
+        if any(keyword in record.getMessage() for keyword in sensitive_keywords):
+            return False
+
+        if any(sensitive_path in record.pathname for sensitive_path in sensitive_paths):
+            return False
+
+        # If none of the above conditions are met, allow the log
+        return True    
 # create handlers 
 
 stream_handler = logging.StreamHandler(sys.stdout)
@@ -49,7 +71,7 @@ logger.handlers = [stream_handler, file_handler, better_stack_handler]
 # set log-level
 
 logger.setLevel(logging.INFO)
-exclude_warnings_filter = ExcludeWarningsFilter()
+exclude_warnings_filter = ExcludeWarningsAndHTTPFilter()
 logger.addFilter(exclude_warnings_filter)
 
 # ensuring that exclude_warnings_filter runs on all three handlers
