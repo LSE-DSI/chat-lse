@@ -20,8 +20,6 @@ router = fastapi.APIRouter()
 
 @router.post("/chat")
 async def chat_handler(chat_request: ChatRequest, chat_model=selected_chat_model, to_summarise=selected_summariser):
-    load_dotenv(override=True)
-
     #logger.info(f"Selected Chat Model: {chat_model}")
     #logger.info(f"Summariser: {to_summarise}")
     
