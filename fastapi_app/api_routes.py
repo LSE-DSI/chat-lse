@@ -19,7 +19,7 @@ selected_summariser = random.choice([True, False])
 router = fastapi.APIRouter()
 
 @router.post("/chat")
-async def chat_handler(chat_request: ChatRequest):
+async def chat_handler(chat_request: ChatRequest, chat_model=selected_chat_model, to_summarise=selected_summariser):
     load_dotenv(override=True)
 
     #logger.info(f"Selected Chat Model: {chat_model}")
@@ -28,12 +28,12 @@ async def chat_handler(chat_request: ChatRequest):
     ragchat = AdvancedRAGChat(
         searcher=PostgresSearcher(global_storage.engine),
         chat_client=global_storage.chat_client,
-        #chat_model=chat_model,
-        chat_model=global_storage.chat_model,
+        chat_model=chat_model,
+        #chat_model=global_storage.chat_model,
         embed_model=global_storage.embed_model,
         embed_dimensions=global_storage.embed_dimensions,
         context_window_override=global_storage.context_window_override, 
-        #to_summarise=to_summarise
+        to_summarise=to_summarise
     )
 
     messages = [message.model_dump() for message in chat_request.messages]
