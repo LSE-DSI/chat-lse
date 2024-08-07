@@ -7,28 +7,27 @@ from openai.types.chat import (
 
 def extract_function_calls(chat_completion: ChatCompletion, key: str): 
     try: 
-        if chat_completion.choices[0].message.tool_calls[0].function.arguments is not None:
+        called_tool = chat_completion.choices[0].message.tool_calls
+        if called_tool:
             response_message = chat_completion.choices[0].message.tool_calls[0].function.arguments
-        else:
+        else: 
             response_message = chat_completion.choices[0].message.content
         args = json.loads(response_message)
         return args[key]
-    except:
-        e = "Error: Could not extract function call"
-        return e
+    except Exception as e: 
+        return e 
 
-def extract_context(chat_completion: ChatCompletion):
-    try:
-        if chat_completion.choices[0].message.tool_calls[0].function.arguments is not None:
-            response_message = chat_completion.choices[0].message.tool_calls[0].function.arguments
-        else:
-            response_message = chat_completion.choices[0].message.content
-        args = json.loads(response_message)
-        args_str = str(args)
-        return args_str 
-    except:
-        e = "Error: Could not extract function call"
-        return e
+
+
+def extract_json(chat_response: ChatCompletion):
+    to_greet = extract_function_calls(chat_response, "is_greeting") # Judge if query is a greeting 
+    is_follow_up = extract_function_calls(chat_response, "is_follow_up") # Judge if query is a follow up question like why, how, more information, etc. 
+    is_reference = extract_function_calls(chat_response, "is_reference") # Judge if the query references the previous model response 
+    is_relevant = extract_function_calls(chat_response, "is_relevant") # Judge if the query is relevant to the scope of ChatLSE 
+    requires_clarification = extract_function_calls(chat_response, "requires_clarification") # Judge if the query requires clarification
+    is_farewell = extract_function_calls(chat_response, "is_farewell") # Judge if the query is a farewell message
+
+    return to_greet, is_follow_up, is_reference, is_relevant, requires_clarification, is_farewell
 
 
 
@@ -40,7 +39,7 @@ def build_filter_function() -> list[ChatCompletionToolParam]:
             "name": "filter_queries",
             "description": '''Decide whether the model should answer a user query by judging whether it is in scope.
                     Respond in the format: {"is_greeting": true/false, "is_follow_up": true/false, "is_reference": true/false, "is_relevant": true/false, "requires_clarification": true/false, "is_farewell": true/false}
-                    Do NOT enclode the true or false values in quotes.''',
+                    Do NOT enclose the true or false values in quotes.''',
             "parameters": {
                 "type": "object",
                 "properties": {
@@ -50,9 +49,7 @@ def build_filter_function() -> list[ChatCompletionToolParam]:
                         E.g
                         {"User": "How can I apply for postrgraduate courses at LSE", 
                             "requires_clarification": true}''',
-
                     },
-
                     "is_greeting": {
                         "type": "boolean",
                         "description": "Based ONLY on the last user query, decide if the query is a greeting, e.g. Hi, Hello, How are you, What's up, Sup, thanks, thank you, bye, great etc.",
@@ -87,41 +84,10 @@ def build_filter_function() -> list[ChatCompletionToolParam]:
                 "required": ["is_greeting", "is_follow_up", "is_reference", "is_relevant", "requires_clarification", "is_farewell"],
             },
         },
-    }
-        
-    
-        
+    }     
 ]
 
-def build_context_function() -> list[ChatCompletionToolParam]:
-    return [
-        {
-            "type": "function",
-            "function": {
-                "name": "get_context",
-                "description": '''Extract the context of the user's background from their first message. This function is called only once at the beginning of the conversation. 
-                        Respond in the format: {"user_description": e.g. student/staff/visitor etc., "department": department user is affiliated with}.
-                        You MUST RESPOND
-                        If the user responds with N/A or avoids the question, respond with {"user_description": "N/A", "department": "N/A"}
-                        If the user responds with a question instead of answering, respond with {"user_description": "N/A", "department": "N/A"}''',
-                "parameters": {
-                    "type": "object",
-                    "properties": {
-                        "user_description": {
-                            "type": "string",
-                            "description": '''Whether the user is a student, member of staff, visitor, memeber of administrative team etc. You MUST respond. Do not leave it blank.
-                            For example, {"User: "I am a new professor in the department of Economics"} should be responded with {"user_description": "new professor"}.''',
-                        },
-                        "department": {
-                            "type": "string",
-                            "description": "The department the user is in and the level of study they are at. You MUST respond. Do not leave it blank. For example, if the user is a student in the department of Economics, you should respond with {'department': 'Economics'}.",
-                        },
-                    },
-                    "required": ["user_description", "department"],
-                },
-            },
-        }
-    ]
+
 
 def build_response_function() -> list[ChatCompletionToolParam]:
     return [
@@ -135,15 +101,13 @@ def build_response_function() -> list[ChatCompletionToolParam]:
                 "is_response": true},
                 {"User": "No",
                 "is_response": false}
-                Alternatively, if the chat has given the user a list of options to choose from, the user may respond with a number, letter or exactly copy the option. 
-                Respond in JSON form ONLY. 
-                Respond in the format: {"is_response": true/false}''',
+                Alternatively, if the chat has given the user a list of options to choose from, the user may respond with a number, letter or exactly copy the option.''',
                 "parameters": {
                     "type": "object",
                     "properties": {
                         "is_response": {
-                            "type": "string",
-                            "description": '''The user has responded to the clarifying question with a non-descriptive answer. For example, if the user responds with "yes" or "no" or repeats an option given by the previous clarifying question, you should respond with {"is_response": true}.''',
+                            "type": "boolean",
+                            "description": '''The user has responded to the clarifying question with a non-descriptive answer. For example, if the user responds with "yes" or "no" or repeats an option given by the previous clarifying question, you should respond with true or false.''',
                         },
                     },
                     "required": ["is_response"],
