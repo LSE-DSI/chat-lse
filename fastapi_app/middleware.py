@@ -21,14 +21,14 @@ class LogMiddleware(BaseHTTPMiddleware):
         if request.method in ("POST", "PUT", "PATCH"):
             try:
                 body = await request.json()
-                #logger.info(f"Request body: {json.dumps(body)}", extra=log_dict)
+                logger.info(f"Request body: {json.dumps(body)}", extra=log_dict)
             except Exception as e:
                 logger.error(f"Error logging request body: {e}", extra=log_dict)
 
         response = await call_next(request)
 
         log_dict['status_code'] = response.status_code
-        #logger.info("Response sent", extra=log_dict)
+        logger.info("Response sent", extra=log_dict)
 
         if response.status_code == 200:
             response_body = b""
