@@ -4,7 +4,7 @@ import fastapi
 from .api_models import ChatRequest
 from .globals import global_storage
 from .postgres_searcher import PostgresSearcher
-from .logger import logger # Ensure logger is imported here
+from .logger import logger, handle_new_message
 
 from .rag_advanced import AdvancedRAGChat
 
@@ -24,6 +24,9 @@ async def chat_handler(chat_request: ChatRequest):
     )
 
     messages = [message.model_dump() for message in chat_request.messages]
+    for msg in messages:
+        handle_new_message(msg['content'])  # Ensure each message is logged to history
+
     logger.info(f"Received messages: {messages[0]['content']}")
     
     user_info = chat_request.context.get("userInfo", {})
