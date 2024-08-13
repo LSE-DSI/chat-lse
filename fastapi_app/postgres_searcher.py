@@ -88,4 +88,19 @@ class PostgresSearcher:
             for id, _ in results[:query_top]:
                 doc = await session.execute(select(Doc).where(Doc.id == id))
                 docs.append(doc.scalar())
-            return docs
+        enhanced_results = []
+        with self.graph.session() as session:
+            for result in docs:
+                doc_id = result[0]
+                entities = # TO-DO: Find a way to detect neo4j nodes using results of hybrid query... consider using hybrid search over nodes? 
+                for entity in entities:
+                    neo4j_query = f"""
+                    MATCH (e:{entity.label})-[:RELATED_TO]->(related)
+                    WHERE e.id = '{entity.id}'
+                    RETURN related
+                    """
+                    related_nodes = session.run(neo4j_query).values()
+                    enhanced_results.append((doc_id, related_nodes, result[1]))
+        return enhanced_results
+
+        
