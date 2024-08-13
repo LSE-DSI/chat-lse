@@ -152,9 +152,6 @@ class AdvancedRAGChat:
 
         
         # Extract model decision on query classification 
-
-        print("FILTER FUNCTION RESPONSE:")
-        print(chat_completion_resp_filter)
     
         to_greet, is_follow_up, is_reference, is_relevant, requires_clarification, is_farewell = extract_json(chat_completion_resp_filter)
         print(f"to_greet: {to_greet}, is_follow_up: {is_follow_up}, is_reference: {is_reference}, is_relevant: {is_relevant}, requires_clarification: {requires_clarification}, is_farewell: {is_farewell}")
@@ -210,6 +207,7 @@ class AdvancedRAGChat:
         
         # Classify user query before deciding how to handle the query (e.g. use RAG, follow up, etc.)
         to_greet, is_farewell, requires_clarification, to_follow_up, to_search, clarification_response = await self.classify_query(original_user_query, past_messages)
+        no_answer = None
 
         ############################################################################################################################################################
 
@@ -313,6 +311,7 @@ class AdvancedRAGChat:
 
         # If the model decides the query is out of scope 
         else: 
+            no_answer = True
             messages = build_messages(
                 model=self.chat_model,
                 system_prompt=self.no_answer_prompt_template,
@@ -337,7 +336,7 @@ class AdvancedRAGChat:
         chat_resp = chat_completion_response.model_dump()
 
         # Include ThoughtStep data for display in frontend 
-        if not (to_search or clarification_response): 
+        if to_greet or is_farewell or requires_clarification or to_follow_up or no_answer: 
             chat_resp["choices"][0]["context"] = {
                 "data_points": {"text": None},
                 "thoughts": [
