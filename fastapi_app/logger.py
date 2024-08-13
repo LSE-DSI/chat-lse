@@ -65,16 +65,16 @@ class ExcludeWarningsAndHTTPFilter(logging.Filter):
         return True    
 # create handlers 
 
-stream_handler = logging.StreamHandler(sys.stdout)
+# stream_handler = logging.StreamHandler(sys.stdout)
 file_handler = logging.FileHandler('app.log')
 better_stack_handler = LogtailHandler(source_token = token)
 
 # set formatters
-stream_handler.setFormatter(formatter)
+# stream_handler.setFormatter(formatter)
 file_handler.setFormatter(formatter)
 
 # add handlers to the logger
-logger.handlers = [stream_handler, file_handler, better_stack_handler]
+logger.handlers = [file_handler, better_stack_handler]
 
 # set log-level
 
@@ -83,6 +83,6 @@ exclude_warnings_filter = ExcludeWarningsAndHTTPFilter()
 logger.addFilter(exclude_warnings_filter)
 
 # ensuring that exclude_warnings_filter runs on all three handlers
-stream_handler.addFilter(exclude_warnings_filter)
+# stream_handler.addFilter(exclude_warnings_filter)
 file_handler.addFilter(exclude_warnings_filter)
 better_stack_handler.addFilter(exclude_warnings_filter)
