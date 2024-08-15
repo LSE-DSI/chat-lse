@@ -41,24 +41,21 @@ class AdvancedRAGChat:
         
         # Load prompts 
         current_dir = pathlib.Path(__file__).parent
-
+        model_prompt_folder = "/".join(chat_model.split(":"))
         # Classify query 
-        self.query_prompt_template = open(current_dir / f"prompts/{chat_model}/query.txt").read()
-
+        self.query_prompt_template = open(current_dir / f"prompts/{model_prompt_folder}/query.txt").read()
         # Summariser prompt 
-        self.summarise_prompt_template = open(current_dir / f"prompts/{chat_model}/summarize.txt").read()
-        
+        self.summarise_prompt_template = open(current_dir / f"prompts/{model_prompt_folder}/summarize.txt").read()
         # Decide whether a query is a response to clarification question 
-        self.clarification_response_prompt_template = open(current_dir / f"prompts/{chat_model}/clarification_response.txt").read()
-        
+        self.clarification_response_prompt_template = open(current_dir / f"prompts/{model_prompt_folder}/clarification_response.txt").read()
         # Handling different types of queries 
-        self.greeting_prompt_template = open(current_dir / f"prompts/{chat_model}/greeting.txt").read()
-        self.farewell_prompt_template = open(current_dir / f"prompts/{chat_model}/farewell.txt").read()
-        self.require_clarification_prompt_template = open(current_dir / f"prompts/{chat_model}/clarification.txt").read()
-        self.follow_up_prompt_template = open(current_dir / f"prompts/{chat_model}/follow_up.txt").read()
-        self.clar_response_prompt_template = open(current_dir / f"prompts/{chat_model}/clar_response.txt").read()
-        self.rag_answer_prompt_template = open(current_dir / f"prompts/{chat_model}/rag_answer_advanced.txt").read()
-        self.no_answer_prompt_template = open(current_dir / f"prompts/{chat_model}/no_answer_advanced.txt").read()
+        self.greeting_prompt_template = open(current_dir / f"prompts/{model_prompt_folder}/greeting.txt").read()
+        self.farewell_prompt_template = open(current_dir / f"prompts/{model_prompt_folder}/farewell.txt").read()
+        self.require_clarification_prompt_template = open(current_dir / f"prompts/{model_prompt_folder}/clarification.txt").read()
+        self.follow_up_prompt_template = open(current_dir / f"prompts/{model_prompt_folder}/follow_up.txt").read()
+        self.clar_response_prompt_template = open(current_dir / f"prompts/{model_prompt_folder}/clar_response.txt").read()
+        self.rag_answer_prompt_template = open(current_dir / f"prompts/{model_prompt_folder}/rag_answer_advanced.txt").read()
+        self.no_answer_prompt_template = open(current_dir / f"prompts/{model_prompt_folder}/no_answer_advanced.txt").read()
 
 
     async def summarise_resp(self, past_messages): 
