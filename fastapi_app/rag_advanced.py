@@ -41,7 +41,7 @@ class AdvancedRAGChat:
         
         # Load prompts 
         current_dir = pathlib.Path(__file__).parent
-        model_prompt_folder = "/".join(chat_model.split(":"))
+        model_prompt_folder = chat_model.replace(":", "/")
         # Classify query 
         self.query_prompt_template = open(current_dir / f"prompts/{model_prompt_folder}/query.txt").read()
         # Summariser prompt 
