@@ -26,9 +26,12 @@ class CustomFormatter(logging.Formatter):
         return formatter.format(record)
 
 def handle_new_message(message):
-    # Process the message
-    # Add the message to the history
-    global_storage.message_history.append(message)
+    # Check if the message is already in the history to avoid duplicates
+    if message not in global_storage.message_history:
+        global_storage.message_history.append(message)
+    else:
+        logger.warning("Duplicate message detected, not adding to history.")
+
 
 
 formatter = CustomFormatter("%(asctime)s - %(levelname)s - Model: %(model)s - Summariser: %(summariser)s - %(message)s - User context: %(user_context)s")
