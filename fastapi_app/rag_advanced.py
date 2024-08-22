@@ -138,22 +138,17 @@ class AdvancedRAGChat:
             results = await self.searcher.search(query_text, vector, top)
 
             # Process results and format them into a string for context
+            # Process results and format them into a string for context
             sources_content = []
             for result in results:
-                doc_id, related_nodes, doc = result
+                doc_id, formatted_related_nodes, doc = result
+
+                doc_str = doc.to_str_for_rag()
+
+               
+                related_nodes_str = "\n".join(formatted_related_nodes) if formatted_related_nodes else ""
                 
-                # Convert document and related nodes into string format for RAG
-                doc_str = doc.to_str_for_rag()  # Document content
-                neo4j_str = ""
-                
-                if related_nodes:  # Check if there are related nodes from Neo4j
-                    neo4j_str = "\nRelated Entities:\n"
-                    for related, rel_type_1, related_related, rel_type_2 in related_nodes:
-                        # Add relationships to the output string
-                        neo4j_str += f"- {related} ({rel_type_1}) -> {related_related} ({rel_type_2})\n"
-                
-                # Add the formatted document and Neo4j information to the sources_content
-                sources_content.append(f"[{doc_id}]: {doc_str}\n{neo4j_str}\n")
+                sources_content.append(f"[{doc_id}]: {doc_str}\n{related_nodes_str}\n")
 
             content = "\n".join(sources_content)
 
@@ -204,8 +199,8 @@ class AdvancedRAGChat:
                         description=[{
                             "doc_id": doc_id,
                             "document": doc.to_dict(),
-                            "related_nodes": [{"related": str(related), "type(r1)": rel_type_1, "related_related": str(related_related), "type(r2)": rel_type_2}
-                                            for related, rel_type_1, related_related, rel_type_2 in related_nodes]
+                            # Now, just include the related_nodes as is, since it's already formatted
+                            "related_nodes": related_nodes  # No unpacking needed here anymore
                         } for doc_id, related_nodes, doc in results]
                     ),
                     ThoughtStep(
