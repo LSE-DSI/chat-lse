@@ -3,11 +3,17 @@ from sqlalchemy import Float, Integer, String, select, text
 from sqlalchemy.ext.asyncio import async_sessionmaker
 
 from .postgres_models import Doc
-
+from neo4j import GraphDatabase
+import os 
 
 class PostgresSearcher:
 
     def __init__(self, engine):
+        neo4j_url = os.getenv("NEO4J_URL")
+        neo4j_user = os.getenv("NEO4J_USERNAME")
+        neo4j_password = os.getenv("NEO4J_PASSWORD")
+        gds = GraphDatabase.driver(neo4j_url, auth = (neo4j_user, neo4j_password))
+
         self.async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
 
     def build_filter_clause(self, filters) -> tuple[str, str]:
@@ -89,18 +95,19 @@ class PostgresSearcher:
                 doc = await session.execute(select(Doc).where(Doc.id == id))
                 docs.append(doc.scalar())
         enhanced_results = []
-        with self.graph.session() as session:
+        with self.neo4j_driver.session() as session:
             for result in docs:
                 doc_id = result[0]
                 entities = await session.execute(select(Doc.entity).where(Doc.id == doc_id))
                 for entity in entities:
                     neo4j_query = f"""
-                    MATCH (e:{entity.label})-[:RELATED_TO]->(related)
-                    WHERE e.id = '{entity.id}'
-                    RETURN related
+                    MATCH (e:{entity.label})-[r1]-> (related)-[r2]->(related_related)
+                    WHERE e.doc_id = '{entity.doc_id}'
+                    RETURN related, type(r1), related_related, type(r2)
                     """
                     related_nodes = session.run(neo4j_query).values()
                     enhanced_results.append((doc_id, related_nodes, result[1]))
         return enhanced_results
-
+    def close(self):
+        self.neo4j_driver.close()
         
