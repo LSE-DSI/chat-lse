@@ -8,13 +8,15 @@ import os
 
 class PostgresSearcher:
 
-    def __init__(self, engine):
-        neo4j_url = os.getenv("NEO4J_URL")
+    def __init__(self, postgres_engine):
+        neo4j_uri = os.getenv("NEO4J_URL")
         neo4j_user = os.getenv("NEO4J_USERNAME")
         neo4j_password = os.getenv("NEO4J_PASSWORD")
-        gds = GraphDatabase.driver(neo4j_url, auth = (neo4j_user, neo4j_password))
-
-        self.async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
+        # Initialize PostgreSQL session maker
+        self.async_session_maker = async_sessionmaker(postgres_engine, expire_on_commit=False)
+        
+        # Initialize Neo4j driver
+        self.neo4j_driver = GraphDatabase.driver(neo4j_uri, auth=(neo4j_user, neo4j_password))
 
     def build_filter_clause(self, filters) -> tuple[str, str]:
         if filters is None:
@@ -36,9 +38,10 @@ class PostgresSearcher:
         query_top: int = 5,
         filters: list[dict] | None = None,
     ):
-
+        # Build the filter clauses for SQL queries
         filter_clause_where, filter_clause_and = self.build_filter_clause(filters)
 
+        # SQL queries for vector, full-text, and hybrid search
         vector_query = f"""
             SELECT id, RANK () OVER (ORDER BY embedding <=> :embedding) AS rank
                 FROM lse_doc
@@ -72,6 +75,7 @@ class PostgresSearcher:
         LIMIT 20
         """
 
+        # Determine which query to run based on the inputs
         if query_text is not None and len(query_vector) > 0:
             sql = text(hybrid_query).columns(id=String, score=Float)
         elif len(query_vector) > 0:
@@ -81,6 +85,7 @@ class PostgresSearcher:
         else:
             raise ValueError("Both query text and query vector are empty")
 
+        # Execute the SQL query using PostgreSQL
         async with self.async_session_maker() as session:
             results = (
                 await session.execute(
@@ -94,20 +99,26 @@ class PostgresSearcher:
             for id, _ in results[:query_top]:
                 doc = await session.execute(select(Doc).where(Doc.id == id))
                 docs.append(doc.scalar())
+
+        # Use Neo4j to enrich the results
         enhanced_results = []
-        with self.neo4j_driver.session() as session:
+        with self.neo4j_driver.session() as neo4j_session:
             for result in docs:
-                doc_id = result[0]
-                entities = await session.execute(select(Doc.entity).where(Doc.id == doc_id))
-                for entity in entities:
-                    neo4j_query = f"""
-                    MATCH (e:{entity.label})-[r1]-> (related)-[r2]->(related_related)
-                    WHERE e.doc_id = '{entity.doc_id}'
-                    RETURN related, type(r1), related_related, type(r2)
-                    """
-                    related_nodes = session.run(neo4j_query).values()
-                    enhanced_results.append((doc_id, related_nodes, result[1]))
+                doc_id = result.doc_id
+
+                # Query Neo4j for related entities
+                neo4j_query = f"""
+                MATCH (n)-[r1]->(related)-[r2]->(related_related)
+                WHERE n.doc_id = '{doc_id}'
+                RETURN related, type(r1), related_related, type(r2)
+                """
+                related_nodes = neo4j_session.run(neo4j_query).values()
+
+                # Append enriched results
+                enhanced_results.append((doc_id, related_nodes, result))
+
         return enhanced_results
+
     def close(self):
+        """Close the Neo4j driver connection when done."""
         self.neo4j_driver.close()
-        

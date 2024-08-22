@@ -12,7 +12,10 @@ from openai_messages_token_helper import build_messages, get_token_limit
 
 from .api_models import ThoughtStep
 from chatlse.embeddings import compute_text_embedding
-from .postgres_searcher import PostgresSearcher
+from .postgres_neo4j_searcher import PostgresSearcher
+
+from neo4j import GraphDatabase
+
 
 
 class AdvancedRAGChat:
@@ -117,6 +120,7 @@ class AdvancedRAGChat:
 
         ##############################################################################
         # If the model decides to use the database
+        # If the model decides to use the database
         if to_search: 
             # Retrieve relevant documents from the database with the GPT optimized query
             vector: list[float] = []
@@ -130,12 +134,30 @@ class AdvancedRAGChat:
             if not text_search:
                 query_text = None
 
+            # Fetch results from Postgres and Neo4j using the searcher
             results = await self.searcher.search(query_text, vector, top)
 
-            sources_content = [f"[{(doc.doc_id)}]: {doc.to_str_for_rag()}\n\n" for doc in results]
+            # Process results and format them into a string for context
+            sources_content = []
+            for result in results:
+                doc_id, related_nodes, doc = result
+                
+                # Convert document and related nodes into string format for RAG
+                doc_str = doc.to_str_for_rag()  # Document content
+                neo4j_str = ""
+                
+                if related_nodes:  # Check if there are related nodes from Neo4j
+                    neo4j_str = "\nRelated Entities:\n"
+                    for related, rel_type_1, related_related, rel_type_2 in related_nodes:
+                        # Add relationships to the output string
+                        neo4j_str += f"- {related} ({rel_type_1}) -> {related_related} ({rel_type_2})\n"
+                
+                # Add the formatted document and Neo4j information to the sources_content
+                sources_content.append(f"[{doc_id}]: {doc_str}\n{neo4j_str}\n")
+
             content = "\n".join(sources_content)
 
-            # Generate a contextual and content specific answer using the search results and chat history
+            # Generate a contextual and content-specific answer using the search results and chat history
             response_token_limit = 1024
             messages = build_messages(
                 model=self.chat_model,
@@ -150,12 +172,13 @@ class AdvancedRAGChat:
                 # Azure OpenAI takes the deployment name as the model name
                 model=self.chat_deployment if self.chat_deployment else self.chat_model,
                 messages=messages,
-                temperature=0, # Setting temperature to 0 for testing
+                temperature=0,  # Setting temperature to 0 for testing
                 max_tokens=response_token_limit,
                 n=1,
                 stream=False,
             )
 
+            # Building the response with context and thoughts
             chat_resp = chat_completion_response.model_dump()
             chat_resp["choices"][0]["context"] = {
                 "data_points": {"text": sources_content},
@@ -178,7 +201,12 @@ class AdvancedRAGChat:
                     ),
                     ThoughtStep(
                         title="Search results",
-                        description=[result.to_dict() for result in results],
+                        description=[{
+                            "doc_id": doc_id,
+                            "document": doc.to_dict(),
+                            "related_nodes": [{"related": str(related), "type(r1)": rel_type_1, "related_related": str(related_related), "type(r2)": rel_type_2}
+                                            for related, rel_type_1, related_related, rel_type_2 in related_nodes]
+                        } for doc_id, related_nodes, doc in results]
                     ),
                     ThoughtStep(
                         title="Prompt to generate answer",
@@ -194,7 +222,7 @@ class AdvancedRAGChat:
 
         # If the model decides the query does not require RAG 
         else: 
-            # Generate a contextual and content specific answer using the chat history only 
+            # Generate a contextual and content-specific answer using the chat history only 
             response_token_limit = 1024
             messages = build_messages(
                 model=self.chat_model,
@@ -205,12 +233,11 @@ class AdvancedRAGChat:
                 fallback_to_default=True,
             )
 
-
             chat_completion_response = await self.chat_client.chat.completions.create(
                 # Azure OpenAI takes the deployment name as the model name
                 model=self.chat_deployment if self.chat_deployment else self.chat_model,
                 messages=messages,
-                temperature=0, # Setting temperature to 0 for testing
+                temperature=0,  # Setting temperature to 0 for testing
                 max_tokens=response_token_limit,
                 n=1,
                 stream=False,
@@ -248,4 +275,3 @@ class AdvancedRAGChat:
             }
 
         return chat_resp
-
