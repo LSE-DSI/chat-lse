@@ -111,7 +111,7 @@ def generate_json_entry(text, type, url, title, date_scraped, doc_id):
     output_list = []
     for chunk_id, chunk_text in enumerate(sentence_chunks):
         id = f"{doc_id}_{chunk_id}"
-        embedding = compute_text_embedding_sync(chunk_text, model_instance=MODEL_INSTANCE)
+#        embedding = compute_text_embedding_sync(chunk_text, model_instance=MODEL_INSTANCE)
         output_list.append([
             id,
             doc_id,
@@ -120,8 +120,8 @@ def generate_json_entry(text, type, url, title, date_scraped, doc_id):
             url,
             title,
             chunk_text,
-            date_scraped,
-            embedding
+            date_scraped
+#            embedding
         ])
 
     return output_list
