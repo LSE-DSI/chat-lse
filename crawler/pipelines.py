@@ -51,10 +51,10 @@ class ItemToPostgresPipeline:
                     url TEXT,
                     title TEXT,
                     content TEXT,
-                    date_scraped TIMESTAMP, 
-                    embedding VECTOR(1024) 
+                    date_scraped TIMESTAMP
                 );
             '''))
+                    #embedding VECTOR(1024) is left out for now 
 
             conn.commit()
             logging.info("Database extension and tables created successfully.")
@@ -119,10 +119,10 @@ class ItemToPostgresPipeline:
 
                     # Insert document into the database (if document not exist or if it has changed)
                     output_list = generate_json_entry(content, type, url, title, date_scraped, doc_id)
-                    for idx, doc_id, chunk_id, type, url, title, content, date_scraped, embedding in output_list:
+                    for idx, doc_id, chunk_id, type, url, title, content, date_scraped in output_list:
                         conn.execute(text('''
-                            INSERT INTO lse_doc (id, doc_id, chunk_id, type, url, title, content, date_scraped, embedding)
-                            VALUES (:id, :doc_id, :chunk_id, :type, :url, :title, :content, :date_scraped, :embedding)
+                            INSERT INTO lse_doc (id, doc_id, chunk_id, type, url, title, content, date_scraped)
+                            VALUES (:id, :doc_id, :chunk_id, :type, :url, :title, :content, :date_scraped)
                         '''), {
                             "id": idx,
                             "doc_id": doc_id,
@@ -131,8 +131,8 @@ class ItemToPostgresPipeline:
                             "url": url,
                             "title": title,
                             "content": content,
-                            "date_scraped": date_scraped,
-                            "embedding": embedding
+                            "date_scraped": date_scraped
+                            #"embedding": embedding
                         })
 
                     logging.info(f'Item processed and stored in PostgreSQL {adapter["url"]}')
@@ -170,3 +170,5 @@ class ItemToPostgresPipeline:
                 print(f"An error occurred while writing JSON lines to file: {e}")
         else:
             print("url or status not found in adapter")
+
+
