@@ -24,8 +24,6 @@ MODEL_INSTANCE = HuggingFaceEmbedding(EMBED_MODEL)
 
 MODEL_INSTANCE = HuggingFaceEmbedding(EMBED_MODEL)
 
-engine = None
-
 
 engine = create_postgres_engine_from_env_sync()
 
@@ -47,6 +45,7 @@ else:
     logging.info("'embedding' column already exists, no need to add it.")
 
 
+# Embed documents where embedding is NULL
 with engine.connect() as conn:
     logging.info("Fetching data for embedding calculation...")
     result = conn.execute(text('''

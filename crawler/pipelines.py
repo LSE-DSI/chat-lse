@@ -54,7 +54,7 @@ class ItemToPostgresPipeline:
                     date_scraped TIMESTAMP
                 );
             '''))
-#                    embedding VECTOR(1024) is left out for now 
+                    #embedding VECTOR(1024) is left out for now 
 
             conn.commit()
             logging.info("Database extension and tables created successfully.")
@@ -132,7 +132,7 @@ class ItemToPostgresPipeline:
                             "title": title,
                             "content": content,
                             "date_scraped": date_scraped
-#                            "embedding": embedding
+                            #"embedding": embedding
                         })
 
                     logging.info(f'Item processed and stored in PostgreSQL {adapter["url"]}')
