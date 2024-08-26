@@ -4,13 +4,8 @@ import re
 import hashlib
 from PyPDF2 import PdfReader
 from llama_index.core.node_parser import SentenceSplitter
-from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 import json
 from datetime import datetime
-
-
-from chatlse.embeddings import compute_text_embedding_sync
-
 
 
 #### Environment variables & Constants ####
@@ -19,14 +14,6 @@ from chatlse.embeddings import compute_text_embedding_sync
 EMBED_CHUNK_SIZE = os.getenv("EMBED_CHUNK_SIZE")
 #  Default is 128 as experimented
 EMBED_OVERLAP_SIZE = os.getenv("EMBED_OVERLAP_SIZE")
-# Get embedding model
-EMBED_MODEL = os.getenv("OLLAMA_EMBED_MODEL")
-
-if not EMBED_MODEL:
-    # Use default model if not provided
-    EMBED_MODEL = "thenlper/gte-large"
-
-MODEL_INSTANCE = HuggingFaceEmbedding(EMBED_MODEL)
 
 
 #### Util Functions ####
@@ -98,7 +85,6 @@ def generate_json_entry(text, type, url, title, date_scraped, doc_id):
         - title: title of the file 
         - content: chunked content of the file 
         - date_scraped: datetime of when the data is scraped 
-        - embedding: embedded chunk 
     """
 
     # Chunking and embedding chunks
@@ -111,7 +97,7 @@ def generate_json_entry(text, type, url, title, date_scraped, doc_id):
     output_list = []
     for chunk_id, chunk_text in enumerate(sentence_chunks):
         id = f"{doc_id}_{chunk_id}"
-#        embedding = compute_text_embedding_sync(chunk_text, model_instance=MODEL_INSTANCE)
+        #embedding = compute_text_embedding_sync(chunk_text, model_instance=MODEL_INSTANCE)
         output_list.append([
             id,
             doc_id,
@@ -121,7 +107,7 @@ def generate_json_entry(text, type, url, title, date_scraped, doc_id):
             title,
             chunk_text,
             date_scraped
-#            embedding
+            #embedding
         ])
 
     return output_list

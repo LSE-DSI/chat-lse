@@ -47,12 +47,12 @@ class SpiderDSI(scrapy.Spider):
         'http://www.lse.ac.uk/sociology/Home.aspx',
         'http://www.lse.ac.uk/statistics/home.aspx'
     ]
-    max_depth = 10
+    max_depth = 6
     global visited
     visited = []
 
     def parse(self, response):
-        for next_page_url in response.css("a").extract():
+        for next_page_url in response.css("a.component__link::attr(href)").extract():
             if next_page_url not in visited:
                 visited.append(next_page_url)
 
@@ -99,7 +99,7 @@ class SpiderDSI(scrapy.Spider):
 
         current_depth = response.meta.get('depth', 1)
         if current_depth < self.max_depth:
-            for next_page_url in response.css("a").extract():
+            for next_page_url in response.css("a.component__link::attr(href)").extract():
                 if next_page_url not in visited:
                     visited.append(next_page_url)
 

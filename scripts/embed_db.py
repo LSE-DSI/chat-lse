@@ -1,9 +1,8 @@
 
 import logging
 
-
+import sqlalchemy
 from sqlalchemy import text
-from sqlalchemy.engine import reflection
 from dotenv import load_dotenv
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 import os
@@ -24,14 +23,12 @@ MODEL_INSTANCE = HuggingFaceEmbedding(EMBED_MODEL)
 
 MODEL_INSTANCE = HuggingFaceEmbedding(EMBED_MODEL)
 
-engine = None
-
 
 engine = create_postgres_engine_from_env_sync()
 
 logging.debug(engine)
 
-insp = reflection.Inspector.from_engine(engine)
+insp = sqlalchemy.inspect(engine)
 
 # Check if the 'embedding' column exists
 columns = [col['name'] for col in insp.get_columns('lse_doc')]
@@ -42,11 +39,14 @@ if 'embedding' not in columns:
         conn.execute(text('''
             ALTER TABLE lse_doc ADD COLUMN embedding VECTOR(1024);
         '''))
+
         logging.info("'embedding' column added successfully.")
+        conn.commit() 
 else:
     logging.info("'embedding' column already exists, no need to add it.")
 
 
+# Embed documents where embedding is NULL
 with engine.connect() as conn:
     logging.info("Fetching data for embedding calculation...")
     result = conn.execute(text('''
