@@ -54,7 +54,6 @@ class ItemToPostgresPipeline:
                     date_scraped TIMESTAMP
                 );
             '''))
-                    #embedding VECTOR(1024) is left out for now 
 
             conn.commit()
             logging.info("Database extension and tables created successfully.")
@@ -97,6 +96,7 @@ class ItemToPostgresPipeline:
                     # Get specific fields from PDF files 
                     elif item_type == "file_metadata": 
                         file_path = adapter["file_path"]
+                        print("ERROR HERE")
                         content, doc_id, type = parse_doc(file_path)
 
                     # Check if the url already exists in the database

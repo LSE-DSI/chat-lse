@@ -4,6 +4,7 @@ import hashlib
 from bs4 import BeautifulSoup
 from crawler.items import PagesScraperItem, FilesScraperItem, ErrorScraperItem, Error301ScraperItem
 from dateutil.parser import parse
+import time
 
 from chatlse.crawler import clean_text
 
@@ -177,3 +178,4 @@ class SpiderDSI(scrapy.Spider):
         with open(file_path, 'wb') as f:
             f.write(response.body)
         self.log(f'Saved file {file_name}')
+

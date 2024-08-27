@@ -4,6 +4,7 @@ import hashlib
 from bs4 import BeautifulSoup
 from crawler.items import PagesScraperItem, FilesScraperItem, ErrorScraperItem, Error301ScraperItem
 from dateutil.parser import parse
+import time
 
 from chatlse.crawler import clean_text
 
@@ -13,7 +14,8 @@ DATA_FOLDER = os.path.join(os.path.dirname(os.path.realpath(__file__)), '..', '.
 
 class CalendarCrawlerSpider(scrapy.Spider):
     name = "calendar_crawler"
-    allowed_domains = ["www.lse.ac.uk"]
+    allowed_domains = ["www.lse.ac.uk",
+                       'info.lse.ac.uk']
     start_urls = ["https://www.lse.ac.uk/resources/calendar"]
     custom_settings = {
         'ROBOTSTXT_OBEY': False  # Disable robots.txt just for this spider
@@ -147,5 +149,9 @@ class CalendarCrawlerSpider(scrapy.Spider):
         file_path = os.path.join(DATA_FOLDER, file_name)
         with open(file_path, 'wb') as f:
             f.write(response.body)
-        self.log(f'Saved file {file_name}')
+            self.log(f'Saved file {file_name}')
+
+
+
+
 
