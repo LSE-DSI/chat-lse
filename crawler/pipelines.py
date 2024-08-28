@@ -10,6 +10,7 @@ from itemadapter import ItemAdapter
 from sqlalchemy import text
 from dotenv import load_dotenv
 import jsonlines
+import os
 
 from chatlse.postgres_engine import create_postgres_engine_from_env_sync
 from chatlse.crawler import parse_doc, generate_json_entry, generate_list_ingested_data
@@ -33,6 +34,22 @@ class ItemToPostgresPipeline:
         logging.debug("ItemToPostgresPipeline close spider")
         self.engine.dispose()
         logging.info('PostgreSQL Connection closed')
+    
+    def write_error_log(self, file_path, url):
+        existing_entries = []
+        try:
+            with jsonlines.open(file_path, 'r') as reader:
+                for entry in reader:
+                    existing_entries.append(entry)
+        except FileNotFoundError:
+            pass
+
+        new_entry = url
+        if new_entry not in existing_entries:
+            with jsonlines.open(file_path, 'a') as writer:
+                writer.write(new_entry)
+        
+        return new_entry
 
     def create_tables(self, engine):
         logging.debug("ItemToPostgresPipeline create tables")
@@ -94,10 +111,16 @@ class ItemToPostgresPipeline:
                         doc_id = adapter["doc_id"]
                         type = "webpage"
                     # Get specific fields from PDF files 
-                    elif item_type == "file_metadata": 
+                    elif item_type == "file_metadata":
                         file_path = adapter["file_path"]
                         print("ERROR HERE")
-                        content, doc_id, type = parse_doc(file_path)
+                        try:
+                            content, doc_id, type = parse_doc(file_path)
+                        except Exception as e:
+                            print(f"Error parsing document: {e}")
+                            self.write_error_log("data/error_downloads.jsonl", url)
+                            return
+
 
                     # Check if the url already exists in the database
                     result = conn.execute(
@@ -132,7 +155,6 @@ class ItemToPostgresPipeline:
                             "title": title,
                             "content": content,
                             "date_scraped": date_scraped
-                            #"embedding": embedding
                         })
 
                     logging.info(f'Item processed and stored in PostgreSQL {adapter["url"]}')
