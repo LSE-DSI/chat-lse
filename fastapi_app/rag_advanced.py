@@ -145,9 +145,9 @@ class AdvancedRAGChat:
 
                 doc_str = doc.to_str_for_rag()
 
-               
-                related_nodes_str = "\n".join(formatted_related_nodes) if formatted_related_nodes else ""
-                
+                # Convert formatted related nodes into a readable format
+                related_nodes_str = "\n".join([str(node) for node in formatted_related_nodes]) if formatted_related_nodes else ""
+
                 sources_content.append(f"[{doc_id}]: {doc_str}\n{related_nodes_str}\n")
 
             content = "\n".join(sources_content)
@@ -199,9 +199,8 @@ class AdvancedRAGChat:
                         description=[{
                             "doc_id": doc_id,
                             "document": doc.to_dict(),
-                            # Now, just include the related_nodes as is, since it's already formatted
-                            "related_nodes": related_nodes  # No unpacking needed here anymore
-                        } for doc_id, related_nodes, doc in results]
+                            "related_nodes": formatted_related_nodes  # Include all properties
+                        } for doc_id, formatted_related_nodes, doc in results]
                     ),
                     ThoughtStep(
                         title="Prompt to generate answer",
@@ -215,58 +214,5 @@ class AdvancedRAGChat:
                 ],
             }
 
-        # If the model decides the query does not require RAG 
-        else: 
-            # Generate a contextual and content-specific answer using the chat history only 
-            response_token_limit = 1024
-            messages = build_messages(
-                model=self.chat_model,
-                system_prompt=overrides.get("prompt_template") or self.no_answer_prompt_template,
-                new_user_content=original_user_query,
-                past_messages=past_messages,
-                max_tokens=self.chat_token_limit - response_token_limit,
-                fallback_to_default=True,
-            )
-
-            chat_completion_response = await self.chat_client.chat.completions.create(
-                # Azure OpenAI takes the deployment name as the model name
-                model=self.chat_deployment if self.chat_deployment else self.chat_model,
-                messages=messages,
-                temperature=0,  # Setting temperature to 0 for testing
-                max_tokens=response_token_limit,
-                n=1,
-                stream=False,
-            )
-
-            chat_resp = chat_completion_response.model_dump()
-            chat_resp["choices"][0]["context"] = {
-                "data_points": {"text": None},
-                "thoughts": [
-                    ThoughtStep(
-                        title="Whether RAG functionalities are used",
-                        description=to_search,
-                        props={
-                            "RAG": to_search
-                        }
-                    ),
-                    ThoughtStep(
-                        title="Search query for database",
-                        description=None,
-                    ),
-                    ThoughtStep(
-                        title="Search results",
-                        description=None,
-                    ),
-                    ThoughtStep(
-                        title="Prompt to generate answer",
-                        description=[str(message) for message in messages],
-                        props=(
-                            {"model": self.chat_model, "deployment": self.chat_deployment}
-                            if self.chat_deployment
-                            else {"model": self.chat_model}
-                        ),
-                    ),
-                ],
-            }
 
         return chat_resp

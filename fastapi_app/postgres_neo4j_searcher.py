@@ -117,24 +117,30 @@ class PostgresSearcher:
                 formatted_related_nodes = []
 
                 for n, related, related_related, rel_type_1, rel_type_2 in related_nodes:
-                    n_name = n.get("name", "Unnamed Node")
-                    related_name = related.get("name", "Unnamed Node") if related else "No Related Node"
-                    related_related_name = related_related.get("name", "Unnamed Node") if related_related else ""
+                    # Convert nodes to dictionaries with all their properties
+                    n_properties = dict(n.items()) if n else {}
+                    related_properties = dict(related.items()) if related else {}
+                    related_related_properties = dict(related_related.items()) if related_related else {}
 
                     if related and related_related:
                         # Chain of relations
-                        formatted_related_nodes.append(
-                            f"{n_name} [{rel_type_1}] {related_name} [{rel_type_2}] {related_related_name}"
-                        )
+                        formatted_related_nodes.append({
+                            "start_node": n_properties,
+                            "relationship_1": rel_type_1,
+                            "middle_node": related_properties,
+                            "relationship_2": rel_type_2,
+                            "end_node": related_related_properties
+                        })
                     elif related:
                         # Single relation
-                        formatted_related_nodes.append(
-                            f"{n_name} [{rel_type_1}] {related_name}"
-                        )
+                        formatted_related_nodes.append({
+                            "start_node": n_properties,
+                            "relationship_1": rel_type_1,
+                            "end_node": related_properties
+                        })
 
-
-                
                 enhanced_results.append((doc_id, formatted_related_nodes, result))
+
 
         
         return enhanced_results
