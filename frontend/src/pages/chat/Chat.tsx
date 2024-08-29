@@ -15,7 +15,7 @@ import {
 } from "../../api";
 import { Answer, AnswerError, AnswerLoading } from "../../components/Answer";
 import { QuestionInput } from "../../components/QuestionInput";
-import { ExampleList } from "../../components/Example";
+//import { ExampleList } from "../../components/Example"; 
 import { UserChatMessage } from "../../components/UserChatMessage";
 import { AnalysisPanel, AnalysisPanelTabs } from "../../components/AnalysisPanel";
 import { SettingsButton } from "../../components/SettingsButton";
@@ -23,6 +23,10 @@ import { ClearChatButton } from "../../components/ClearChatButton";
 import { VectorSettings } from "../../components/VectorSettings";
 
 const Chat = () => {
+    const [RoleInfo, setRoleInfo] = useState<string>(""); 
+    const [AffiliationInfo, setAffiliationInfo] = useState<string>(""); 
+    const [StudyLevelInfo, setStudyLevelInfo] = useState<string>(""); 
+
     const [isConfigPanelOpen, setIsConfigPanelOpen] = useState(false);
     const [promptTemplate, setPromptTemplate] = useState<string>("");
     const [temperature, setTemperature] = useState<number>(0.3);
@@ -60,6 +64,11 @@ const Chat = () => {
             const request: ChatAppRequest = {
                 messages: [...messages, { content: question, role: "user" }],
                 context: {
+                    userInfo: {
+                        role: RoleInfo,
+                        department: AffiliationInfo,
+                        level_of_study: StudyLevelInfo
+                    }, 
                     overrides: {
                         top: retrieveCount,
                         retrieval_mode: retrievalMode,
@@ -115,9 +124,9 @@ const Chat = () => {
     };
 
 
-    const onExampleClicked = (example: string) => {
+    /* const onExampleClicked = (example: string) => {
         makeApiRequest(example);
-    };
+    }; */
 
     const onShowCitation = (citation: string, index: number) => {
         if (activeCitation === citation && activeAnalysisPanelTab === AnalysisPanelTabs.CitationTab && selectedAnswer === index) {
@@ -151,10 +160,47 @@ const Chat = () => {
                     {!lastQuestionRef.current ? (
                         <div className={styles.chatEmptyState}>
                             {/* <SparkleFilled fontSize={"120px"} primaryFill={"rgba(115, 118, 225, 1)"} aria-hidden="true" aria-label="Chat logo" /> */}
-                            <SparkleFilled fontSize={"120px"} primaryFill={"rgba(225, 115, 115, 1)"} aria-hidden="true" aria-label="Chat logo" />
+                            <SparkleFilled fontSize={"80px"} primaryFill={"rgba(225, 115, 115, 1)"} aria-hidden="true" aria-label="Chat logo" />
                             <h1 className={styles.chatEmptyStateTitle}>Chat LSE</h1>
-                            <h2 className={styles.chatEmptyStateSubtitle}>Ask anything or try an example</h2>
-                            <ExampleList onExampleClicked={onExampleClicked} />
+                            <h2 className={styles.chatEmptyStateSubtitle}>
+                                Please fill in the context information below for a more tailored chatting <br/>
+                                experience, or go directly to chatting by typing in your query below: 
+                            </h2>
+                            <ol className={styles.contextList} type="1">
+                                <li className={styles.contextChatContainer}>Your role within the LSE: </li>
+                                    <div className={styles.contextInputContainer}>
+                                        <TextField
+                                            resizable={false}
+                                            borderless
+                                            value={RoleInfo}
+                                            onChange={(e) => setRoleInfo((e.target as HTMLInputElement).value)}
+                                            placeholder="E.g. student, teaching staff, professional service staff, etc."
+                                        />
+                                    </div>
+                                <li className={styles.contextChatContainer}>Your affiliation: </li>
+                                    <div className={styles.contextInputContainer}>
+                                        <TextField
+                                            className={styles.questionInputTextArea}
+                                            resizable={false}
+                                            borderless
+                                            value={AffiliationInfo}
+                                            onChange={(e) => setAffiliationInfo((e.target as HTMLInputElement).value)}
+                                            placeholder="E.g. academic/administrative department, institution, etc."
+                                        />
+                                    </div>
+                                <li className={styles.contextChatContainer}>If applicable, your level of study: </li>
+                                    <div className={styles.contextInputContainer}>
+                                        <TextField 
+                                            className={styles.contextInputTextArea}
+                                            resizable={false}
+                                            borderless
+                                            value={StudyLevelInfo} 
+                                            onChange={(e) => setStudyLevelInfo((e.target as HTMLInputElement).value)} 
+                                            placeholder="E.g. undergraduate, master's degree, PhD, etc."
+                                        />
+                                    </div>
+                            </ol>
+                            {/* <ExampleList onExampleClicked={onExampleClicked} /> */}
                         </div>
                     ) : (
                         <div className={styles.chatMessageStream}>

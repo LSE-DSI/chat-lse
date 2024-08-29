@@ -14,6 +14,12 @@ export type ChatAppRequestOverrides = {
     prompt_template?: string;
 };
 
+export type ChatAppRequestUserInfo = {
+    role?: string;
+    department?: string;
+    level_of_study?: string;
+};
+
 export type ResponseMessage = {
     content: string;
     role: string;
@@ -48,6 +54,7 @@ export type ChatAppResponse = {
 };
 
 export type ChatAppRequestContext = {
+    userInfo?: ChatAppRequestUserInfo; 
     overrides?: ChatAppRequestOverrides;
 };
 
