@@ -12,7 +12,7 @@ from openai_messages_token_helper import build_messages, get_token_limit
 
 from .api_models import ThoughtStep
 from chatlse.embeddings import compute_text_embedding
-from .postgres_searcher import PostgresSearcher
+from .postgres_neo4j_searcher import PostgresSearcher
 
 
 class AdvancedRAGChat:
