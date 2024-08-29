@@ -9,7 +9,7 @@ from openai_messages_token_helper import build_messages, get_token_limit
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 
 from .api_models import ThoughtStep
-from .postgres_searcher import PostgresSearcher
+from .postgres_neo4j_searcher import PostgresSearcher
 
 from chatlse.embeddings import compute_text_embedding
 

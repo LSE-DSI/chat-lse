@@ -55,6 +55,11 @@ class AdvancedRAGChat:
 
         original_user_query = messages[-1]["content"]
         past_messages = messages[:-1]
+
+        # Initial step: Enrich the user query with graph-based context
+        enriched_query = self.searcher.enrich_query_with_graph(original_user_query)
+        if enriched_query:
+            original_user_query = f"({original_user_query}) OR ({' OR '.join(enriched_query)})"
         
 
 
@@ -117,8 +122,7 @@ class AdvancedRAGChat:
 
         ##############################################################################
         # If the model decides to use the database
-        if to_search: 
-            # Retrieve relevant documents from the database with the GPT optimized query
+        if to_search:
             vector: list[float] = []
             query_text = None 
             if vector_search:

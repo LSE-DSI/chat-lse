@@ -7,14 +7,18 @@ from .logger import logger # Ensure logger is imported here
 
 from .rag_simple import SimpleRAGChat
 from .rag_advanced import AdvancedRAGChat
+import os
 
 router = fastapi.APIRouter()
 
+neo4j_uri = os.getenv("NEO4J_URL")
+neo4j_user = os.getenv("NEO4J_USERNAME")
+neo4j_password = os.getenv("NEO4J_PASSWORD")
 
 @router.post("/chat")
 async def chat_handler(chat_request: ChatRequest):
     ragchat = AdvancedRAGChat(
-        searcher=PostgresSearcher(global_storage.engine),
+        searcher=PostgresSearcher(neo4j_uri, neo4j_user, neo4j_password, global_storage.engine),
         chat_client=global_storage.chat_client,
         chat_model=global_storage.chat_model,
         chat_deployment=global_storage.chat_deployment,
