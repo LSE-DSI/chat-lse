@@ -174,42 +174,24 @@ class AdvancedRAGChat:
         return to_greet, is_farewell, requires_clarification, to_follow_up, to_search, clarification_response
 
 
-    async def run(
-        self, messages: list[dict], user_info: dict[str, Any] = {}, overrides: dict[str, Any] = {}
-    ) -> dict[str, Any] | AsyncGenerator[dict[str, Any], None]:
-
-        # Generate JSON formatted string for user context information
-        global_storage.user_context = str(user_info) 
-        print(f"USER CONTEXT: {global_storage.user_context}")
-        
-        # Get overrides 
-        text_search = overrides.get("retrieval_mode") in ["text", "hybrid", None]
-        vector_search = overrides.get("retrieval_mode") in ["vectors", "hybrid", None]
-        top = overrides.get("top", 3)
-
-        original_user_query = messages[-1]["content"]
-        past_messages = messages[:-1]
-
-        # Clear cached RAG results if it builds up 
-        if len(global_storage.rag_results) >= 3: 
-            global_storage.rag_results = [global_storage.rag_results[-1]]
-
-        ############################################################################################################################################################
-        
-        # Summarise model output after 3 rounds of conversation 
-        if self.to_summarise and len(past_messages) >= 6: 
-            await self.summarise_resp(past_messages) 
-
-        ############################################################################################################################################################
-        
-        # Classify user query before deciding how to handle the query (e.g. use RAG, follow up, etc.)
-        to_greet, is_farewell, requires_clarification, to_follow_up, to_search, clarification_response = await self.classify_query(original_user_query, past_messages)
-        no_answer = None
-
-        ############################################################################################################################################################
-
+    async def build_final_query(
+        self, 
+        original_user_query, 
+        past_messages, 
+        to_greet, 
+        is_farewell, 
+        requires_clarification, 
+        to_follow_up, 
+        to_search, 
+        clarification_response, 
+        no_answer, 
+        vector_search, 
+        text_search, 
+        top, 
         response_token_limit=1024
-        
+    ): 
+        sources_content, query_text, results = None, None, None 
+
         if to_greet:
             print("ENTERED GREETING")
             messages = build_messages(
@@ -258,7 +240,7 @@ class AdvancedRAGChat:
         elif to_search or clarification_response: 
             # Retrieve relevant documents from the database with the GPT optimized query
             vector: list[float] = []
-            query_text = None 
+            #query_text = None 
             if vector_search:
                 if clarification_response:
                     # TODO: Create a optimised search query instead of just using the previous user query 
@@ -316,23 +298,27 @@ class AdvancedRAGChat:
                 max_tokens=self.chat_token_limit - response_token_limit,
                 fallback_to_default=True,
            )
-        
-        ############################################################################################################################################################
-        
-        # Generate answer to user query 
-        chat_completion_response = await self.chat_client.chat.completions.create(
-                # Azure OpenAI takes the deployment name as the model name
-                model=self.chat_model,
-                messages=messages,
-                temperature=0, # Setting temperature to 0 for testing
-                max_tokens=response_token_limit,
-                n=1,
-                stream=False,
-            )
-        
-        chat_resp = chat_completion_response.model_dump()
+            
+        return messages, sources_content, query_text, results
 
-        # Include ThoughtStep data for display in frontend 
+
+    async def display_thoughtstep(
+        self, 
+        chat_resp, 
+        messages, 
+        to_greet, 
+        is_farewell, 
+        requires_clarification, 
+        to_follow_up, 
+        to_search, 
+        no_answer, 
+        vector_search, 
+        text_search, 
+        top, 
+        sources_content, 
+        query_text, 
+        results
+    ): 
         if to_greet or is_farewell or requires_clarification or to_follow_up or no_answer: 
             chat_resp["choices"][0]["context"] = {
                 "data_points": {"text": None},
@@ -394,5 +380,92 @@ class AdvancedRAGChat:
                     ),
                 ],
             }
+
+
+    async def run(
+        self, messages: list[dict], user_info: dict[str, Any] = {}, overrides: dict[str, Any] = {}
+    ) -> dict[str, Any] | AsyncGenerator[dict[str, Any], None]:
+
+        # Generate JSON formatted string for user context information
+        global_storage.user_context = str(user_info) 
+        print(f"USER CONTEXT: {global_storage.user_context}")
+        
+        # Get overrides 
+        text_search = overrides.get("retrieval_mode") in ["text", "hybrid", None]
+        vector_search = overrides.get("retrieval_mode") in ["vectors", "hybrid", None]
+        top = overrides.get("top", 3)
+
+        original_user_query = messages[-1]["content"]
+        past_messages = messages[:-1]
+
+        # Clear cached RAG results if it builds up 
+        if len(global_storage.rag_results) >= 3: 
+            global_storage.rag_results = [global_storage.rag_results[-1]]
+
+        ############################################################################################################################################################
+        
+        # Summarise model output after 3 rounds of conversation 
+        if self.to_summarise and len(past_messages) >= 6: 
+            await self.summarise_resp(past_messages) 
+
+        ############################################################################################################################################################
+        
+        # Classify user query before deciding how to handle the query (e.g. use RAG, follow up, etc.)
+        to_greet, is_farewell, requires_clarification, to_follow_up, to_search, clarification_response = await self.classify_query(original_user_query, past_messages)
+        no_answer = None
+
+        ############################################################################################################################################################
+
+        # Generate corresponding query message for the model based on incoming user query 
+        response_token_limit  = 1024
+
+        messages, sources_content, query_text, results = await self.build_final_query(
+                                                            original_user_query, 
+                                                            past_messages, 
+                                                            to_greet, 
+                                                            is_farewell, 
+                                                            requires_clarification, 
+                                                            to_follow_up, 
+                                                            to_search, 
+                                                            clarification_response, 
+                                                            no_answer, 
+                                                            vector_search, 
+                                                            text_search, 
+                                                            top, 
+                                                            response_token_limit
+                                                        )
+        
+        ############################################################################################################################################################
+
+        # Generate answer to user query 
+        chat_completion_response = await self.chat_client.chat.completions.create(
+                # Azure OpenAI takes the deployment name as the model name
+                model=self.chat_model,
+                messages=messages,
+                temperature=0, # Setting temperature to 0 for testing
+                max_tokens=response_token_limit,
+                n=1,
+                stream=False,
+            )
+        
+        chat_resp = chat_completion_response.model_dump()
+
+        # Include ThoughtStep data for display in frontend 
+        await self.display_thoughtstep(
+            chat_resp, 
+            messages, 
+            to_greet, 
+            is_farewell, 
+            requires_clarification, 
+            to_follow_up, 
+            to_search, 
+            no_answer, 
+            vector_search, 
+            text_search, 
+            top, 
+            sources_content, 
+            query_text, 
+            results
+        )
 
         return chat_resp
