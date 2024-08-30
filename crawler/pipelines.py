@@ -110,10 +110,15 @@ class ItemToPostgresPipeline:
                         content = adapter["content"]
                         doc_id = adapter["doc_id"]
                         type = "webpage"
+
+                    elif item_type == "webpage_su":
+                        content = adapter["content"]
+                        doc_id = adapter["doc_id"]
+                        type = "webpage_su"
+                        
                     # Get specific fields from PDF files 
                     elif item_type == "file_metadata":
                         file_path = adapter["file_path"]
-                        print("ERROR HERE")
                         try:
                             content, doc_id, type = parse_doc(file_path)
                         except Exception as e:
