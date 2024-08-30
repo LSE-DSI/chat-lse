@@ -6,14 +6,18 @@ from .globals import global_storage
 from .postgres_searcher import PostgresSearcher
 from .logger import logger, handle_new_message
 
-from .rag_advanced import AdvancedRAGChat
+from .rag_advanced import AdvancedRAGChat, QueryRewriterRAG
 
+
+#ChatClass = random.choice([AdvancedRAGChat, QueryRewriterRAG])
+ChatClass = QueryRewriterRAG
+print(f"ChatClass: {ChatClass}")
 
 router = fastapi.APIRouter()
 
 @router.post("/chat")
-async def chat_handler(chat_request: ChatRequest):
-    ragchat = AdvancedRAGChat(
+async def chat_handler(chat_request: ChatRequest, chat_class=ChatClass):
+    ragchat = chat_class(
         searcher=PostgresSearcher(global_storage.engine),
         chat_client=global_storage.chat_client,
         chat_model=global_storage.chat_model,
