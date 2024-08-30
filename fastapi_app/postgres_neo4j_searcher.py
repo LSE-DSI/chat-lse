@@ -18,14 +18,10 @@ class PostgresSearcher:
         # Initialize Neo4j driver
         self.neo4j_driver = GraphDatabase.driver(neo4j_uri, auth=(neo4j_user, neo4j_password))
 
-    def enrich_query_with_graph(self, original_query: str):
+    def enrich_query_with_graph(self, original_query: str, llm_generated_query: str):
         enriched_terms = set()
         with self.neo4j_driver.session() as neo4j_session:
-            neo4j_query = """
-            MATCH (n) WHERE n.name CONTAINS $query
-            OPTIONAL MATCH (n)-[r]-(related)
-            RETURN n.name AS name, collect(related.name) AS related_names
-            """
+            neo4j_query = llm_generated_query
             result = neo4j_session.run(neo4j_query, parameters={"query": original_query}).values()
             for record in result:
                 enriched_terms.add(record[0])
@@ -51,9 +47,11 @@ class PostgresSearcher:
         query_vector: list[float] | list,
         query_top: int = 5,
         filters: list[dict] | None = None,
+        llm_generated_query: str | None = None  
+
     ):
         # Enrich the query with graph-based terms
-        enriched_terms = self.enrich_query_with_graph(query_text) if query_text else []
+        enriched_terms = self.enrich_query_with_graph(query_text, llm_generated_query) if query_text else []
         if enriched_terms:
             enriched_query_text = " OR ".join(enriched_terms)
             query_text = f"({query_text}) OR ({enriched_query_text})" if query_text else enriched_query_text
