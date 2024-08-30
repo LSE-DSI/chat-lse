@@ -5,6 +5,8 @@ from neo4j import GraphDatabase
 import os
 
 from .postgres_models import Doc
+from neo4j import GraphDatabase
+import os 
 
 class PostgresSearcher:
     neo4j_uri = os.getenv("NEO4J_URL")
@@ -60,6 +62,7 @@ class PostgresSearcher:
 
         filter_clause_where, filter_clause_and = self.build_filter_clause(filters)
 
+        # SQL queries for vector, full-text, and hybrid search
         vector_query = f"""
             SELECT id, RANK () OVER (ORDER BY embedding <=> :embedding) AS rank
                 FROM lse_doc
@@ -93,6 +96,7 @@ class PostgresSearcher:
         LIMIT 20
         """
 
+        # Determine which query to run based on the inputs
         if query_text is not None and len(query_vector) > 0:
             sql = text(hybrid_query).columns(id=String, score=Float)
         elif len(query_vector) > 0:
@@ -102,6 +106,7 @@ class PostgresSearcher:
         else:
             raise ValueError("Both query text and query vector are empty")
 
+        # Execute the SQL query using PostgreSQL
         async with self.async_session_maker() as session:
             results = (
                 await session.execute(
