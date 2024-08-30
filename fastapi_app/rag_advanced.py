@@ -306,12 +306,6 @@ class AdvancedRAGChat:
         self, 
         chat_resp, 
         messages, 
-        to_greet, 
-        is_farewell, 
-        requires_clarification, 
-        to_follow_up, 
-        to_search, 
-        no_answer, 
         vector_search, 
         text_search, 
         top, 
@@ -319,7 +313,7 @@ class AdvancedRAGChat:
         query_text, 
         results
     ): 
-        if to_greet or is_farewell or requires_clarification or to_follow_up or no_answer: 
+        if not sources_content: 
             chat_resp["choices"][0]["context"] = {
                 "data_points": {"text": None},
                 "thoughts": [
@@ -353,9 +347,9 @@ class AdvancedRAGChat:
                 "thoughts": [
                     ThoughtStep(
                         title="Whether RAG functionalities are used",
-                        description=to_search,
+                        description=True,
                         props={
-                            "RAG": to_search
+                            "RAG": True
                         }
                     ),
                     ThoughtStep(
@@ -380,6 +374,30 @@ class AdvancedRAGChat:
                     ),
                 ],
             }
+
+
+    async def classify_and_build_message_wrapper(self, original_user_query, past_messages, vector_search, text_search, top, query_response_token_limit=500, response_token_limit=1024): 
+        # Classify user query before deciding how to handle the query (e.g. use RAG, follow up, etc.)
+        to_greet, is_farewell, requires_clarification, to_follow_up, to_search, clarification_response = await self.classify_query(original_user_query, past_messages, query_response_token_limit)
+        no_answer = None
+
+        messages, sources_content, query_text, results = await self.build_final_query(
+                                                            original_user_query, 
+                                                            past_messages, 
+                                                            to_greet, 
+                                                            is_farewell, 
+                                                            requires_clarification, 
+                                                            to_follow_up, 
+                                                            to_search, 
+                                                            clarification_response, 
+                                                            no_answer, 
+                                                            vector_search, 
+                                                            text_search, 
+                                                            top, 
+                                                            response_token_limit
+                                                        )
+        
+        return messages, sources_content, query_text, results 
 
 
     async def run(
@@ -410,34 +428,15 @@ class AdvancedRAGChat:
 
         ############################################################################################################################################################
         
-        # Classify user query before deciding how to handle the query (e.g. use RAG, follow up, etc.)
-        to_greet, is_farewell, requires_clarification, to_follow_up, to_search, clarification_response = await self.classify_query(original_user_query, past_messages)
-        no_answer = None
+        # Classify and build corresponding query messages for the model 
 
-        ############################################################################################################################################################
-
-        # Generate corresponding query message for the model based on incoming user query 
-        response_token_limit  = 1024
-
-        messages, sources_content, query_text, results = await self.build_final_query(
-                                                            original_user_query, 
-                                                            past_messages, 
-                                                            to_greet, 
-                                                            is_farewell, 
-                                                            requires_clarification, 
-                                                            to_follow_up, 
-                                                            to_search, 
-                                                            clarification_response, 
-                                                            no_answer, 
-                                                            vector_search, 
-                                                            text_search, 
-                                                            top, 
-                                                            response_token_limit
-                                                        )
+        messages, sources_content, query_text, results = await self.classify_and_build_message_wrapper(original_user_query, past_messages, vector_search, text_search, top)
         
         ############################################################################################################################################################
 
         # Generate answer to user query 
+        response_token_limit  = 1024
+        
         chat_completion_response = await self.chat_client.chat.completions.create(
                 # Azure OpenAI takes the deployment name as the model name
                 model=self.chat_model,
@@ -454,12 +453,6 @@ class AdvancedRAGChat:
         await self.display_thoughtstep(
             chat_resp, 
             messages, 
-            to_greet, 
-            is_farewell, 
-            requires_clarification, 
-            to_follow_up, 
-            to_search, 
-            no_answer, 
             vector_search, 
             text_search, 
             top, 
