@@ -295,9 +295,7 @@ dist
 
 ##### CUSTOM #####
 
-data/files
-data/error_all.jsonl
-data/ingested_data.json
+data/
 static/
 
 .vscode
