@@ -21,8 +21,18 @@ class PostgresSearcher:
     def enrich_query_with_graph(self, original_query: str, llm_generated_query: str):
         enriched_terms = set()
         with self.neo4j_driver.session() as neo4j_session:
-            neo4j_query = llm_generated_query
+            neo4j_query = f"""
+                MATCH (n:{llm_generated_query})
+                OPTIONAL MATCH (n)-[r]-()
+                WITH n, COUNT(r) AS relationshipCount
+                ORDER BY relationshipCount DESC
+                LIMIT 1
+                OPTIONAL MATCH (n) - [r1] -> (related)
+                OPTIONAL MATCH (related) - [r2] -> (related_related)
+                RETURN n, related, related_related as related_nodes;"""
+            print(f"NEO4J QUERY: {neo4j_query}")
             result = neo4j_session.run(neo4j_query, parameters={"query": original_query}).values()
+            print(f"NEO4J RESULT: {result}")
             for record in result:
                 enriched_terms.add(record[0])
                 enriched_terms.update(record[1] if record[1] else [])
@@ -47,16 +57,20 @@ class PostgresSearcher:
         query_vector: list[float] | list,
         query_top: int = 5,
         filters: list[dict] | None = None,
-        llm_generated_query: str | None = None  
-
+        llm_generated_query: str | None = None,
+        orignal_query: str | None = None 
     ):
         # Enrich the query with graph-based terms
-        enriched_terms = self.enrich_query_with_graph(query_text, llm_generated_query) if query_text else []
-        if enriched_terms:
-            enriched_query_text = " OR ".join(enriched_terms)
-            query_text = f"({query_text}) OR ({enriched_query_text})" if query_text else enriched_query_text
-        else:
-            enriched_query_text = query_text
+        enriched_terms = self.enrich_query_with_graph(orignal_query, llm_generated_query) if llm_generated_query else []
+#        if enriched_terms:
+        enriched_query_text = " OR ".join(enriched_terms)
+        query_text = f"({query_text}) OR ({enriched_query_text})" if query_text else enriched_query_text
+#        else:
+ #           enriched_query_text = query_text
+        
+        print(f"ENRICHED QUERY TEXT: {enriched_query_text}")
+        
+        print(f"FILTERS: {filters}")
 
         filter_clause_where, filter_clause_and = self.build_filter_clause(filters)
 

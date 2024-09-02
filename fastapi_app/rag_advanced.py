@@ -10,13 +10,14 @@ from openai.types.chat import (
 )
 
 from openai_messages_token_helper import build_messages, get_token_limit
+import json
 
 from .globals import global_storage
 
 from .api_models import ThoughtStep
 from .postgres_neo4j_searcher import PostgresSearcher
 from chatlse.embeddings import compute_text_embedding
-from chatlse.llm_functions import build_filter_function, extract_function_calls, extract_json, build_response_function
+from chatlse.llm_functions import build_filter_function, extract_function_calls, extract_json, build_response_function, build_cypher_query
 
 
 from neo4j import GraphDatabase
@@ -280,8 +281,23 @@ class AdvancedRAGChat:
             if not text_search:
                 query_text = None
                 
-            llm_generated_cypher_query = #TODO: Find out how to call the generate_cypher function
-            results = await self.searcher.search(query_text, llm_generated_cypher_query, vector, top)
+            llm_generated_cypher_query = await self.chat_client.chat.completions.create(
+            messages=messages,  # type: ignore
+            # Azure OpenAI takes the deployment name as the model name
+            model=self.chat_model,
+            temperature=0, # Setting temperature to 0 for testing
+            n=1,
+            tools=build_cypher_query(),
+            tool_choice="required",
+            stream=False)
+
+            llm_generated_cypher_query = str(llm_generated_cypher_query.choices[0].message.tool_calls[0].function.arguments).strip("{").strip("}").strip('"Cypher Query":').replace('\\u003e', '>').replace('\\n', '')
+            print(f"LLM GENERATED CYPHER QUERY: {llm_generated_cypher_query}")
+
+
+            results = await self.searcher.search(query_text, vector, top, None, llm_generated_query = llm_generated_cypher_query, orignal_query = original_user_query)
+
+            print(f"RESULTS: {results}")
 
             # Process results and format them into a string for context
             # Process results and format them into a string for context
