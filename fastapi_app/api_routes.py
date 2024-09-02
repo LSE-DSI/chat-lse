@@ -9,8 +9,7 @@ from .logger import logger, handle_new_message
 from .rag_advanced import AdvancedRAGChat, QueryRewriterRAG
 
 
-#ChatClass = random.choice([AdvancedRAGChat, QueryRewriterRAG])
-ChatClass = QueryRewriterRAG
+ChatClass = random.choice([AdvancedRAGChat, QueryRewriterRAG])
 print(f"ChatClass: {ChatClass}")
 
 router = fastapi.APIRouter()
