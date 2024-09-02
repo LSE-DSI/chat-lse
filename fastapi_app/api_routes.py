@@ -10,6 +10,7 @@ from .rag_advanced import AdvancedRAGChat, QueryRewriterRAG
 
 
 ChatClass = random.choice([AdvancedRAGChat, QueryRewriterRAG])
+global_storage.chat_class = ChatClass.__name__
 print(f"ChatClass: {ChatClass}")
 
 router = fastapi.APIRouter()
@@ -23,7 +24,7 @@ async def chat_handler(chat_request: ChatRequest, chat_class=ChatClass):
         embed_model=global_storage.embed_model,
         embed_dimensions=global_storage.embed_dimensions,
         context_window_override=global_storage.context_window_override, 
-        to_summarise=global_storage.to_summarise
+        to_summarise=global_storage.to_summarise, 
     )
 
     messages = [message.model_dump() for message in chat_request.messages]

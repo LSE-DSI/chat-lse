@@ -20,8 +20,9 @@ class CustomFormatter(logging.Formatter):
         record.model = getattr(global_storage, 'chat_model', 'No Model Selected')
         record.summariser = getattr(global_storage, 'to_summarise', False)
         record.user_context = getattr(global_storage, 'user_context', {})
+        record.chat_class = getattr(global_storage, 'chat_class', None)
         record.message_history = " | ".join(global_storage.message_history)  # Join messages into a single string
-        format_string = "%(asctime)s - %(levelname)s - Model: %(model)s - Summariser: %(summariser)s - Messages: %(message_history)s - User context: %(user_context)s"
+        format_string = "%(asctime)s - %(levelname)s - Model: %(model)s - Summariser: %(summariser)s - Messages: %(message_history)s - User context: %(user_context)s - Chat Class: %(chat_class)s"
         formatter = logging.Formatter(format_string)
         return formatter.format(record)
 
@@ -34,7 +35,7 @@ def handle_new_message(message):
 
 
 
-formatter = CustomFormatter("%(asctime)s - %(levelname)s - Model: %(model)s - Summariser: %(summariser)s - %(message)s - User context: %(user_context)s")
+formatter = CustomFormatter("%(asctime)s - %(levelname)s - Model: %(model)s - Summariser: %(summariser)s - %(message)s - User context: %(user_context)s - Chat Class: %(chat_class)s")
 
 # create ExcludeWarningsFilter class to remove unneccessary logs (e.g. "defaulting to Cl100k")
 class ExcludeWarningsAndHTTPFilter(logging.Filter):
