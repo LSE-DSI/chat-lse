@@ -256,7 +256,7 @@ class AdvancedRAGChat:
             global_storage.requires_clarification = True
 
         elif to_search or clarification_response: 
-            llm_generated_query = #TO-DO: Find out how to call the generate_cypher function
+
             # Retrieve relevant documents from the database with the GPT optimized query
             vector: list[float] = []
             query_text = None 
@@ -279,8 +279,9 @@ class AdvancedRAGChat:
 
             if not text_search:
                 query_text = None
-
-            results = await self.searcher.search(query_text, llm_generated_query, vector, top)
+                
+            llm_generated_cypher_query = #TODO: Find out how to call the generate_cypher function
+            results = await self.searcher.search(query_text, llm_generated_cypher_query, vector, top)
 
             # Process results and format them into a string for context
             # Process results and format them into a string for context

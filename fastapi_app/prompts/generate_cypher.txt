@@ -1,27 +1,27 @@
 You must generate a Cypher querying statement based on the query you have received. 
 You must extract relevant entities from the query that are relevant to the London School of Economics. 
-If you extract multiple entities, then you must create multiple Cypher statements. 
+If you extract multiple entities, then you must create multiple Cypher statements for each of the entities you extract. 
 
-These entities must be one of these types:
+These entities must be one of these types with the following descriptions:
 
-'Department', id:string, name:string, description:string, head:string, website:string, other_relevant_content:string // Academic departments at the London School of Economics, referred to as "Department of ____"; 'id' property is the name of the department, in lowercase and camelCase.
-'Degree': id:string, name:string, description:string, duration:string, level:string, credits_required:string, website:string, other_relevant_content:string // Bachelor or masters university degrees that are taken at the London School of Economics, that includes "BSc Mathematics and Economics", "BA Geography", "BSc Data Science"; 'id' property is the name of the degree, in lowercase and camelCase.
-'Module', id:string, name:string, course_code:string, prerequisites:string, semester:string, course_content_summary:string, description:string, credit_value:string, assessment_methods:string, learning_outcomes:string, recommended_readings:string, other_relevant_content:string // Academic courses taught at the London School of Economics; 'id' property is the name of the course, in lowercase and camelCase.
-'Faculty', id:string, name:string, description:string, position:string, email:string, phone_number:string, office_hours:string, other_relevant_content:string // Professors, assistant professors, teachers, fellows, tutors, directors, lecturers, and chairs associated with the London School of Economics; 'id' property is the full name of the faculty member, in lowercase and camelCase.
-'Event', id:string, name:string, description:string, date:string, location:string, organizer:string, registration_link:string, contact_person:string, other_relevant_content:string // Seminars, workshops, talks, and other events involving the London School of Economics; 'id' property is the name of the event, in lowercase and camelCase.
-'ResearchProject', id:string, title:string, summary:string, description:string, start_date:string, end_date:string, principal_investigator:string, funding_amount:string, other_relevant_content:string // Research projects led by faculty associated with the London School of Economics; 'id' property is the title of the research project, in lowercase and camelCase.
-"Policy", id:string, name:string, policy_procedure_summary:string, description:string, effective_date:string, last_reviewed_date:string, contact_person:string, related_policies:string, other_relevant_content:string // Policy related to administrative procedure at the London School of Economics; 'id' property is the name of the policy in lowercase and camelCase.
-"AdministrativeCommittee", id:string, name:string, description:string, chair:string, meeting_frequency:string, members:string, contact_email:string, other_relevant_content:string // Regulatory organisation or departments at the London School of Economics; 'id' property is the name of the committee in lowercase and camelCase.
-"Group", id:string, name:string, description:string, membership_criteria:string, number_of_members:string, leader:string, affiliated_societies:string, other_relevant_content:string // Individuals or organisations that are DIRECTLY AFFECTED BY ADMINISTRATIVE POLICIES AND PROMPTS at the London School of Economics; 'id' property is the name of the group in lowercase and camelCase.
-'Publication', id:string, title:string, summary:string, description:string, publication_date:string, journal:string, doi:string, authors:string, other_relevant_content:string // A publication resulting from research conducted at LSE; 'id' property is the title of the publication in lowercase and camelCase.
-'FundingSource', id:string, name:string, description:string, contact_person:string, funding_amount:string, website:string, other_relevant_content:string // An entity providing funding for research projects; 'id' property is the name of the funding source in lowercase and camelCase.
-'Society', id:string, name:string, type:string, description:string, founded_year:string, current_members:string, membership_criteria:string, website:string, other_relevant_content:string // Clubs, sports clubs, and other student societies at the London School of Economics; 'id' property is the name of the society in lowercase and camelCase.
-'HeadOfSociety', id:string, name:string, description:string, contact_email:string, term_start:string, term_end:string, other_relevant_content:string // Individuals leading a society, such as presidents or captains; 'id' property is the name of the individual in lowercase and camelCase.
-'Facility', id:string, name:string, location:string, description:string, capacity:string, operating_hours:string, manager:string, contact_number:string, other_relevant_content:string // Facilities offered by the Student Union, such as the gym, faith center, performance venues, etc.; 'id' property is the name of the facility in lowercase and camelCase.
-'Support', id:string, name:string, description:string, eligibility_criteria:string, contact_email:string, availability:string, location:string, other_relevant_content:string // Support services provided by the Student Union, such as counseling, financial aid, or advisory services; 'id' property is the name of the support service in lowercase and camelCase.
-'Building', id:string, name:string, type:string, address:string, description:string, construction_year:string, floors:string, main_occupants:string, accessibility_features:string, other_relevant_content:string // Academic buildings at the London School of Economics; 'id' property is the name of the building in lowercase and camelCase.
-'Office', id:string, name:string, location:string, description:string, head:string, phone_number:string, email_address:string, office_hours:string, other_relevant_content:string // Offices or administrative units within buildings; 'id' property is the name of the office in lowercase and camelCase.
-'Institution', id:string, name:string, description:string, founding_year:string, director:string, affiliated_departments:string, website:string, other_relevant_content:string // Institutions affiliated with the London School of Economics that are not academic departments, including "Data Science Institute", "Eden Centre", "LSE Summer School"; 'id' property is the name of the institution in lowercase and camelCase.
+'Department', Academic departments at the London School of Economics, referred to as "Department of ____"
+'Degree', Bachelor or masters university degrees that are taken at the London School of Economics, that includes "BSc Mathematics and Economics", "BA Geography", "BSc Data Science"
+'Module', Academic courses taught at the London School of Economics
+'Faculty', Professors, assistant professors, teachers, fellows, tutors, directors, lecturers, and chairs associated with the London School of Economics
+'Event', Seminars, workshops, talks, and other events involving the London School of Economics
+'ResearchProject', Research projects led by faculty associated with the London School of Economics
+"Policy", Policy related to administrative procedure at the London School of Economics
+"AdministrativeCommittee", Regulatory organisation or departments at the London School of Economics
+"Group", Individuals or organisations that are DIRECTLY AFFECTED BY ADMINISTRATIVE POLICIES AND PROMPTS at the London School of Economics
+'Publication', A publication resulting from research conducted at LSE
+'FundingSource' An entity providing funding for research projects
+'Society', Clubs, sports clubs, and other student societies at the London School of Economics
+'HeadOfSociety', Individuals leading a society, such as presidents or captains
+'Facility', Facilities offered by the Student Union, such as the gym, faith center, performance venues, etc.
+'Support', Support services provided by the Student Union, such as counseling, financial aid, or advisory services
+'Building', Academic buildings at the London School of Economics
+'Office', Offices or administrative units within buildings
+'Institution', Institutions affiliated with the London School of Economics that are not academic departments, including "Data Science Institute", "Eden Centre", "LSE Summer School"
 
 This is the format of the Cypher statement that you must output:
 """
