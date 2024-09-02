@@ -48,6 +48,25 @@ class AdvancedRAGChat:
         self.no_answer_prompt_template = open(current_dir / "prompts/no_answer_advanced.txt").read()
         self.summarise_prompt_template = open(current_dir / "prompts/summarize.txt").read()
 
+    def rewrite_related_nodes_to_natural_language(self, related_nodes):
+        descriptions = []
+        
+        for node in related_nodes:
+            start_node_desc = f"The entity '{node['start_node'].get('name')}'" if 'start_node' in node else "An entity"
+            if 'relationship_1' in node and 'middle_node' in node:
+                middle_node_desc = f" is related to '{node['middle_node'].get('name')}' through the relationship '{node['relationship_1']}'"
+            else:
+                middle_node_desc = ""
+            if 'relationship_2' in node and 'end_node' in node:
+                end_node_desc = f", which in turn is related to '{node['end_node'].get('name')}' through the relationship '{node['relationship_2']}'."
+            else:
+                end_node_desc = "."
+            
+            descriptions.append(f"{start_node_desc}{middle_node_desc}{end_node_desc}")
+        
+        return " ".join(descriptions)
+
+
     async def run(
         self, messages: list[dict], overrides: dict[str, Any] = {}
     ) -> dict[str, Any] | AsyncGenerator[dict[str, Any], None]:
@@ -138,7 +157,6 @@ class AdvancedRAGChat:
             results = await self.searcher.search(query_text, vector, top)
 
             # Process results and format them into a string for context
-            # Process results and format them into a string for context
             sources_content = []
             for result in results:
                 doc_id, formatted_related_nodes, doc = result
@@ -146,8 +164,9 @@ class AdvancedRAGChat:
                 doc_str = doc.to_str_for_rag()
 
                 # Convert formatted related nodes into a readable format
-                related_nodes_str = "\n".join([str(node) for node in formatted_related_nodes]) if formatted_related_nodes else ""
+                related_nodes_str = self.rewrite_related_nodes_to_natural_language(formatted_related_nodes)
 
+                # Append the natural language description to the content
                 sources_content.append(f"[{doc_id}]: {doc_str}\n{related_nodes_str}\n")
 
             content = "\n".join(sources_content)
@@ -199,7 +218,7 @@ class AdvancedRAGChat:
                         description=[{
                             "doc_id": doc_id,
                             "document": doc.to_dict(),
-                            "related_nodes": formatted_related_nodes  # Include all properties
+                            "related_information": related_nodes_str  # Include only natural language description
                         } for doc_id, formatted_related_nodes, doc in results]
                     ),
                     ThoughtStep(
@@ -214,5 +233,5 @@ class AdvancedRAGChat:
                 ],
             }
 
-
         return chat_resp
+
