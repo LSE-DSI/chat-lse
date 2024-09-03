@@ -26,8 +26,8 @@ async def lifespan(app: FastAPI):
 
     chat_client, chat_model = await create_chat_client()
     global_storage.chat_client = chat_client
-    #global_storage.chat_model = chat_model
-    global_storage.chat_model = random.choice(["llama3.1:8b-instruct-q8_0", "mistral-nemo:12b-instruct-2407-q6_K"])
+    global_storage.chat_model = chat_model
+    #global_storage.chat_model = random.choice(["llama3.1:8b-instruct-q8_0", "mistral-nemo:12b-instruct-2407-q6_K"])
     global_storage.to_summarise = False
     #global_storage.to_summarise = random.choice([True, False])
     
