@@ -863,7 +863,7 @@ class GraphRAG(QueryRewriterRAG):
             messages = build_messages(
                 model = self.chat_model,
                 system_prompt = self.cypher_prompt_template,
-                new_user_content = original_user_query,
+                new_user_content = search_query,
                 max_tokens=self.chat_token_limit - response_token_limit,
                 fallback_to_default=True,
             )
