@@ -1,6 +1,7 @@
+import os
+import random
 import contextlib
 import logging
-import os
 
 from dotenv import load_dotenv
 from environs import Env
@@ -8,7 +9,7 @@ from fastapi import FastAPI
 
 from .globals import global_storage
 from chatlse.clients import create_chat_client, create_embed_client
-from chatlse.postgres_engine import create_postgres_engine_from_env
+from chatlse.postgres_engine import create_postgres_engine_from_env, create_neo4j_driver_from_env 
 
 from .logger import logger 
 from .middleware import LogMiddleware 
@@ -23,9 +24,17 @@ async def lifespan(app: FastAPI):
     engine = await create_postgres_engine_from_env()
     global_storage.engine = engine
 
+    neo4j_driver = await create_neo4j_driver_from_env()
+    global_storage.neo4j_driver = neo4j_driver
+
     chat_client, chat_model = await create_chat_client()
     global_storage.chat_client = chat_client
     global_storage.chat_model = chat_model
+    global_storage.to_summarise = False
+    #global_storage.to_summarise = random.choice([True, False])
+    
+    logger.info(f"Model Selected: {global_storage.chat_model}")
+    logger.info(f"Summariser: {global_storage.to_summarise}")
 
     embed_model = await create_embed_client()
     global_storage.embed_model = embed_model

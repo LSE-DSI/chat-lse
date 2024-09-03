@@ -5,20 +5,19 @@ from .api_models import ChatRequest
 from .globals import global_storage
 from .postgres_neo4j_searcher import PostgresSearcher
 from .logger import logger, handle_new_message
+from .rag_advanced import AdvancedRAGChat, QueryRewriterRAG, GraphRAG
 
-from .rag_advanced import AdvancedRAGChat
-import os
+#ChatClass = random.choice([AdvancedRAGChat, QueryRewriterRAG])
+ChatClass = GraphRAG
+global_storage.chat_class = ChatClass.__name__
+print(f"ChatClass: {ChatClass.__name__}")
 
 router = fastapi.APIRouter()
 
-neo4j_uri = os.getenv("NEO4J_URL")
-neo4j_user = os.getenv("NEO4J_USERNAME")
-neo4j_password = os.getenv("NEO4J_PASSWORD")
-
 @router.post("/chat")
-async def chat_handler(chat_request: ChatRequest):
-    ragchat = AdvancedRAGChat(
-        searcher=PostgresSearcher(neo4j_uri = neo4j_uri, neo4j_user = neo4j_user, neo4j_password = neo4j_password, engine = global_storage.engine),
+async def chat_handler(chat_request: ChatRequest, chat_class=ChatClass):
+    ragchat = chat_class(
+        searcher=PostgresSearcher(engine=global_storage.engine, neo4j_driver=global_storage.neo4j_driver),
         chat_client=global_storage.chat_client,
         chat_model=global_storage.chat_model,
         embed_model=global_storage.embed_model,

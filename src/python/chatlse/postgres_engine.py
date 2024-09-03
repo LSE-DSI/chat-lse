@@ -4,7 +4,11 @@ import os
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 from sqlalchemy import Engine, create_engine
 
+from neo4j import GraphDatabase
+from dotenv import load_dotenv
+
 logger = logging.getLogger("ragapp")
+load_dotenv(override=True)
 
 
 async def create_postgres_engine(*, host, port, username, database, password, sslmode) -> AsyncEngine:
@@ -80,3 +84,13 @@ async def create_postgres_engine_from_args(args) -> AsyncEngine:
     )
 
     return engine
+
+
+async def create_neo4j_driver_from_env(): 
+    neo4j_uri = os.getenv("NEO4J_URI")
+    neo4j_user = os.getenv("NEO4J_USERNAME")
+    neo4j_password = os.getenv("NEO4J_PASSWORD")
+    
+    driver = GraphDatabase.driver(neo4j_uri, auth=(neo4j_user, neo4j_password))
+    
+    return driver 

@@ -1,22 +1,17 @@
 from pgvector.utils import to_db
 from sqlalchemy import Float, Integer, String, select, text
 from sqlalchemy.ext.asyncio import async_sessionmaker
-from neo4j import GraphDatabase
-import os
 
 from .postgres_models import Doc
-from neo4j import GraphDatabase
-import os 
+
 
 class PostgresSearcher:
-    neo4j_uri = os.getenv("NEO4J_URL")
-    neo4j_user = os.getenv("NEO4J_USERNAME")
-    neo4j_password = os.getenv("NEO4J_PASSWORD")
-    def __init__(self, engine, neo4j_uri, neo4j_user, neo4j_password):
+    def __init__(self, engine, neo4j_driver=None):
         # Initialize PostgreSQL session maker
         self.async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
         # Initialize Neo4j driver
-        self.neo4j_driver = GraphDatabase.driver(neo4j_uri, auth=(neo4j_user, neo4j_password))
+        self.neo4j_driver = neo4j_driver
+
 
     def enrich_query_with_graph(self, original_query: str, llm_generated_query: str):
         enriched_terms = set()
@@ -31,12 +26,15 @@ class PostgresSearcher:
                 OPTIONAL MATCH (related) - [r2] -> (related_related)
                 RETURN n, related, related_related as related_nodes;"""
             print(f"NEO4J QUERY: {neo4j_query}")
+
             result = neo4j_session.run(neo4j_query, parameters={"query": original_query}).values()
-            print(f"NEO4J RESULT: {result}")
+            #print(f"NEO4J RESULT: {result}")
+
             for record in result:
-                enriched_terms.add(record[0])
-                enriched_terms.update(record[1] if record[1] else [])
+                enriched_terms.add(record[0]["name"])
+                #enriched_terms.update(record[1] if record[1] else [])
         return list(enriched_terms)
+    
 
     def build_filter_clause(self, filters) -> tuple[str, str]:
         if filters is None:
@@ -51,6 +49,7 @@ class PostgresSearcher:
             return f"WHERE {filter_clause}", f"AND {filter_clause}"
         return "", ""
 
+
     async def search(
         self,
         query_text: str | None,
@@ -60,17 +59,17 @@ class PostgresSearcher:
         llm_generated_query: str | None = None,
         orignal_query: str | None = None 
     ):
-        # Enrich the query with graph-based terms
-        enriched_terms = self.enrich_query_with_graph(orignal_query, llm_generated_query) if llm_generated_query else []
-#        if enriched_terms:
-        enriched_query_text = " OR ".join(enriched_terms)
-        query_text = f"({query_text}) OR ({enriched_query_text})" if query_text else enriched_query_text
-#        else:
- #           enriched_query_text = query_text
+        # Only use graph database when llm_generated_query is passed 
+        if llm_generated_query: 
+            # Enrich the query with graph-based terms
+            enriched_terms = self.enrich_query_with_graph(orignal_query, llm_generated_query) if llm_generated_query else []
+            #if enriched_terms:
+            enriched_query_text = " OR ".join(enriched_terms)
+            query_text = f"({query_text}) OR ({enriched_query_text})" if query_text else enriched_query_text
+            #else:
+                #enriched_query_text = query_text
         
-        print(f"ENRICHED QUERY TEXT: {enriched_query_text}")
-        
-        print(f"FILTERS: {filters}")
+            print(f"ENRICHED QUERY TEXT: {enriched_query_text}")
 
         filter_clause_where, filter_clause_and = self.build_filter_clause(filters)
 

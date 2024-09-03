@@ -1,6 +1,7 @@
 class Global:
     def __init__(self):
         self.engine = None
+        self.neo4j_driver = None 
         self.chat_client = None
         self.embed_client = None
         self.chat_model = None
@@ -13,6 +14,7 @@ class Global:
         self.rag_results = []
         self.user_context = None
         self.requires_clarification = None
+        self.chat_class = None 
         self.message_history = []
 
 
