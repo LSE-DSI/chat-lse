@@ -1,7 +1,7 @@
 from pgvector.utils import to_db
 from sqlalchemy import Float, Integer, String, select, text
 from sqlalchemy.ext.asyncio import async_sessionmaker
-
+from neo4j import GraphDatabase
 from .postgres_models import Doc
 
 
@@ -13,25 +13,26 @@ class PostgresSearcher:
         self.neo4j_driver = neo4j_driver
 
 
-    def enrich_query_with_graph(self, original_query: str, llm_generated_query: str):
+    def enrich_query_with_graph(self, original_query: str, query_embedding):
         enriched_terms = set()
         with self.neo4j_driver.session() as neo4j_session:
             neo4j_query = f"""
-                MATCH (n:{llm_generated_query})
-                OPTIONAL MATCH (n)-[r]-()
-                WITH n, COUNT(r) AS relationshipCount
-                ORDER BY relationshipCount DESC
-                LIMIT 1
-                OPTIONAL MATCH (n) - [r1] -> (related)
-                OPTIONAL MATCH (related) - [r2] -> (related_related)
-                RETURN n, related, related_related as related_nodes;"""
-            print(f"NEO4J QUERY: {neo4j_query}")
+            WITH {query_embedding} AS queryEmbedding
+            MATCH (n)
+            WHERE n.embedding IS NOT NULL
+            WITH n, vector.similarity.cosine(n.embedding, queryEmbedding) AS similarity
+            ORDER BY similarity DESC
+            LIMIT 3
+            MATCH (n)-[r]->(relatedNode)
+            WITH n.name AS node_name, collect(relatedNode.name) AS related_names, collect(type(r)) AS relation_names
+            UNWIND ([node_name] + related_names) AS name
+            RETURN DISTINCT name, relation_names""" # Note, need to fix this as it is only return 2-3 results
 
             result = neo4j_session.run(neo4j_query, parameters={"query": original_query}).values()
-            #print(f"NEO4J RESULT: {result}")
+            print(f"NEO4J RESULT: {result}")
 
             for record in result:
-                enriched_terms.add(record[0]["name"])
+                enriched_terms.add(record[0])
                 #enriched_terms.update(record[1] if record[1] else [])
         return list(enriched_terms)
     
@@ -56,13 +57,13 @@ class PostgresSearcher:
         query_vector: list[float] | list,
         query_top: int = 5,
         filters: list[dict] | None = None,
-        llm_generated_query: str | None = None,
+        query_embedding: str | None = None,
         orignal_query: str | None = None 
     ):
         # Only use graph database when llm_generated_query is passed 
-        if llm_generated_query: 
+        if query_embedding: 
             # Enrich the query with graph-based terms
-            enriched_terms = self.enrich_query_with_graph(orignal_query, llm_generated_query) if llm_generated_query else []
+            enriched_terms = self.enrich_query_with_graph(orignal_query, query_embedding) if query_embedding else []
             #if enriched_terms:
             enriched_query_text = " OR ".join(enriched_terms)
             query_text = f"({query_text}) OR ({enriched_query_text})" if query_text else enriched_query_text
