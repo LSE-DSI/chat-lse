@@ -100,7 +100,7 @@ class PostgresSearcher:
                 doc = await session.execute(select(Doc).where(Doc.id == id))
                 docs.append(doc.scalar())
 
-        # Use Neo4j to enhance the results
+        # Use Neo4j to enrich the results
         enhanced_results = []
         with self.neo4j_driver.session() as neo4j_session:
             for result in docs:
@@ -108,41 +108,28 @@ class PostgresSearcher:
 
                 # Query Neo4j for related entities
                 neo4j_query = f"""
-                MATCH (n {{doc_id: '{doc_id}'}})
-                OPTIONAL MATCH (n) - [r1] -> (related)
-                OPTIONAL MATCH (related) - [r2] -> (related_related)
-                RETURN n, related, related_related, type(r1), type(r2)
+                MATCH (n)-[r1]->(related)-[r2]->(related_related)
+                WHERE n.doc_id = '{doc_id}'
+                RETURN n, related, type(r1), related_related, type(r2)
                 """
                 related_nodes = neo4j_session.run(neo4j_query).values()
                 formatted_related_nodes = []
 
-                for n, related, related_related, rel_type_1, rel_type_2 in related_nodes:
-                    # Convert nodes to dictionaries with all their properties
-                    n_properties = dict(n.items()) if n else {}
-                    related_properties = dict(related.items()) if related else {}
-                    related_related_properties = dict(related_related.items()) if related_related else {}
+                for n, related, rel_type_1, related_related, rel_type_2 in related_nodes:
+                    # Extract the relevant properties to make the output more readable
+                    n_name = n.get("name", "Unnamed Node")
+                    related_name = related.get("name", "Unnamed Node")
+                    related_related_name = related_related.get("name", "Unnamed Node")
 
-                    if related and related_related:
-                        # Chain of relations
-                        formatted_related_nodes.append({
-                            "start_node": n_properties,
-                            "relationship_1": rel_type_1,
-                            "middle_node": related_properties,
-                            "relationship_2": rel_type_2,
-                            "end_node": related_related_properties
-                        })
-                    elif related:
-                        # Single relation
-                        formatted_related_nodes.append({
-                            "start_node": n_properties,
-                            "relationship_1": rel_type_1,
-                            "end_node": related_properties
-                        })
+                    # Format the output as n[RELATION]related[RELATION]related_related
+                    formatted_related_nodes.append(
+                        f"{n_name} [{rel_type_1}] {related_name} [{rel_type_2}] {related_related_name}"
+                    )
 
+                # Append enriched results
                 enhanced_results.append((doc_id, formatted_related_nodes, result))
 
-
-        
+        # Return the enriched results
         return enhanced_results
     
     def close(self):
