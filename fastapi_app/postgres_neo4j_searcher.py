@@ -74,7 +74,7 @@ class PostgresSearcher:
             if isinstance(filter["value"], str):
                 filter["value"] = f"'{filter['value']}'"
             filter_clauses.append(f"{filter['column']} {filter['comparison_operator']} {filter['value']}")
-        filter_clause = " AND ".join(filter_clauses)
+        filter_clause = " OR ".join(filter_clauses)
         if len(filter_clause) > 0:
             return f"WHERE {filter_clause}", f"AND {filter_clause}"
         return "", ""
@@ -126,7 +126,7 @@ class PostgresSearcher:
         vector_query = f"""
             SELECT id, RANK () OVER (ORDER BY embedding <=> :embedding) AS rank
                 FROM lse_doc
-                {filter_clause_where} {doc_id_filter}
+                {filter_clause_where} 
                 ORDER BY embedding <=> :embedding
                 LIMIT 20
             """
@@ -134,7 +134,7 @@ class PostgresSearcher:
         fulltext_query = f"""
             SELECT id, RANK () OVER (ORDER BY ts_rank_cd(to_tsvector('english', content), query) DESC)
                 FROM lse_doc, plainto_tsquery('english', :query) query
-                WHERE to_tsvector('english', content) @@ query {filter_clause_and} {doc_id_filter}
+                WHERE to_tsvector('english', content) @@ query {filter_clause_and} 
                 ORDER BY ts_rank_cd(to_tsvector('english', content), query) DESC
                 LIMIT 20
             """
@@ -165,6 +165,8 @@ class PostgresSearcher:
             sql = text(fulltext_query).columns(id=String, rank=Integer)
         else:
             raise ValueError("Both query text and query vector are empty")
+        
+        print(f"SQL: {sql}")
 
         # Execute the SQL query using PostgreSQL
         async with self.async_session_maker() as session:
