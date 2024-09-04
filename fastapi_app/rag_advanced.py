@@ -890,7 +890,7 @@ class GraphRAG(QueryRewriterRAG):
                 query_embedding = await compute_text_embedding(query_text, None, self.embed_model)
 
 
-            results = await self.searcher.search(query_text, vector, top, None, query_embedding, orignal_query=original_user_query)
+            results = await self.searcher.search(query_text, vector, top, query_embedding, original_user_query)
 
             # Process results and format them into a string for context
             sources_content = [f"[{(doc.doc_id)}]: {doc.to_str_for_rag()}\n\n" for doc in results]

@@ -14,7 +14,8 @@ class PostgresSearcher:
 
 
     def enrich_query_with_graph(self, original_query: str, query_embedding):
-        enriched_terms = set()
+        enriched_terms = []
+        relevant_doc_ids = []
         with self.neo4j_driver.session() as neo4j_session:
             neo4j_query = f"""
             WITH {query_embedding} AS queryEmbedding
@@ -56,12 +57,13 @@ class PostgresSearcher:
 
             for record in result:
                 if record[1] is not None:
-                    enriched_terms.add(tuple(record[0:3]))  # Convert first three terms to a tuple and add to the set
-
+                    enriched_terms.append(record[0])  
+                    relevant_doc_ids.append(record[1])
+            
 
                 #enriched_terms.add(record[0:3]) if record[i] is not None
                 #enriched_terms.update(record[1] if record[1] else [])
-        return list(enriched_terms)
+        return enriched_terms, relevant_doc_ids
     
 
     def build_filter_clause(self, filters) -> tuple[str, str]:
@@ -83,29 +85,48 @@ class PostgresSearcher:
         query_text: str | None,
         query_vector: list[float] | list,
         query_top: int = 5,
-        filters: list[dict] | None = None,
         query_embedding: str | None = None,
         orignal_query: str | None = None 
     ):
+        filters = []
         # Only use graph database when llm_generated_query is passed 
-        if query_embedding: 
+        if query_vector: 
             # Enrich the query with graph-based terms
-            enriched_terms = self.enrich_query_with_graph(orignal_query, query_embedding) if query_embedding else []
-            #if enriched_terms:
-            enriched_query_text = " OR ".join(enriched_terms)
-            query_text = f"({query_text}) OR ({enriched_query_text})" if query_text else enriched_query_text
-            #else:
-                #enriched_query_text = query_text
-        
-            print(f"ENRICHED QUERY TEXT: {enriched_query_text}")
+            enriched_terms= self.enrich_query_with_graph(orignal_query, query_vector) if query_vector else []
+            relevant_doc_ids = list(set(enriched_terms[1]))
+            enriched_terms = list(set(enriched_terms[0]))
 
+
+            print(f"RELEVANT DOC IDS: {relevant_doc_ids}")
+            print(f"ENRICHED TERMS: {enriched_terms}")
+            if enriched_terms:
+                print(f"ENRICHED TERMS: {enriched_terms}")
+                enriched_query_text = " OR ".join(x for x in enriched_terms)
+                query_text = f"({query_text}) OR ({enriched_query_text})" if query_text else enriched_query_text
+                for doc_id in relevant_doc_ids:
+                    print(f"DOC ID: {doc_id}")
+                    filters.append({"column": "doc_id", "comparison_operator": "=", "value": doc_id})
+            else:
+                enriched_query_text = query_text
+
+            print(f"ENRICHED QUERY TEXT: {enriched_query_text}")
+            print(f"FILTERS: {filters}")
+        
         filter_clause_where, filter_clause_and = self.build_filter_clause(filters)
+
+        # Add filtering by relevant doc_ids if available
+        if relevant_doc_ids:
+            relevant_doc_ids_list = ', '.join(f"'{doc_id}'" for doc_id in relevant_doc_ids)
+            doc_id_filter = f"AND id IN ({relevant_doc_ids_list})"
+        else:
+            doc_id_filter = ""
+
 
         # SQL queries for vector, full-text, and hybrid search
         vector_query = f"""
             SELECT id, RANK () OVER (ORDER BY embedding <=> :embedding) AS rank
                 FROM lse_doc
-                {filter_clause_where}
+                {filter_clause_where} {doc_id_filter}
                 ORDER BY embedding <=> :embedding
                 LIMIT 20
             """
@@ -113,7 +134,7 @@ class PostgresSearcher:
         fulltext_query = f"""
             SELECT id, RANK () OVER (ORDER BY ts_rank_cd(to_tsvector('english', content), query) DESC)
                 FROM lse_doc, plainto_tsquery('english', :query) query
-                WHERE to_tsvector('english', content) @@ query {filter_clause_and}
+                WHERE to_tsvector('english', content) @@ query {filter_clause_and} {doc_id_filter}
                 ORDER BY ts_rank_cd(to_tsvector('english', content), query) DESC
                 LIMIT 20
             """
