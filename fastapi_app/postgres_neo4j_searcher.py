@@ -23,16 +23,43 @@ class PostgresSearcher:
             WITH n, vector.similarity.cosine(n.embedding, queryEmbedding) AS similarity
             ORDER BY similarity DESC
             LIMIT 3
+            
+            WITH {query_embedding} AS queryEmbedding, n, similarity
             MATCH (n)-[r]->(relatedNode)
-            WITH n.name AS node_name, collect(relatedNode.name) AS related_names, collect(type(r)) AS relation_names
-            UNWIND ([node_name] + related_names) AS name
-            RETURN DISTINCT name, relation_names""" # Note, need to fix this as it is only return 2-3 results
+            WHERE relatedNode.embedding IS NOT NULL
+            WITH n,
+                n.name AS node_name, 
+                n.doc_id AS doc_id, 
+                similarity,
+                relatedNode, 
+                queryEmbedding,
+                vector.similarity.cosine(relatedNode.embedding, queryEmbedding) AS related_similarity
+            ORDER BY n, related_similarity DESC
+            WITH n, node_name, doc_id, similarity, 
+                collect(relatedNode.name)[0..3] AS top_related_names, 
+                collect(relatedNode.doc_id)[0..3] AS top_related_doc_ids, 
+                collect(related_similarity)[0..3] AS top_related_similarities
+
+            UNWIND ([node_name] + top_related_names) AS name
+            WITH name, 
+                ([doc_id] + top_related_doc_ids) AS all_doc_ids, 
+                ([similarity] + top_related_similarities) AS all_similarities
+
+            UNWIND all_doc_ids AS doc_ids
+            UNWIND all_similarities AS similarities
+
+            RETURN DISTINCT name, doc_ids, similarities;
+ """ 
 
             result = neo4j_session.run(neo4j_query, parameters={"query": original_query}).values()
             print(f"NEO4J RESULT: {result}")
 
             for record in result:
-                enriched_terms.add(record[0])
+                if record[1] is not None:
+                    enriched_terms.add(tuple(record[0:3]))  # Convert first three terms to a tuple and add to the set
+
+
+                #enriched_terms.add(record[0:3]) if record[i] is not None
                 #enriched_terms.update(record[1] if record[1] else [])
         return list(enriched_terms)
     

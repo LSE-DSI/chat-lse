@@ -884,7 +884,11 @@ class GraphRAG(QueryRewriterRAG):
             #llm_generated_cypher_query = cypher_response_json["Cypher Query"] if cypher_response_json["Cypher Query"] in entities else None
             #print(f"LLM GENERATED CYPHER QUERY: {llm_generated_cypher_query}")
 
-            query_embedding = await compute_text_embedding(original_user_query, None, self.embed_model)
+            if len(past_messages) <= 2: 
+                query_embedding = await compute_text_embedding(original_user_query, None, self.embed_model)
+            else:
+                query_embedding = await compute_text_embedding(query_text, None, self.embed_model)
+
 
             results = await self.searcher.search(query_text, vector, top, None, query_embedding, orignal_query=original_user_query)
 
