@@ -11,11 +11,12 @@ from sqlalchemy import text
 from dotenv import load_dotenv
 import jsonlines
 import os
+from pathlib import Path
 
 from chatlse.postgres_engine import create_postgres_engine_from_env_sync
 from chatlse.crawler import parse_doc, generate_json_entry, generate_list_ingested_data
 
-
+CURRENT_DIR = Path(__file__).parents[1]
 
 class ItemToPostgresPipeline:
     def __init__(self):
@@ -118,7 +119,7 @@ class ItemToPostgresPipeline:
                         
                     # Get specific fields from PDF files 
                     elif item_type == "file_metadata":
-                        file_path = adapter["file_path"]
+                        file_path = os.path.join(CURRENT_DIR, adapter["file_path"])
                         try:
                             content, doc_id, type = parse_doc(file_path)
                         except Exception as e:
