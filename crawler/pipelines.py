@@ -72,6 +72,7 @@ class ItemToPostgresPipeline:
                     date_scraped TIMESTAMP
                 );
             '''))
+                    #embedding VECTOR(1024) is left out for now 
 
             conn.commit()
             logging.info("Database extension and tables created successfully.")
@@ -84,7 +85,7 @@ class ItemToPostgresPipeline:
         item_type = item.type
 
         with self.engine.connect() as conn:
-            if item_type == "error_301":
+            if item_type  "error_301":
                 try:
                     filename = "data/error_301.jsonl"
                     self.process_error(conn, adapter, filename)
@@ -161,6 +162,7 @@ class ItemToPostgresPipeline:
                             "title": title,
                             "content": content,
                             "date_scraped": date_scraped
+                            #"embedding": embedding
                         })
 
                     logging.info(f'Item processed and stored in PostgreSQL {adapter["url"]}')

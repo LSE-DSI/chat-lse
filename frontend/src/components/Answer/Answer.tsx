@@ -103,7 +103,7 @@ export const Answer = ({
             {citations && !!citations.length && (
                 <Stack.Item>
                     <Stack wrap tokens={{ childrenGap: 5 }}>
-                        <span className={styles.citationLearnMore}>Citations:</span>
+                        <span className={styles.citationLearnMore}>Referenced Sources:</span>
                         {citations.map((x: Record<string, any>, i: number) => {
                             return (
                                 // <>
