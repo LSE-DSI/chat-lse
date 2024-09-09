@@ -85,7 +85,7 @@ class ItemToPostgresPipeline:
         item_type = item.type
 
         with self.engine.connect() as conn:
-            if item_type  "error_301":
+            if item_type == "error_301":
                 try:
                     filename = "data/error_301.jsonl"
                     self.process_error(conn, adapter, filename)
