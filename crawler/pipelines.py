@@ -11,10 +11,14 @@ from sqlalchemy import text
 from dotenv import load_dotenv
 import jsonlines
 import os
+from pathlib import Path
 
 from chatlse.postgres_engine import create_postgres_engine_from_env_sync
 from chatlse.crawler import parse_doc, generate_json_entry, generate_list_ingested_data
 
+
+#defining the current directory that is two levels up from the current file
+CURRENT_DIR = Path(__file__).resolve().parents[1]
 
 
 class ItemToPostgresPipeline:
@@ -61,9 +65,7 @@ class ItemToPostgresPipeline:
             logging.info("Creating lse_doc table...")
             conn.execute(text('''
                 CREATE TABLE IF NOT EXISTS lse_doc (
-                    id TEXT PRIMARY KEY, 
-                    doc_id TEXT,
-                    chunk_id TEXT, 
+                    doc_id TEXT PRIMARY KEY,
                     type TEXT, 
                     url TEXT,
                     title TEXT,
@@ -118,7 +120,7 @@ class ItemToPostgresPipeline:
                         
                     # Get specific fields from PDF files 
                     elif item_type == "file_metadata":
-                        file_path = adapter["file_path"]
+                        file_path = os.path.join(CURRENT_DIR, adapter["file_path"])
                         try:
                             content, doc_id, type = parse_doc(file_path)
                         except Exception as e:
@@ -147,14 +149,12 @@ class ItemToPostgresPipeline:
 
                     # Insert document into the database (if document not exist or if it has changed)
                     output_list = generate_json_entry(content, type, url, title, date_scraped, doc_id)
-                    for idx, doc_id, chunk_id, type, url, title, content, date_scraped in output_list:
+                    for doc_id, type, url, title, content, date_scraped in output_list:
                         conn.execute(text('''
-                            INSERT INTO lse_doc (id, doc_id, chunk_id, type, url, title, content, date_scraped)
-                            VALUES (:id, :doc_id, :chunk_id, :type, :url, :title, :content, :date_scraped)
+                            INSERT INTO lse_doc (doc_id, type, url, title, content, date_scraped)
+                            VALUES (:doc_id, :type, :url, :title, :content, :date_scraped)
                         '''), {
-                            "id": idx,
                             "doc_id": doc_id,
-                            "chunk_id": chunk_id,
                             "type": type,
                             "url": url,
                             "title": title,
@@ -164,7 +164,7 @@ class ItemToPostgresPipeline:
 
                     logging.info(f'Item processed and stored in PostgreSQL {adapter["url"]}')
 
-                    generate_list_ingested_data("data/ingested_data.json", idx, type, url, title, date_scraped)
+                    generate_list_ingested_data("data/ingested_data.json", doc_id, type, url, title, date_scraped)
 
                     logging.info(f'File saved to list of ingested data: {adapter["url"]}')
 

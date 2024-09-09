@@ -88,27 +88,24 @@ def generate_json_entry(text, type, url, title, date_scraped, doc_id):
     """
 
     # Chunking and embedding chunks
-    splitter = SentenceSplitter(
-        chunk_size=EMBED_CHUNK_SIZE if EMBED_CHUNK_SIZE else 512,
-        chunk_overlap=EMBED_OVERLAP_SIZE if EMBED_OVERLAP_SIZE else 128
-    )
+#    splitter = SentenceSplitter(
+ #       chunk_size=EMBED_CHUNK_SIZE if EMBED_CHUNK_SIZE else 512,
+  #      chunk_overlap=EMBED_OVERLAP_SIZE if EMBED_OVERLAP_SIZE else 128
+   # )
 
-    sentence_chunks = splitter.split_text(text)
+#    sentence_chunks = splitter.split_text(text)
     output_list = []
-    for chunk_id, chunk_text in enumerate(sentence_chunks):
-        id = f"{doc_id}_{chunk_id}"
+#    for chunk_id, chunk_text in enumerate(sentence_chunks):
+#        id = f"{doc_id}_{chunk_id}"
         #embedding = compute_text_embedding_sync(chunk_text, model_instance=MODEL_INSTANCE)
-        output_list.append([
-            id,
-            doc_id,
-            chunk_id,
-            type,
-            url,
-            title,
-            chunk_text,
-            date_scraped
-            #embedding
-        ])
+    output_list.append([
+        doc_id,
+        type,
+        url,
+        title,
+        text,
+        date_scraped
+    ])
 
     return output_list
 
