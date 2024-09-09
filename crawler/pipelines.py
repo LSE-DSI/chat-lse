@@ -10,11 +10,13 @@ from itemadapter import ItemAdapter
 from sqlalchemy import text
 from dotenv import load_dotenv
 import jsonlines
+import os
+from pathlib import Path
 
 from chatlse.postgres_engine import create_postgres_engine_from_env_sync
 from chatlse.crawler import parse_doc, generate_json_entry, generate_list_ingested_data
 
-
+CURRENT_DIR = Path(__file__).parents[1]
 
 class ItemToPostgresPipeline:
     def __init__(self):
@@ -33,6 +35,22 @@ class ItemToPostgresPipeline:
         logging.debug("ItemToPostgresPipeline close spider")
         self.engine.dispose()
         logging.info('PostgreSQL Connection closed')
+    
+    def write_error_log(self, file_path, url):
+        existing_entries = []
+        try:
+            with jsonlines.open(file_path, 'r') as reader:
+                for entry in reader:
+                    existing_entries.append(entry)
+        except FileNotFoundError:
+            pass
+
+        new_entry = url
+        if new_entry not in existing_entries:
+            with jsonlines.open(file_path, 'a') as writer:
+                writer.write(new_entry)
+        
+        return new_entry
 
     def create_tables(self, engine):
         logging.debug("ItemToPostgresPipeline create tables")
@@ -94,10 +112,22 @@ class ItemToPostgresPipeline:
                         content = adapter["content"]
                         doc_id = adapter["doc_id"]
                         type = "webpage"
+
+                    elif item_type == "webpage_su":
+                        content = adapter["content"]
+                        doc_id = adapter["doc_id"]
+                        type = "webpage_su"
+                        
                     # Get specific fields from PDF files 
-                    elif item_type == "file_metadata": 
-                        file_path = adapter["file_path"]
-                        content, doc_id, type = parse_doc(file_path)
+                    elif item_type == "file_metadata":
+                        file_path = os.path.join(CURRENT_DIR, adapter["file_path"])
+                        try:
+                            content, doc_id, type = parse_doc(file_path)
+                        except Exception as e:
+                            print(f"Error parsing document: {e}")
+                            self.write_error_log("data/error_downloads.jsonl", url)
+                            return
+
 
                     # Check if the url already exists in the database
                     result = conn.execute(

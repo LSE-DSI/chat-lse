@@ -26,6 +26,26 @@ class PagesScraperItem(scrapy.Item):
     content = scrapy.Field()
     date_scraped = scrapy.Field()
 
+class SUPagesScraperItem(scrapy.Item):
+    """
+    Represents an item scraped from the LSESU pages.
+
+    Attributes:
+        type: The name of item, i.e page 
+        doc_id (scrapy.Field): The hash of the HTML content of the page 
+        origin_url (scrapy.Field): The original URL of the page.
+        url (scrapy.Field): The URL of the page.
+        title (scrapy.Field): The title of the page.
+        content (scrapy.Field): The HTML content of the page.
+        date_scraped (scrapy.Field): The date when the page was scraped.
+    """
+    type = 'webpage_su'
+    doc_id = scrapy.Field()
+    url = scrapy.Field()
+    title = scrapy.Field()
+    content = scrapy.Field()
+    date_scraped = scrapy.Field()
+
 
 class FilesScraperItem(scrapy.Item):
     """
