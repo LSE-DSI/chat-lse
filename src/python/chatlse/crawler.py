@@ -74,43 +74,21 @@ def parse_doc(file_path):
 
 def generate_json_entry(text, type, url, title, date_scraped, doc_id):
     """
-    This function takes the metadata returned by the `file_downloader`, chunks and embeds
-    the files and returns a json entry for input into postgres database. 
-
-    Output: 
-        - doc_id: hashed chunk content 
-        - chunk_id: id of the file chunk 
-        - type: type of the file 
-        - url: url of the file 
-        - title: title of the file 
-        - content: chunked content of the file 
-        - date_scraped: datetime of when the data is scraped 
+    This function now skips the chunking step, just feeds the full document instead.
     """
+    # No chunking - pass the full text to the embedding model
+    id = f"{doc_id}_0"  # Single chunk ID
 
-    # Chunking and embedding chunks
-    splitter = SentenceSplitter(
-        chunk_size=EMBED_CHUNK_SIZE if EMBED_CHUNK_SIZE else 512,
-        chunk_overlap=EMBED_OVERLAP_SIZE if EMBED_OVERLAP_SIZE else 128
-    )
-
-    sentence_chunks = splitter.split_text(text)
-    output_list = []
-    for chunk_id, chunk_text in enumerate(sentence_chunks):
-        id = f"{doc_id}_{chunk_id}"
-        #embedding = compute_text_embedding_sync(chunk_text, model_instance=MODEL_INSTANCE)
-        output_list.append([
-            id,
-            doc_id,
-            chunk_id,
-            type,
-            url,
-            title,
-            chunk_text,
-            date_scraped
-            #embedding
-        ])
-
-    return output_list
+    return [[
+        id,
+        doc_id,
+        type,
+        url,
+        title,
+        text, 
+        date_scraped,
+        
+    ]]
 
 
 def generate_list_ingested_data(file_path, idx, type, url, title, date_scraped):

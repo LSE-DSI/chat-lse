@@ -63,7 +63,6 @@ class ItemToPostgresPipeline:
                 CREATE TABLE IF NOT EXISTS lse_doc (
                     id TEXT PRIMARY KEY, 
                     doc_id TEXT,
-                    chunk_id TEXT, 
                     type TEXT, 
                     url TEXT,
                     title TEXT,
@@ -147,14 +146,13 @@ class ItemToPostgresPipeline:
 
                     # Insert document into the database (if document not exist or if it has changed)
                     output_list = generate_json_entry(content, type, url, title, date_scraped, doc_id)
-                    for idx, doc_id, chunk_id, type, url, title, content, date_scraped in output_list:
+                    for idx, doc_id, type, url, title, content, date_scraped in output_list:
                         conn.execute(text('''
-                            INSERT INTO lse_doc (id, doc_id, chunk_id, type, url, title, content, date_scraped)
-                            VALUES (:id, :doc_id, :chunk_id, :type, :url, :title, :content, :date_scraped)
+                            INSERT INTO lse_doc (id, doc_id, type, url, title, content, date_scraped)
+                            VALUES (:id, :doc_id, :type, :url, :title, :content, :date_scraped)
                         '''), {
                             "id": idx,
                             "doc_id": doc_id,
-                            "chunk_id": chunk_id,
                             "type": type,
                             "url": url,
                             "title": title,
