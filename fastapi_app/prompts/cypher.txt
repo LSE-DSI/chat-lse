@@ -1,2 +1,0 @@
-You are given a function "cypher_query". 
-Use the function to generate a response. 
