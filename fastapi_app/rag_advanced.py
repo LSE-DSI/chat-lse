@@ -500,6 +500,7 @@ class QueryRewriterRAG(AdvancedRAGChat):
         self.no_answer_prompt_template = open(current_dir / f"prompts/no_answer_advanced.txt").read()
 
 
+
     async def classify_query(self, original_user_query, past_messages, query_response_token_limit=500):
         """
         Takes the user query (`original_user_query`) and past messages (`past_messages`), using function calling to ask the model 
@@ -703,6 +704,33 @@ class GraphRAG(QueryRewriterRAG):
         self.cypher_prompt_template = open(current_dir / f"prompts/cypher.txt").read()
         self.rag_answer_prompt_template = open(current_dir / f"prompts/rag_answer_advanced.txt").read()
         self.no_answer_prompt_template = open(current_dir / f"prompts/no_answer_advanced.txt").read()
+        self.cypher_relationship_prompt_template = open(current_dir / f"prompts/cypher_relationship.txt").read()
+    
+    async def generate_cypher_query(self, chat_model, original_user_query):
+        """Generate Cypher query based on classification."""
+
+        system_prompt = self.cypher_prompt_template
+
+        messages = build_messages(
+            model=self.chat_model,
+            system_prompt=system_prompt,
+            new_user_content=original_user_query,
+            max_tokens=self.chat_token_limit - 100
+        )
+
+        # Generate the Cypher query
+        chat_completion = await self.chat_client.chat.completions.create(
+            model=self.chat_model,
+            messages=messages,
+            temperature=0,
+            max_tokens=100,
+            n=1
+        )
+
+        # Extract the Cypher query from the response
+        cypher_query = chat_completion.choices[0].message.content.strip()
+        
+        return cypher_query
 
 
     async def build_final_query(self, original_user_query, past_messages, search_query, to_greet, is_farewell, is_relevant, no_answer, vector_search, text_search, top, response_token_limit=1024):
@@ -860,25 +888,10 @@ class GraphRAG(QueryRewriterRAG):
             if not text_search:
                 query_text = None
 
-            messages = build_messages(
-                model = self.chat_model,
-                system_prompt = self.cypher_prompt_template,
-                new_user_content = search_query,
-                max_tokens=self.chat_token_limit - response_token_limit,
-                fallback_to_default=True,
-            )
 
-            cypher_response = await self.chat_client.chat.completions.create(
-                        messages=messages,  # type: ignore
-                        # Azure OpenAI takes the deployment name as the model name
-                        model=self.chat_model,
-                        temperature=0, # Setting temperature to 0 for testing
-                        n=1,
-                        tools=build_cypher_query(),
-                        tool_choice="required",
-                        response_format={"type": "json_object"}, 
-                        stream=False
-                    )
+            cypher_relationship = await self.generate_cypher_query(chat_model ,original_user_query)
+            print(f"CYPHER RELATIONSHIP: {cypher_relationship}")
+
 
 #            cypher_response_json = json.loads(cypher_response.choices[0].message.tool_calls[0].function.arguments)
 #            llm_generated_cypher_query = cypher_response_json["Cypher Query"] if cypher_response_json["Cypher Query"] in entities else None
@@ -892,7 +905,6 @@ class GraphRAG(QueryRewriterRAG):
 
             results = await self.searcher.search(query_text, vector, top, query_embedding, original_user_query)
 
-            print(f"RESULTS: {results}")
 
             # Process results and format them into a string for context
             sources_content = [f"[{(doc.doc_id)}]: {doc.to_str_for_rag()}\n\n" for doc in results]
