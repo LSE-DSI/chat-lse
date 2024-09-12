@@ -23,33 +23,17 @@ class PostgresSearcher:
             WHERE n.embedding IS NOT NULL
             WITH n, vector.similarity.cosine(n.embedding, queryEmbedding) AS similarity
             ORDER BY similarity DESC
-            LIMIT 3
+            LIMIT 1
             
-            WITH {query_embedding} AS queryEmbedding, n, similarity
-            MATCH (n)-[r]->(relatedNode)
-            WHERE relatedNode.embedding IS NOT NULL
-            WITH n,
-                n.name AS node_name, 
-                n.doc_id AS doc_id, 
-                similarity,
-                relatedNode, 
-                queryEmbedding,
-                vector.similarity.cosine(relatedNode.embedding, queryEmbedding) AS related_similarity
-            ORDER BY n, related_similarity DESC
-            WITH n, node_name, doc_id, similarity, 
-                collect(relatedNode.name)[0..3] AS top_related_names, 
-                collect(relatedNode.doc_id)[0..3] AS top_related_doc_ids, 
-                collect(related_similarity)[0..3] AS top_related_similarities
+            WITH n
+            MATCH (n) - [r] - (m)
+            WHERE m.community = n.community
+            WITH COLLECT(n.doc_id) + COLLECT(m.doc_id) AS all_doc_ids,
+            COLLECT(n.name) + COLLECT(m.name) AS all_names
 
-            UNWIND ([node_name] + top_related_names) AS name
-            WITH name, 
-                ([doc_id] + top_related_doc_ids) AS all_doc_ids, 
-                ([similarity] + top_related_similarities) AS all_similarities
+            RETURN all_names, all_doc_ids;
 
-            UNWIND all_doc_ids AS doc_ids
-            UNWIND all_similarities AS similarities
 
-            RETURN DISTINCT name, doc_ids, similarities;
  """ 
 
             result = neo4j_session.run(neo4j_query, parameters={"query": original_query}).values()
@@ -57,13 +41,15 @@ class PostgresSearcher:
 
             for record in result:
                 if record[1] is not None:
-                    enriched_terms.append(record[0])  
+                    enriched_terms.append(record[0])
                     relevant_doc_ids.append(record[1])
             
+            print(f"ENRICHED TERMS: {enriched_terms}")
+            print(f"RELEVANT DOC IDS: {relevant_doc_ids}")
 
                 #enriched_terms.add(record[0:3]) if record[i] is not None
                 #enriched_terms.update(record[1] if record[1] else [])
-        return enriched_terms, relevant_doc_ids
+            return enriched_terms, relevant_doc_ids
     
 
     def build_filter_clause(self, filters) -> tuple[str, str]:
@@ -93,15 +79,20 @@ class PostgresSearcher:
         if query_vector: 
             # Enrich the query with graph-based terms
             enriched_terms= self.enrich_query_with_graph(orignal_query, query_vector) if query_vector else []
-            relevant_doc_ids = list(set(enriched_terms[1]))
-            enriched_terms = list(set(enriched_terms[0]))
+            relevant_doc_ids = enriched_terms[1]
+            enriched_terms = enriched_terms[0]
 
+            print("Entered Query Vector")
 
-            print(f"RELEVANT DOC IDS: {relevant_doc_ids}")
             print(f"ENRICHED TERMS: {enriched_terms}")
+            print(f"RELEVANT DOC IDS: {relevant_doc_ids}")
+
+
+
             if enriched_terms:
                 print(f"ENRICHED TERMS: {enriched_terms}")
-                enriched_query_text = " OR ".join(x for x in enriched_terms)
+                enriched_query_text = " OR ".join(str(x) for x in enriched_terms)
+
                 query_text = f"({query_text}) OR ({enriched_query_text})" if query_text else enriched_query_text
                 for doc_id in relevant_doc_ids:
                     print(f"DOC ID: {doc_id}")
@@ -182,4 +173,5 @@ class PostgresSearcher:
             for id, _ in results[:query_top]:
                 doc = await session.execute(select(Doc).where(Doc.id == id))
                 docs.append(doc.scalar())
+                print(f"DOC: {doc.scalar()}")
             return docs

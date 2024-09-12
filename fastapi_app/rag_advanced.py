@@ -880,9 +880,9 @@ class GraphRAG(QueryRewriterRAG):
                         stream=False
                     )
 
-            #cypher_response_json = json.loads(cypher_response.choices[0].message.tool_calls[0].function.arguments)
-            #llm_generated_cypher_query = cypher_response_json["Cypher Query"] if cypher_response_json["Cypher Query"] in entities else None
-            #print(f"LLM GENERATED CYPHER QUERY: {llm_generated_cypher_query}")
+#            cypher_response_json = json.loads(cypher_response.choices[0].message.tool_calls[0].function.arguments)
+#            llm_generated_cypher_query = cypher_response_json["Cypher Query"] if cypher_response_json["Cypher Query"] in entities else None
+#            print(f"LLM GENERATED CYPHER QUERY: {llm_generated_cypher_query}")
 
             if len(past_messages) <= 2: 
                 query_embedding = await compute_text_embedding(original_user_query, None, self.embed_model)
@@ -891,6 +891,8 @@ class GraphRAG(QueryRewriterRAG):
 
 
             results = await self.searcher.search(query_text, vector, top, query_embedding, original_user_query)
+
+            print(f"RESULTS: {results}")
 
             # Process results and format them into a string for context
             sources_content = [f"[{(doc.doc_id)}]: {doc.to_str_for_rag()}\n\n" for doc in results]
