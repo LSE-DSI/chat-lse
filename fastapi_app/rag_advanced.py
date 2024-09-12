@@ -15,7 +15,7 @@ from openai_messages_token_helper import build_messages, get_token_limit
 from .globals import global_storage
 
 from .api_models import ThoughtStep
-from .postgres_neo4j_searcher import PostgresSearcher
+from .postgres_neo4j_searcher import PostgresFirst, PostgresSecond
 from chatlse.embeddings import compute_text_embedding
 from chatlse.llm_functions import build_filter_function, build_filter_function_query_rewriter, extract_function_calls, extract_json, extract_json_query_rewriter, build_response_function
 
@@ -24,7 +24,8 @@ class AdvancedRAGChat:
     def __init__(
         self,
         *,
-        searcher: PostgresSearcher,
+        postgres_first: PostgresFirst,
+        postgres_second: PostgresSecond,
         chat_client: AsyncOpenAI,
         chat_model: str,
         embed_model: str,
@@ -32,7 +33,8 @@ class AdvancedRAGChat:
         context_window_override: int | None, # Context window size (default to 4000 if None)
         to_summarise: bool | None 
     ):
-        self.searcher = searcher
+        self.postgres_first = postgres_first
+        self.postgres_second = postgres_second
         self.chat_client = chat_client
         self.chat_model = chat_model
         self.embed_model = embed_model
@@ -57,7 +59,12 @@ class AdvancedRAGChat:
         self.rag_answer_prompt_template = open(current_dir / f"prompts/rag_answer_advanced.txt").read()
         self.no_answer_prompt_template = open(current_dir / f"prompts/no_answer_advanced.txt").read()
 
-
+    def determine_searcher(query: str) -> str:
+        if "condition":
+            return "PostgresFirst"
+        else:
+            return "PostgresSecond"
+        
     async def summarise_resp(self, past_messages): 
         """
         Assumes that len(past_messages) >= 6, summarises the 4th most recent model response. Writes over past_messages 
@@ -377,6 +384,14 @@ class AdvancedRAGChat:
 
 
     async def classify_and_build_message_wrapper(self, original_user_query, past_messages, vector_search, text_search, top, query_response_token_limit=500, response_token_limit=1024): 
+        searcher_choice = determine_searcher(original_user_query)
+    
+        if searcher_choice == "PostgresFirst":
+            self.searcher = self.postgres_first
+        else:
+            self.searcher = self.postgres_second
+
+
         # Classify user query before deciding how to handle the query (e.g. use RAG, follow up, etc.)
         to_greet, is_farewell, requires_clarification, to_follow_up, to_search, clarification_response = await self.classify_query(original_user_query, past_messages, query_response_token_limit)
         no_answer = None
