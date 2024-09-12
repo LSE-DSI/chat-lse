@@ -23,13 +23,14 @@ class PostgresSearcher:
             WHERE n.embedding IS NOT NULL
             WITH n, vector.similarity.cosine(n.embedding, queryEmbedding) AS similarity
             ORDER BY similarity DESC
-            LIMIT 1
+            LIMIT 3
             
             WITH n
             MATCH (n) - [r] - (m)
-            WHERE m.community = n.community
-            WITH COLLECT(n.doc_id) + COLLECT(m.doc_id) AS all_doc_ids,
-            COLLECT(n.name) + COLLECT(m.name) AS all_names
+            OPTIONAL MATCH (m) - [r] - (o)
+            WHERE m.community = n.community = o.community
+            WITH COLLECT(n.doc_id) + COLLECT(m.doc_id) + Collect(o.doc_id) AS all_doc_ids,
+            COLLECT(n.name) + COLLECT(m.name) + COLLECT (o.name) AS all_names
 
             RETURN all_names, all_doc_ids;
 
@@ -41,8 +42,8 @@ class PostgresSearcher:
 
             for record in result:
                 if record[1] is not None:
-                    enriched_terms.append(record[0])
-                    relevant_doc_ids.append(record[1])
+                    enriched_terms.extend(record[0])  # Flattening list and extending to avoid nested lists
+                    relevant_doc_ids.extend(record[1])
             
             print(f"ENRICHED TERMS: {enriched_terms}")
             print(f"RELEVANT DOC IDS: {relevant_doc_ids}")
@@ -79,8 +80,8 @@ class PostgresSearcher:
         if query_vector: 
             # Enrich the query with graph-based terms
             enriched_terms= self.enrich_query_with_graph(orignal_query, query_vector) if query_vector else []
-            relevant_doc_ids = enriched_terms[1]
-            enriched_terms = enriched_terms[0]
+            relevant_doc_ids = list(set(enriched_terms[1]))
+            enriched_terms = list(set(enriched_terms[0]))
 
             print("Entered Query Vector")
 
@@ -173,5 +174,5 @@ class PostgresSearcher:
             for id, _ in results[:query_top]:
                 doc = await session.execute(select(Doc).where(Doc.id == id))
                 docs.append(doc.scalar())
-                print(f"DOC: {doc.scalar()}")
+
             return docs
