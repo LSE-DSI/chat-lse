@@ -59,11 +59,50 @@ class AdvancedRAGChat:
         self.rag_answer_prompt_template = open(current_dir / f"prompts/rag_answer_advanced.txt").read()
         self.no_answer_prompt_template = open(current_dir / f"prompts/no_answer_advanced.txt").read()
 
-    def determine_searcher(query: str) -> str:
-        if "condition":
-            return "PostgresFirst"
-        else:
-            return "PostgresSecond"
+    async def determine_searcher(self, user_query: str) -> str:
+        """
+        Uses an LLM call to determine whether to use PostgresFirst or PostgresSecond based on the user query.
+        The LLM is instructed to choose PostgresFirst if the question is vague.
+        """
+        prompt = f"""
+        The user query is: "{user_query}"
+        
+        Please decide which searcher to use:
+        - If the question is vague or unclear, output "PostgresFirst".
+        - If the question is detailed and specific, output "PostgresSecond".
+        Provide only one output: "PostgresFirst" or "PostgresSecond".
+        """
+        
+        # Send the prompt to the LLM
+        response_token_limit = 100  # Define a suitable token limit for the response
+        messages = build_messages(
+            model=self.chat_model,
+            system_prompt=prompt,
+            new_user_content=user_query,
+            max_tokens=self.chat_token_limit - response_token_limit,
+            fallback_to_default=True
+        )
+        
+        chat_completion_resp: ChatCompletion = await self.chat_client.chat.completions.create(
+            model=self.chat_model,
+            messages=messages,
+            temperature=0,  # Minimize creativity for consistency
+            max_tokens=response_token_limit,
+            n=1,
+            stream=False
+        )
+        
+        # Extract the decision from the LLM's response
+        searcher_decision = chat_completion_resp.choices[0].message.content.strip()
+
+        # Ensure the output is either "PostgresFirst" or "PostgresSecond"
+        if searcher_decision not in ["PostgresFirst", "PostgresSecond"]:
+            # Fallback to PostgresFirst if the response is invalid
+            logger.warning(f"Unexpected LLM response for searcher selection: {searcher_decision}. Defaulting to PostgresFirst.")
+            searcher_decision = "PostgresFirst"
+        
+        return searcher_decision
+
         
     async def summarise_resp(self, past_messages): 
         """
@@ -383,36 +422,37 @@ class AdvancedRAGChat:
             }
 
 
-    async def classify_and_build_message_wrapper(self, original_user_query, past_messages, vector_search, text_search, top, query_response_token_limit=500, response_token_limit=1024): 
-        searcher_choice = determine_searcher(original_user_query)
-    
+    async def classify_and_build_message_wrapper(self, original_user_query, past_messages, vector_search, text_search, top, query_response_token_limit=500, response_token_limit=1024):
+        # Use the LLM to determine which searcher to use
+        searcher_choice = await self.determine_searcher(original_user_query)
+        
         if searcher_choice == "PostgresFirst":
             self.searcher = self.postgres_first
         else:
             self.searcher = self.postgres_second
 
-
-        # Classify user query before deciding how to handle the query (e.g. use RAG, follow up, etc.)
+        # Proceed with the rest of the workflow
         to_greet, is_farewell, requires_clarification, to_follow_up, to_search, clarification_response = await self.classify_query(original_user_query, past_messages, query_response_token_limit)
         no_answer = None
 
         messages, sources_content, query_text, results = await self.build_final_query(
-                                                            original_user_query, 
-                                                            past_messages, 
-                                                            to_greet, 
-                                                            is_farewell, 
-                                                            requires_clarification, 
-                                                            to_follow_up, 
-                                                            to_search, 
-                                                            clarification_response, 
-                                                            no_answer, 
-                                                            vector_search, 
-                                                            text_search, 
-                                                            top, 
-                                                            response_token_limit
-                                                        )
-        
-        return messages, sources_content, query_text, results 
+            original_user_query,
+            past_messages,
+            to_greet,
+            is_farewell,
+            requires_clarification,
+            to_follow_up,
+            to_search,
+            clarification_response,
+            no_answer,
+            vector_search,
+            text_search,
+            top,
+            response_token_limit
+        )
+
+        return messages, sources_content, query_text, results
+ 
 
 
     async def run(
