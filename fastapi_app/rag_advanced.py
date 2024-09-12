@@ -15,7 +15,7 @@ from openai_messages_token_helper import build_messages, get_token_limit
 from .globals import global_storage
 
 from .api_models import ThoughtStep
-from .postgres_searcher import PostgresSearcher
+from .postgres_neo4j_searcher import PostgresSearcher
 from chatlse.embeddings import compute_text_embedding
 from chatlse.llm_functions import build_filter_function, build_filter_function_query_rewriter, extract_function_calls, extract_json, extract_json_query_rewriter, build_response_function
 

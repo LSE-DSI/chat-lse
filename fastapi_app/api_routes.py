@@ -3,7 +3,7 @@ import fastapi
 
 from .api_models import ChatRequest
 from .globals import global_storage
-from .postgres_searcher import PostgresSearcher
+from .postgres_neo4j_searcher import PostgresSearcher
 from .logger import logger, handle_new_message
 
 from .rag_advanced import AdvancedRAGChat, QueryRewriterRAG
