@@ -38,6 +38,35 @@ def extract_json_query_rewriter(chat_response: ChatCompletion):
 
     return to_greet, is_relevant, is_farewell
 
+# def build_cypher_filter_function() -> list[dict]:
+#     return [
+#         {
+#             "type": "function",
+#             "function": {
+#                 "name": "filter_cypher_queries",
+#                 "description": '''Decide which kind of query the user's question is.
+#                     Respond in the format: {"single_entity_query": true/false, "relationship_query": true/false}
+#                     Do NOT enclose the true or false values in quotes.''',
+#                 "parameters": {
+#                     "type": "object",
+#                     "properties": {
+#                         "single_entity_query": {
+#                             "type": "boolean",
+#                             "description": '''Decide if the user's question is focused on retrieving information about a specific entity (node) without any mention of relationships or connections to other entities.
+#                             E.g., "Find details about the Department of Economics" or "What is the location of LSE?". Return true if the question can be answered by fetching a single node like a department, person, or entity.''',
+#                         },
+#                         "relationship_query": {
+#                             "type": "boolean",
+#                             "description": '''Determine if the user's question involves relationships between entities, such as finding connections or interactions between nodes.
+#                             E.g., "Find all professors who work in the Economics Department at LSE" or "What research groups is LSE affiliated with?". Return true if the query requires identifying relationships (edges) between nodes like people, departments, or research groups.''',
+#                         }
+#                     },
+#                     "required": ["single_entity_query", "relationship_query"]
+#                 }
+#             }
+#         }
+#     ]
+
 
 
 def build_filter_function() -> list[ChatCompletionToolParam]:
@@ -159,148 +188,3 @@ def build_filter_function_query_rewriter() -> list[ChatCompletionToolParam]:
         },
     }     
 ]
-
-
-
-def build_cypher_query() -> list[ChatCompletionToolParam]:
-    return [
-        {
-        "type": "function",
-        "function": {
-            "name": "cypher_query",
-            "description": '''This function takes a user query and return the most relevent entitiy to the query. The entities can ONLY be taken from the following list:
-            entities = [
-                "AdministrativeCommittee",
-                "AdvisoryBoardMember",
-                "Alumna",
-                "Alumni",
-                "AlumniNetwork",
-                "Alumnus",
-                "App",
-                "ArchitecturalPractice",
-                "Author",
-                "Award",
-                "Blog",
-                "Building",
-                "Campaign",
-                "Centre",
-                "Charity",
-                "Club",
-                "Committee",
-                "Company",
-                "ConstructionCompany",
-                "ConsultingGroup",
-                "Contact",
-                "ContactPerson",
-                "CoResearcher",
-                "Course",
-                "Database",
-                "Deadline",
-                "Degree",
-                "Department",
-                "Division",
-                "Document",
-                "ECRNetwork",
-                "EligibilityCriteria",
-                "Email",
-                "Episode",
-                "Event",
-                "Expert",
-                "Facility",
-                "Faculty",
-                "FeaturedAlumni",
-                "Fellowship",
-                "Festival",
-                "Form",
-                "FundingSource",
-                "Graduate",
-                "Group",
-                "Guide",
-                "HeadOfSociety",
-                "HostOrganisation",
-                "Initiative",
-                "Institution",
-                "Job",
-                "Library",
-                "LSEExpertsDirectory",
-                "LSEResearchOnline",
-                "Mentor",
-                "Module",
-                "Network",
-                "Newsletter",
-                "NGO",
-                "Office",
-                "Opportunity",
-                "Organization",
-                "Partnership",
-                "PensionScheme",
-                "Person",
-                "PhD",
-                "PhDResearcher",
-                "PhDStudent",
-                "Podcast",
-                "Policy",
-                "Prize",
-                "ProfessionalServicesStaff",
-                "Program",
-                "Programme",
-                "Project",
-                "ProjectBoard",
-                "Publication",
-                "Ranking",
-                "Report",
-                "Research",
-                "ResearchCentre",
-                "ResearchCluster",
-                "Researcher",
-                "ResearchGroup",
-                "ResearchImpactManager",
-                "ResearchPolicyTeam",
-                "ResearchProject",
-                "ResearchTheme",
-                "Resource",
-                "Reviewer",
-                "Role",
-                "Scholarship",
-                "ScholarshipProgramme",
-                "School",
-                "Skill",
-                "Society",
-                "Speaker",
-                "Startup",
-                "Student",
-                "StudentAmbassador",
-                "StudentChair",
-                "StudentVlogger",
-                "Support",
-                "Syllabus",
-                "TeachingCentre",
-                "Team",
-                "Thesis",
-                "University",
-                "Video",
-                "Visitor",
-                "Vlogger",
-                "Website",
-                "Workshop"
-            ]
-            The fuction should choose the most relevant entity.
-            E.g
-            {"User": "Where is the library?",
-            "Cypher Query": "Library"}
-            The function MUST return an entity from the list above. The entity must EXACTLY match the entity name from the list above. If the entity is not in the list, the function should return an empty string.
-            ''',
-            "parameters": {
-                "type": "object",
-                "properties": {
-                    "Cypher Query": {
-                        "type": "string",
-                        "description": "The entity that is most relevant to the user query.",
-                    },
-                },
-                "required": ["cypher_query"],
-            },
-        },
-    }
-]
-    
