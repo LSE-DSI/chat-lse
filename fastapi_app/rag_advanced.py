@@ -11,6 +11,7 @@ from openai.types.chat import (
     ChatCompletion,
 )
 from openai_messages_token_helper import build_messages, get_token_limit
+ 
 
 from .globals import global_storage
 
@@ -706,7 +707,7 @@ class GraphRAG(QueryRewriterRAG):
         self.no_answer_prompt_template = open(current_dir / f"prompts/no_answer_advanced.txt").read()
         self.cypher_relationship_prompt_template = open(current_dir / f"prompts/cypher_relationship.txt").read()
     
-    async def generate_cypher_query(self, chat_model, original_user_query):
+    def generate_cypher_query(self, original_user_query):
         """Generate Cypher query based on classification."""
 
         system_prompt = self.cypher_prompt_template
@@ -719,7 +720,7 @@ class GraphRAG(QueryRewriterRAG):
         )
 
         # Generate the Cypher query
-        chat_completion = await self.chat_client.chat.completions.create(
+        chat_completion = self.chat_client.chat.completions.create(
             model=self.chat_model,
             messages=messages,
             temperature=0,
@@ -889,7 +890,7 @@ class GraphRAG(QueryRewriterRAG):
                 query_text = None
 
 
-            cypher_relationship = await self.generate_cypher_query(chat_model ,original_user_query)
+            cypher_relationship = self.generate_cypher_query(original_user_query)
             print(f"CYPHER RELATIONSHIP: {cypher_relationship}")
 
 
