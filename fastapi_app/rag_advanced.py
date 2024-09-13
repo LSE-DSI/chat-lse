@@ -707,31 +707,6 @@ class GraphRAG(QueryRewriterRAG):
         self.no_answer_prompt_template = open(current_dir / f"prompts/no_answer_advanced.txt").read()
         self.cypher_relationship_prompt_template = open(current_dir / f"prompts/cypher_relationship.txt").read()
     
-    def generate_cypher_query(self, original_user_query):
-        """Generate Cypher query based on classification."""
-
-        system_prompt = self.cypher_prompt_template
-
-        messages = build_messages(
-            model=self.chat_model,
-            system_prompt=system_prompt,
-            new_user_content=original_user_query,
-            max_tokens=self.chat_token_limit - 100
-        )
-
-        # Generate the Cypher query
-        chat_completion = self.chat_client.chat.completions.create(
-            model=self.chat_model,
-            messages=messages,
-            temperature=0,
-            max_tokens=100,
-            n=1
-        )
-
-        # Extract the Cypher query from the response
-        cypher_query = chat_completion.choices[0].message.content.strip()
-        
-        return cypher_query
 
 
     async def build_final_query(self, original_user_query, past_messages, search_query, to_greet, is_farewell, is_relevant, no_answer, vector_search, text_search, top, response_token_limit=1024):
@@ -889,8 +864,29 @@ class GraphRAG(QueryRewriterRAG):
             if not text_search:
                 query_text = None
 
+            
+            # Generate the Cypher query
 
-            cypher_relationship = self.generate_cypher_query(original_user_query)
+            messages = build_messages(
+                model=self.chat_model,
+                system_prompt=self.cypher_relationship_prompt_template,
+                new_user_content=original_user_query,
+                max_tokens=self.chat_token_limit - 100,
+                fallback_to_default=True,
+            )
+
+            chat_completion = await self.chat_client.chat.completions.create(
+                model=self.chat_model,
+                messages=messages,
+                temperature=0,
+                max_tokens=100,
+                n=1
+            )
+
+            # Extract the Cypher query from the response
+            cypher_query = chat_completion.choices[0].message.content.strip()
+            
+            return cypher_query
             print(f"CYPHER RELATIONSHIP: {cypher_relationship}")
 
 
