@@ -732,123 +732,7 @@ class GraphRAG(QueryRewriterRAG):
                 fallback_to_default=True,
             )
 
-        elif is_relevant: 
-            # Relevant entities 
-            entities = [
-                "AdministrativeCommittee",
-                "AdvisoryBoardMember",
-                "Alumna",
-                "Alumni",
-                "AlumniNetwork",
-                "Alumnus",
-                "App",
-                "ArchitecturalPractice",
-                "Author",
-                "Award",
-                "Blog",
-                "Building",
-                "Campaign",
-                "Centre",
-                "Charity",
-                "Club",
-                "Committee",
-                "Company",
-                "ConstructionCompany",
-                "ConsultingGroup",
-                "Contact",
-                "ContactPerson",
-                "CoResearcher",
-                "Course",
-                "Database",
-                "Deadline",
-                "Degree",
-                "Department",
-                "Division",
-                "Document",
-                "ECRNetwork",
-                "EligibilityCriteria",
-                "Email",
-                "Episode",
-                "Event",
-                "Expert",
-                "Facility",
-                "Faculty",
-                "FeaturedAlumni",
-                "Fellowship",
-                "Festival",
-                "Form",
-                "FundingSource",
-                "Graduate",
-                "Group",
-                "Guide",
-                "HeadOfSociety",
-                "HostOrganisation",
-                "Initiative",
-                "Institution",
-                "Job",
-                "Library",
-                "LSEExpertsDirectory",
-                "LSEResearchOnline",
-                "Mentor",
-                "Module",
-                "Network",
-                "Newsletter",
-                "NGO",
-                "Office",
-                "Opportunity",
-                "Organization",
-                "Partnership",
-                "PensionScheme",
-                "Person",
-                "PhD",
-                "PhDResearcher",
-                "PhDStudent",
-                "Podcast",
-                "Policy",
-                "Prize",
-                "ProfessionalServicesStaff",
-                "Program",
-                "Programme",
-                "Project",
-                "ProjectBoard",
-                "Publication",
-                "Ranking",
-                "Report",
-                "Research",
-                "ResearchCentre",
-                "ResearchCluster",
-                "Researcher",
-                "ResearchGroup",
-                "ResearchImpactManager",
-                "ResearchPolicyTeam",
-                "ResearchProject",
-                "ResearchTheme",
-                "Resource",
-                "Reviewer",
-                "Role",
-                "Scholarship",
-                "ScholarshipProgramme",
-                "School",
-                "Skill",
-                "Society",
-                "Speaker",
-                "Startup",
-                "Student",
-                "StudentAmbassador",
-                "StudentChair",
-                "StudentVlogger",
-                "Support",
-                "Syllabus",
-                "TeachingCentre",
-                "Team",
-                "Thesis",
-                "University",
-                "Video",
-                "Visitor",
-                "Vlogger",
-                "Website",
-                "Workshop"
-            ]
+        elif is_relevant:
 
             # Retrieve relevant documents from the database with the GPT optimized query
             vector: list[float] = []
@@ -866,8 +750,7 @@ class GraphRAG(QueryRewriterRAG):
 
             
             # Generate the Cypher query
-
-            messages = build_messages(
+            cypher_messages = build_messages(
                 model=self.chat_model,
                 system_prompt=self.cypher_relationship_prompt_template,
                 new_user_content=original_user_query,
@@ -875,19 +758,19 @@ class GraphRAG(QueryRewriterRAG):
                 fallback_to_default=True,
             )
 
-            chat_completion = await self.chat_client.chat.completions.create(
+            chat_completion_cypher = await self.chat_client.chat.completions.create(
                 model=self.chat_model,
-                messages=messages,
+                messages=cypher_messages,
                 temperature=0,
                 max_tokens=100,
                 n=1
             )
 
             # Extract the Cypher query from the response
-            cypher_query = chat_completion.choices[0].message.content.strip()
-            
-            return cypher_query
+            cypher_relationship = chat_completion_cypher.choices[0].message.content.strip()
+
             print(f"CYPHER RELATIONSHIP: {cypher_relationship}")
+
 
 
 #            cypher_response_json = json.loads(cypher_response.choices[0].message.tool_calls[0].function.arguments)

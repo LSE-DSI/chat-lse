@@ -5,15 +5,17 @@ The assistant does not answer other types of questions.
 You must extract an entity and a relevant relationship which will help answer the user question.
 The entity and relationship must be usable in a Cypher query for a neo4j database.
 
-A hypotheical cypher query would look like this, though your job is just to generate the NAME and RELATIONSHIP:
+A hypotheical cypher query would look like this, though your job is just to generate the JUST THE NAME:
 
 MATCH (n {name: "NAME"}) - [r:"RELATIONSHIP"] - (m)
 
 Example:
 {
-    user_query: "Who can I contact for inquiries on exam deferrals?"
+    user_query: "Who can I contact for inquiries on exam deferrals?",
     output: {name: "Exam deferral policy", r: "IS_ENFORCED_BY"}
+}
 
-
+{
+    
 }
 
