@@ -4,6 +4,8 @@ from collections.abc import AsyncGenerator
 from typing import (
     Any,
 )
+import re
+
 from .logger import logger
 
 from openai import AsyncOpenAI
@@ -769,7 +771,25 @@ class GraphRAG(QueryRewriterRAG):
             # Extract the Cypher query from the response
             cypher_relationship = chat_completion_cypher.choices[0].message.content.strip()
 
-            print(f"CYPHER RELATIONSHIP: {cypher_relationship}")
+            print(cypher_relationship)
+
+            # Find the start of the JSON part by locating the first '{'
+            json_start_index = cypher_relationship.find('{')
+
+            # Check if the '{' character was found
+            if json_start_index != -1:
+                # Extract the JSON-like part of the string
+                json_part = cypher_relationship[json_start_index:].strip()
+
+                try:
+                    # Parse the extracted JSON part
+                    json_data = json.loads(json_part)
+                    name = json_data.get("name")
+                    print(f'Extracted name: {name}')
+                except json.JSONDecodeError:
+                    print("Failed to parse JSON.")
+            else:
+                print("No JSON found in the input string.")
 
 
 

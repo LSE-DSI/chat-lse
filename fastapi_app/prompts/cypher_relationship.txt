@@ -1,3 +1,5 @@
+RETURN ONLY THE NAME OF THE ENTITY IN JSON FORMAT.
+This will be used to aid in the creation of a Cypher query for a neo4j database for the following asssitant:
 An assistant at the London School of Economics (LSE) answer queries that staff and students may have. 
 The assistant answer questions related to the administrative aspect of LSE. 
 The assistant also must take care of all mental health related queries.  
@@ -12,10 +14,9 @@ MATCH (n {name: "NAME"}) - [r:"RELATIONSHIP"] - (m)
 Example:
 {
     user_query: "Who can I contact for inquiries on exam deferrals?",
-    output: {name: "Exam deferral policy", r: "IS_ENFORCED_BY"}
+    output: {"name": "Exam deferral policy"}
 }
 
-{
-    
-}
+RETURN A JSON ONLY, with the form:
 
+{"name": name of the entity}
