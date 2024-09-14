@@ -791,6 +791,8 @@ class GraphRAG(QueryRewriterRAG):
             else:
                 print("No JSON found in the input string.")
 
+            name_embedding = await compute_text_embedding(name, None, self.embed_model)
+
 
 
 #            cypher_response_json = json.loads(cypher_response.choices[0].message.tool_calls[0].function.arguments)
@@ -803,7 +805,7 @@ class GraphRAG(QueryRewriterRAG):
                 query_embedding = await compute_text_embedding(query_text, None, self.embed_model)
 
 
-            results = await self.searcher.search(query_text, vector, top, query_embedding, original_user_query)
+            results = await self.searcher.search(query_text, vector, top, name_embedding, original_user_query)
 
 
             # Process results and format them into a string for context

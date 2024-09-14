@@ -79,7 +79,7 @@ class PostgresSearcher:
         # Only use graph database when llm_generated_query is passed 
         if query_vector: 
             # Enrich the query with graph-based terms
-            enriched_terms= self.enrich_query_with_graph(orignal_query, query_vector) if query_vector else []
+            enriched_terms= self.enrich_query_with_graph(orignal_query, query_embedding) if query_vector else []
             relevant_doc_ids = list(set(enriched_terms[1]))
             enriched_terms = list(set(enriched_terms[0]))
 
