@@ -24,16 +24,19 @@ class PostgresSearcher:
             WITH n, vector.similarity.cosine(n.embedding, queryEmbedding) AS similarity
             ORDER BY similarity DESC
             LIMIT 3
-            
+
+            // Match direct and indirect relationships within the same community
             WITH n
-            MATCH (n) - [r] - (m)
-            OPTIONAL MATCH (m) - [r] - (o)
-            WHERE m.community = n.community = o.community
-            WITH COLLECT(n.doc_id) + COLLECT(m.doc_id) + Collect(o.doc_id) AS all_doc_ids,
-            COLLECT(n.name) + COLLECT(m.name) + COLLECT (o.name) AS all_names
+            MATCH (n)-[r1]-(m) 
+            WHERE m.community = n.community
+            OPTIONAL MATCH (m)-[r2]-(o)
+            WHERE o.community = n.community
+
+            // Collect document IDs and entity names, ensuring uniqueness
+            WITH COLLECT(DISTINCT n.doc_id) + COLLECT(DISTINCT m.doc_id) + COLLECT(DISTINCT o.doc_id) AS all_doc_ids,
+                COLLECT(DISTINCT n.name) + COLLECT(DISTINCT m.name) + COLLECT(DISTINCT o.name) AS all_names
 
             RETURN all_names, all_doc_ids;
-
 
  """ 
 
