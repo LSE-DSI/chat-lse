@@ -2,20 +2,19 @@
 import os 
 from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 
-# Filter unnecessary FutureWarning thrown by HuggingFaceEmbedding
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
 
 
 
-#### Environment Variables ####
+
 
 # Get embedding model 
 EMBED_MODEL = os.getenv("OLLAMA_EMBED_MODEL")
 
 
 
-#### Util Functions #### 
+
 
 async def compute_text_embedding(
     q: str, embed_model: str = EMBED_MODEL, model_instance=None
