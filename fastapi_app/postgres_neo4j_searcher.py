@@ -13,15 +13,15 @@ class PostgresSearcher:
         self.neo4j_driver = neo4j_driver
 
 
-    def enrich_query_with_graph(self, original_query: str, query_embedding):
+    def enrich_query_with_graph(self, original_query: str, name_embedding):
         enriched_terms = []
         relevant_doc_ids = []
         with self.neo4j_driver.session() as neo4j_session:
             neo4j_query = f"""
-            WITH {query_embedding} AS queryEmbedding
+            WITH {name_embedding} AS nameEmbedding
             MATCH (n)
             WHERE n.embedding IS NOT NULL
-            WITH n, vector.similarity.cosine(n.embedding, queryEmbedding) AS similarity
+            WITH n, vector.similarity.cosine(n.embedding, nameEmbedding) AS similarity
             ORDER BY similarity DESC
             LIMIT 3
 
@@ -75,14 +75,14 @@ class PostgresSearcher:
         query_text: str | None,
         query_vector: list[float] | list,
         query_top: int = 5,
-        query_embedding: str | None = None,
+        name_embedding: str | None = None,
         orignal_query: str | None = None 
     ):
         filters = []
         # Only use graph database when llm_generated_query is passed 
         if query_vector: 
             # Enrich the query with graph-based terms
-            enriched_terms= self.enrich_query_with_graph(orignal_query, query_embedding) if query_vector else []
+            enriched_terms= self.enrich_query_with_graph(orignal_query, name_embedding) if query_vector else []
             relevant_doc_ids = list(set(enriched_terms[1]))
             enriched_terms = list(set(enriched_terms[0]))
 
