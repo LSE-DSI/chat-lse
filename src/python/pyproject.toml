@@ -7,7 +7,7 @@ packages = ["chatlse"]
 
 [project]
 name = "chatlse"
-version = "0.1"
+version = "0.3"
 authors = [
   { name="tz1211", email="y.zhou169@lse.ac.uk" },
 ]

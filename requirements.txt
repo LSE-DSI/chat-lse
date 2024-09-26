@@ -33,6 +33,7 @@ jsonlines==4.0.0
 python-dotenv==1.0.1 # Load environment variables from .env file
 python-docx==1.1.2
 logtail-python==0.3.0 # Logging 
+openpyxl==3.1.5
 
 # Copied from rag-on-postgres with Azure components removed
 # uvloop is commented out due to incompatibility on Windows

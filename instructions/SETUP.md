@@ -144,6 +144,15 @@ Run the following code to start the crawler :
 sh scripts/start_crawlers.sh 
 ```
 
+### 4.3 Run the embedding script
+
+The following script will take a while for the first time you run it as it generates embeddings for all the documents in the database. Subsequent runs of the embedding script should be quicker as it only updates the embeddings for the documents that has changed.
+
+Run the following code to start the embedding script:
+
+```bash
+sh scripts/embed_db.sh
+```
 
 ## 5. Start the FastAPI APP
 

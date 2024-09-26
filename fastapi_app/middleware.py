@@ -16,7 +16,7 @@ class LogMiddleware(BaseHTTPMiddleware):
             'method': request.method,
             'client': request.client.host
         }
-        logger.info("Request received", extra=log_dict)
+        #logger.info("Request received", extra=log_dict)
 
         # Exclude static files from logging.
         if request.url.path.startswith("/favicon") or request.url.path.startswith("/assets"):
@@ -39,7 +39,7 @@ class LogMiddleware(BaseHTTPMiddleware):
             response_body = b""
             async for chunk in response.body_iterator:
                 response_body += chunk
-            logger.info(f"Response body: {response_body.decode()}", extra=log_dict)
+            #logger.info(f"Response body: {response_body.decode()}", extra=log_dict)
             response = StreamingResponse(iter([response_body]), status_code=response.status_code)
             for header, value in response.headers.items():
                 response.headers[header] = value
