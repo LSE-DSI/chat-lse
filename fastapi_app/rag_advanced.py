@@ -646,6 +646,8 @@ class QueryRewriterRAG(AdvancedRAGChat):
     async def classify_and_build_message_wrapper(self, original_user_query, past_messages, vector_search, text_search, top, query_response_token_limit=500, response_token_limit=1024):
         # Rewrite search query based on chat history to capture follow up questions 
         search_query = await self.rewrite_search_query(original_user_query, past_messages, past_n=1)
+
+        print(f"Rewritten Query: {search_query}")
         
         # Classify user query before deciding how to handle the query (e.g. use RAG)
         to_greet, is_relevant, is_farewell = await self.classify_query(search_query, past_messages, query_response_token_limit)

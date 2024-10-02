@@ -27,11 +27,10 @@ class CustomFormatter(logging.Formatter):
         return formatter.format(record)
 
 def handle_new_message(message):
-    # Check if the message is already in the history to avoid duplicates
-    if message not in global_storage.message_history:
-        global_storage.message_history.append(message)
-    else:
-        logger.warning("Duplicate message detected, not adding to history.")
+    global_storage.message_history.append(message)
+    
+    if len(global_storage.message_history) > 6: 
+        global_storage.message_history = global_storage.message_history[-6:]
 
 
 
