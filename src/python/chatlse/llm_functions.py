@@ -36,7 +36,18 @@ def extract_json_query_rewriter(chat_response: ChatCompletion):
     is_relevant = extract_function_calls(chat_response, "is_relevant") # Judge if the query is relevant to the scope of ChatLSE 
     is_farewell = extract_function_calls(chat_response, "is_farewell") # Judge if the query is a farewell message
 
+    to_greet = parse_type(to_greet)
+    is_relevant = parse_type(is_relevant)
+    is_farewell = parse_type(is_farewell)
+    
     return to_greet, is_relevant, is_farewell
+
+
+
+def parse_type(obj):
+    if type(obj) != bool:
+        return obj.lower() == "true"
+    return obj
 
 
 
