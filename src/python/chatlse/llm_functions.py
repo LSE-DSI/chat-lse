@@ -155,7 +155,7 @@ def build_filter_function_query_rewriter() -> list[ChatCompletionToolParam]:
                     },
                     "is_relevant": {
                         "type": "boolean",
-                        "description": "You are an assistant at the London School fo Economics (LSE). Your job is to answer any administrative questions that the staff and students may have. You must also handle all mental health related queries. Based on the last user query and the previous model response (if provided), decide if you should answer the user query provided. If the statement is purely conversational (e.g. thanks, bye, etc.), it is not relevant. If you are unsure, answer true.",
+                        "description": "You are an assistant at the London School fo Economics (LSE). Your job is to answer any administrative questions that the staff and students may have. You must also handle all mental health related queries. Based on the last user query and the previous model response (if provided), decide if you should answer the user query provided. Pay attention to the user's role withing the LSE, his/her affiliation and the level of studies (if applicable) to give a more accurate response. All questions that mention LSE's courses, policies, career opportunities are relevant. If the statement is purely conversational (e.g. thanks, bye, etc.), it is not relevant. If you are unsure, answer true.",
                     },
                     "is_farewell": {
                         "type": "boolean",
