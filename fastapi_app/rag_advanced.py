@@ -14,7 +14,6 @@ from openai.types.chat import (
 )
 from openai_messages_token_helper import build_messages, get_token_limit
  
-
 from .globals import global_storage
 
 from .api_models import ThoughtStep
@@ -378,7 +377,20 @@ class AdvancedRAGChat:
                 ],
             }
 
+        # If the model decides the query does not require RAG 
+        else: 
+            # Generate a contextual and content-specific answer using the chat history only 
+            response_token_limit = 1024
+            messages = build_messages(
+                model=self.chat_model,
+                system_prompt=overrides.get("prompt_template") or self.no_answer_prompt_template,
+                new_user_content=original_user_query,
+                past_messages=past_messages,
+                max_tokens=self.chat_token_limit - response_token_limit,
+                fallback_to_default=True,
+            )
 
+<<<<<<< HEAD
     async def classify_and_build_message_wrapper(self, original_user_query, past_messages, vector_search, text_search, top, query_response_token_limit=500, response_token_limit=1024): 
         # Classify user query before deciding how to handle the query (e.g. use RAG, follow up, etc.)
         to_greet, is_farewell, requires_clarification, to_follow_up, to_search, clarification_response = await self.classify_query(original_user_query, past_messages, query_response_token_limit)
@@ -835,3 +847,36 @@ class GraphRAG(QueryRewriterRAG):
            )
             
         return messages, sources_content, query_text, results 
+
+            chat_resp = chat_completion_response.model_dump()
+            chat_resp["choices"][0]["context"] = {
+                "data_points": {"text": None},
+                "thoughts": [
+                    ThoughtStep(
+                        title="Whether RAG functionalities are used",
+                        description=to_search,
+                        props={
+                            "RAG": to_search
+                        }
+                    ),
+                    ThoughtStep(
+                        title="Search query for database",
+                        description=None,
+                    ),
+                    ThoughtStep(
+                        title="Search results",
+                        description=None,
+                    ),
+                    ThoughtStep(
+                        title="Prompt to generate answer",
+                        description=[str(message) for message in messages],
+                        props=(
+                            {"model": self.chat_model, "deployment": self.chat_deployment}
+                            if self.chat_deployment
+                            else {"model": self.chat_model}
+                        ),
+                    ),
+                ],
+            }
+
+        return chat_resp

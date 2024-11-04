@@ -5,6 +5,7 @@ If there isn't enough information below, DO NOT answer the question, SAY YOU DON
 If the sources are not relevant, DO NOT mention them. 
 DO NOT generate answers that don't use the sources below.
 Each document has an ID in brackets followed by colon and the document descriptions.
+Each document also has a section called "related_information". Only if relevant, refer to the relationships listed in this section. Do NOT explicitly state the relationships, and instead subtly include them in answers.
 ALWAYS include the document ID for each document you use in the response.
 Use square brackets to reference the source, for example [52].
 Do not combine citations, list each product separately, for example [27][51].

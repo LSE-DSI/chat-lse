@@ -10,6 +10,7 @@ from itemadapter import ItemAdapter
 from sqlalchemy import text
 from dotenv import load_dotenv
 import jsonlines
+import os
 
 from chatlse.postgres_engine import create_postgres_engine_from_env_sync
 from chatlse.crawler import parse_doc, generate_json_entry, generate_list_ingested_data
@@ -33,6 +34,22 @@ class ItemToPostgresPipeline:
         logging.debug("ItemToPostgresPipeline close spider")
         self.engine.dispose()
         logging.info('PostgreSQL Connection closed')
+    
+    def write_error_log(self, file_path, url):
+        existing_entries = []
+        try:
+            with jsonlines.open(file_path, 'r') as reader:
+                for entry in reader:
+                    existing_entries.append(entry)
+        except FileNotFoundError:
+            pass
+
+        new_entry = url
+        if new_entry not in existing_entries:
+            with jsonlines.open(file_path, 'a') as writer:
+                writer.write(new_entry)
+        
+        return new_entry
 
     def create_tables(self, engine):
         logging.debug("ItemToPostgresPipeline create tables")
@@ -46,7 +63,6 @@ class ItemToPostgresPipeline:
                 CREATE TABLE IF NOT EXISTS lse_doc (
                     id TEXT PRIMARY KEY, 
                     doc_id TEXT,
-                    chunk_id TEXT, 
                     type TEXT, 
                     url TEXT,
                     title TEXT,
@@ -94,10 +110,22 @@ class ItemToPostgresPipeline:
                         content = adapter["content"]
                         doc_id = adapter["doc_id"]
                         type = "webpage"
+
+                    elif item_type == "webpage_su":
+                        content = adapter["content"]
+                        doc_id = adapter["doc_id"]
+                        type = "webpage_su"
+                        
                     # Get specific fields from PDF files 
-                    elif item_type == "file_metadata": 
+                    elif item_type == "file_metadata":
                         file_path = adapter["file_path"]
-                        content, doc_id, type = parse_doc(file_path)
+                        try:
+                            content, doc_id, type = parse_doc(file_path)
+                        except Exception as e:
+                            print(f"Error parsing document: {e}")
+                            self.write_error_log("data/error_downloads.jsonl", url)
+                            return
+
 
                     # Check if the url already exists in the database
                     result = conn.execute(
@@ -119,20 +147,20 @@ class ItemToPostgresPipeline:
 
                     # Insert document into the database (if document not exist or if it has changed)
                     output_list = generate_json_entry(content, type, url, title, date_scraped, doc_id)
-                    for idx, doc_id, chunk_id, type, url, title, content, date_scraped in output_list:
+
+                    for idx, doc_id, type, url, title, content, date_scraped in output_list:
                         conn.execute(text('''
-                            INSERT INTO lse_doc (id, doc_id, chunk_id, type, url, title, content, date_scraped)
-                            VALUES (:id, :doc_id, :chunk_id, :type, :url, :title, :content, :date_scraped)
+                            INSERT INTO lse_doc (id, doc_id, type, url, title, content, date_scraped)
+                            VALUES (:id, :doc_id, :type, :url, :title, :content, :date_scraped)
                         '''), {
                             "id": idx,
                             "doc_id": doc_id,
-                            "chunk_id": chunk_id,
                             "type": type,
                             "url": url,
                             "title": title,
                             "content": content,
                             "date_scraped": date_scraped
-                            #"embedding": embedding
+                            #"embedding": embedding    (it was not included in the aksh's branch)
                         })
 
                     logging.info(f'Item processed and stored in PostgreSQL {adapter["url"]}')
