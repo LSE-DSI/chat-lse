@@ -175,25 +175,22 @@ class AdvancedRAGChat:
 
         return to_greet, is_farewell, requires_clarification, to_follow_up, to_search, clarification_response
 
-
     async def build_final_query(
-        self, 
-        original_user_query, 
-        past_messages, 
-        to_greet, 
-        is_farewell, 
-        requires_clarification, 
-        to_follow_up, 
-        to_search, 
-        clarification_response, 
-        no_answer, 
-        vector_search, 
-        text_search, 
-        top, 
-        response_token_limit=1024
-    ): 
-        sources_content, query_text, results = None, None, None 
-
+            self,
+            original_user_query,
+            past_messages, 
+            search_query, 
+            to_greet, 
+            is_farewell, 
+            is_relevant, 
+            no_answer, 
+            vector_search, 
+            text_search, top, 
+            response_token_limit=1024
+            
+        ):
+            sources_content, query_text, results = None, None, None 
+                
         if to_greet:
             print("ENTERED GREETING")
             messages = build_messages(
@@ -303,7 +300,6 @@ class AdvancedRAGChat:
             
         return messages, sources_content, query_text, results
 
-
     async def display_thoughtstep(
         self, 
         chat_resp, 
@@ -375,22 +371,12 @@ class AdvancedRAGChat:
                         ),
                     ),
                 ],
-            }
+            } 
+        
 
-        # If the model decides the query does not require RAG 
-        else: 
-            # Generate a contextual and content-specific answer using the chat history only 
-            response_token_limit = 1024
-            messages = build_messages(
-                model=self.chat_model,
-                system_prompt=overrides.get("prompt_template") or self.no_answer_prompt_template,
-                new_user_content=original_user_query,
-                past_messages=past_messages,
-                max_tokens=self.chat_token_limit - response_token_limit,
-                fallback_to_default=True,
-            )
 
-<<<<<<< HEAD
+
+
     async def classify_and_build_message_wrapper(self, original_user_query, past_messages, vector_search, text_search, top, query_response_token_limit=500, response_token_limit=1024): 
         # Classify user query before deciding how to handle the query (e.g. use RAG, follow up, etc.)
         to_greet, is_farewell, requires_clarification, to_follow_up, to_search, clarification_response = await self.classify_query(original_user_query, past_messages, query_response_token_limit)
@@ -693,8 +679,8 @@ class GraphRAG(QueryRewriterRAG):
         chat_model: str,
         embed_model: str,
         embed_dimensions: int,
-        context_window_override: int | None, # Context window size (default to 4000 if None)
-        to_summarise: bool | None 
+        context_window_override: int | None = None,  # Context window size (default to 4000 if None)
+        to_summarise: bool | None = None 
     ): 
         super().__init__(
             searcher=searcher,
@@ -704,26 +690,23 @@ class GraphRAG(QueryRewriterRAG):
             embed_dimensions=embed_dimensions, 
             context_window_override=context_window_override, 
             to_summarise=to_summarise
-            ) 
+        )
 
         # Load prompts 
         current_dir = pathlib.Path(__file__).parent
-        # Classify query 
-        self.query_prompt_template = open(current_dir / f"prompts/query.txt").read()
-        # Summariser prompt 
-        self.summarise_prompt_template = open(current_dir / f"prompts/summarize.txt").read()
-        # Handling different types of queries 
-        self.greeting_prompt_template = open(current_dir / f"prompts/greeting.txt").read()
-        self.farewell_prompt_template = open(current_dir / f"prompts/farewell.txt").read()
-        self.query_rewriter_prompt_template = open(current_dir / f"prompts/query_rewriter.txt").read()
-        self.cypher_prompt_template = open(current_dir / f"prompts/cypher.txt").read()
-        self.rag_answer_prompt_template = open(current_dir / f"prompts/rag_answer_advanced.txt").read()
-        self.no_answer_prompt_template = open(current_dir / f"prompts/no_answer_advanced.txt").read()
-        self.cypher_relationship_prompt_template = open(current_dir / f"prompts/cypher_relationship.txt").read()
-    
+        self.query_prompt_template = open(current_dir / "prompts/query.txt").read()
+        self.summarise_prompt_template = open(current_dir / "prompts/summarize.txt").read()
+        self.greeting_prompt_template = open(current_dir / "prompts/greeting.txt").read()
+        self.farewell_prompt_template = open(current_dir / "prompts/farewell.txt").read()
+        self.query_rewriter_prompt_template = open(current_dir / "prompts/query_rewriter.txt").read()
+        self.cypher_prompt_template = open(current_dir / "prompts/cypher.txt").read()
+        self.rag_answer_prompt_template = open(current_dir / "prompts/rag_answer_advanced.txt").read()
+        self.no_answer_prompt_template = open(current_dir / "prompts/no_answer_advanced.txt").read()
+        self.cypher_relationship_prompt_template = open(current_dir / "prompts/cypher_relationship.txt").read()
 
-
-    async def build_final_query(self, original_user_query, past_messages, search_query, to_greet, is_farewell, is_relevant, no_answer, vector_search, text_search, top, response_token_limit=1024):
+    async def build_final_query(
+        self, original_user_query, past_messages, search_query, to_greet, is_farewell, is_relevant, no_answer, vector_search, text_search, top, response_token_limit=1024
+    ):
         sources_content, query_text, results = None, None, None 
         
         if to_greet:
@@ -739,30 +722,22 @@ class GraphRAG(QueryRewriterRAG):
         elif is_farewell:
             print("ENTERED FAREWELL")
             messages = build_messages(
-                model = self.chat_model,
-                system_prompt = self.farewell_prompt_template,
-                new_user_content = original_user_query,
+                model=self.chat_model,
+                system_prompt=self.farewell_prompt_template,
+                new_user_content=original_user_query,
                 max_tokens=self.chat_token_limit - response_token_limit,
                 fallback_to_default=True,
             )
 
         elif is_relevant:
-
             # Retrieve relevant documents from the database with the GPT optimized query
-            vector: list[float] = []
-            #query_text = None 
+            vector = []
+            query_text = search_query if text_search else None
+
             if vector_search:
                 print(f"Entering vector search with query text: {search_query}")
-                vector = await compute_text_embedding(
-                    original_user_query,
-                    None,
-                    self.embed_model 
-                )
+                vector = await compute_text_embedding(original_user_query, None, self.embed_model)
 
-            if not text_search:
-                query_text = None
-
-            
             # Generate the Cypher query
             cypher_messages = build_messages(
                 model=self.chat_model,
@@ -780,48 +755,35 @@ class GraphRAG(QueryRewriterRAG):
                 n=1
             )
 
-            # Extract the Cypher query from the response
             cypher_relationship = chat_completion_cypher.choices[0].message.content.strip()
-
             print(cypher_relationship)
 
-            # Find the start of the JSON part by locating the first '{'
+            # Extract the name from JSON if present
             json_start_index = cypher_relationship.find('{')
-
-            # Check if the '{' character was found
             if json_start_index != -1:
-                # Extract the JSON-like part of the string
                 json_part = cypher_relationship[json_start_index:].strip()
-
                 try:
-                    # Parse the extracted JSON part
                     json_data = json.loads(json_part)
                     name = json_data.get("name")
                     print(f'Extracted name: {name}')
+                    name_embedding = await compute_text_embedding(name, None, self.embed_model)
                 except json.JSONDecodeError:
                     print("Failed to parse JSON.")
+                    name_embedding = None
             else:
                 print("No JSON found in the input string.")
+                name_embedding = None
 
-            name_embedding = await compute_text_embedding(name, None, self.embed_model)
-
-
-
-#            cypher_response_json = json.loads(cypher_response.choices[0].message.tool_calls[0].function.arguments)
-#            llm_generated_cypher_query = cypher_response_json["Cypher Query"] if cypher_response_json["Cypher Query"] in entities else None
-#            print(f"LLM GENERATED CYPHER QUERY: {llm_generated_cypher_query}")
-
+            # Embed query or use name embedding if available
             if len(past_messages) <= 2: 
                 query_embedding = await compute_text_embedding(original_user_query, None, self.embed_model)
             else:
                 query_embedding = await compute_text_embedding(query_text, None, self.embed_model)
 
-
             results = await self.searcher.search(query_text, vector, top, name_embedding, original_user_query)
 
-
-            # Process results and format them into a string for context
-            sources_content = [f"[{(doc.doc_id)}]: {doc.to_str_for_rag()}\n\n" for doc in results]
+            # Process results for context
+            sources_content = [f"[{doc.doc_id}]: {doc.to_str_for_rag()}\n\n" for doc in results]
             content = "\n".join(sources_content)
             global_storage.rag_results.append(content)
 
@@ -834,9 +796,7 @@ class GraphRAG(QueryRewriterRAG):
                 fallback_to_default=True,
             )
 
-
-        # If the model decides the query is out of scope 
-        else: 
+        else:  # If query is out of scope
             no_answer = True
             messages = build_messages(
                 model=self.chat_model,
@@ -844,9 +804,10 @@ class GraphRAG(QueryRewriterRAG):
                 new_user_content=original_user_query, 
                 max_tokens=self.chat_token_limit - response_token_limit,
                 fallback_to_default=True,
-           )
+            )
             
-        return messages, sources_content, query_text, results 
+        return messages, sources_content, query_text, results
+
 
             chat_resp = chat_completion_response.model_dump()
             chat_resp["choices"][0]["context"] = {
