@@ -175,22 +175,25 @@ class AdvancedRAGChat:
 
         return to_greet, is_farewell, requires_clarification, to_follow_up, to_search, clarification_response
 
+    
     async def build_final_query(
-            self,
-            original_user_query,
-            past_messages, 
-            search_query, 
-            to_greet, 
-            is_farewell, 
-            is_relevant, 
-            no_answer, 
-            vector_search, 
-            text_search, top, 
-            response_token_limit=1024
-            
-        ):
-            sources_content, query_text, results = None, None, None 
-                
+        self, 
+        original_user_query, 
+        past_messages, 
+        to_greet, 
+        is_farewell, 
+        requires_clarification, 
+        to_follow_up, 
+        to_search, 
+        clarification_response, 
+        no_answer, 
+        vector_search, 
+        text_search, 
+        top, 
+        response_token_limit=1024
+    ): 
+        sources_content, query_text, results = None, None, None 
+
         if to_greet:
             print("ENTERED GREETING")
             messages = build_messages(
@@ -299,7 +302,7 @@ class AdvancedRAGChat:
            )
             
         return messages, sources_content, query_text, results
-
+    
     async def display_thoughtstep(
         self, 
         chat_resp, 
@@ -809,35 +812,35 @@ class GraphRAG(QueryRewriterRAG):
         return messages, sources_content, query_text, results
 
 
-            chat_resp = chat_completion_response.model_dump()
-            chat_resp["choices"][0]["context"] = {
-                "data_points": {"text": None},
-                "thoughts": [
-                    ThoughtStep(
-                        title="Whether RAG functionalities are used",
-                        description=to_search,
-                        props={
-                            "RAG": to_search
-                        }
+        chat_resp = chat_completion_response.model_dump()
+        chat_resp["choices"][0]["context"] = {
+            "data_points": {"text": None},
+            "thoughts": [
+                ThoughtStep(
+                    title="Whether RAG functionalities are used",
+                    description=to_search,
+                    props={
+                        "RAG": to_search
+                    }
+                ),
+                ThoughtStep(
+                    title="Search query for database",
+                    description=None,
+                ),
+                ThoughtStep(
+                    title="Search results",
+                    description=None,
+                ),
+                ThoughtStep(
+                    title="Prompt to generate answer",
+                    description=[str(message) for message in messages],
+                    props=(
+                        {"model": self.chat_model, "deployment": self.chat_deployment}
+                        if self.chat_deployment
+                        else {"model": self.chat_model}
                     ),
-                    ThoughtStep(
-                        title="Search query for database",
-                        description=None,
-                    ),
-                    ThoughtStep(
-                        title="Search results",
-                        description=None,
-                    ),
-                    ThoughtStep(
-                        title="Prompt to generate answer",
-                        description=[str(message) for message in messages],
-                        props=(
-                            {"model": self.chat_model, "deployment": self.chat_deployment}
-                            if self.chat_deployment
-                            else {"model": self.chat_model}
-                        ),
-                    ),
-                ],
-            }
+                ),
+            ],
+        }
 
         return chat_resp
