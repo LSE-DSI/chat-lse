@@ -1,36 +1,38 @@
-
+import os
+import openai
 import logging
+import pandas as pd 
+from dotenv import load_dotenv
 
 import sqlalchemy
 from sqlalchemy import text
-from dotenv import load_dotenv
-from llama_index.embeddings.huggingface import HuggingFaceEmbedding
-import os
 
+from llama_index.embeddings.huggingface import HuggingFaceEmbedding
+
+from chatlse.embeddings import compute_text_embedding_sync, summarise_and_embed_sync
 from chatlse.postgres_engine import create_postgres_engine_from_env_sync
 
-from chatlse.embeddings import compute_text_embedding_sync
 
 load_dotenv(override=True)
 
+OLLAMA_ENDPOINT = os.getenv("OLLAMA_ENDPOINT")
 EMBED_MODEL = os.getenv("OLLAMA_EMBED_MODEL")
 
-if not EMBED_MODEL:
-    # Use default model if not provided
-    EMBED_MODEL = "thenlper/gte-large"
-
-MODEL_INSTANCE = HuggingFaceEmbedding(EMBED_MODEL)
-
-MODEL_INSTANCE = HuggingFaceEmbedding(EMBED_MODEL)
-
+CHAT_MODEL_INSTANCE = openai.OpenAI(
+            base_url=OLLAMA_ENDPOINT, 
+            api_key="nokeyneeded", 
+        )
+EMBED_MODEL_INSTANCE = HuggingFaceEmbedding(EMBED_MODEL)
 
 engine = create_postgres_engine_from_env_sync()
-
 logging.debug(engine)
 
-insp = sqlalchemy.inspect(engine)
+logging.basicConfig(level=logging.INFO)
+
+
 
 # Check if the 'embedding' column exists
+insp = sqlalchemy.inspect(engine)
 columns = [col['name'] for col in insp.get_columns('lse_doc')]
 
 if 'embedding' not in columns:
@@ -49,17 +51,25 @@ else:
 # Embed documents where embedding is NULL
 with engine.connect() as conn:
     logging.info("Fetching data for embedding calculation...")
-    result = conn.execute(text('''
-        SELECT id, content 
+    query = '''
+        SELECT id, doc_id, title, content 
         FROM lse_doc 
         WHERE embedding IS NULL
-    ''')).fetchall()
+    '''
 
-    if result: 
+    df_results = pd.read_sql_query(query, conn) 
+
+    if df_results: 
+        logging.info("Summarising documents...") 
+        df_docs = df_results.sort_values("id").groupby("doc_id").agg({"content": lambda x: "".join(x)}).reset_index()
+        df_docs["summarised_docs"] = df_docs["content"].apply(lambda doc: summarise_and_embed_sync(doc, chat_model_instant=CHAT_MODEL_INSTANCE, embed_model_instance=EMBED_MODEL_INSTANCE))
+
         logging.info("Calculating embeddings...")
-        for row in result:
-            id, content = row
-            embedding = compute_text_embedding_sync(content, model_instance=MODEL_INSTANCE)
+        for row in df_results.itertuples(index=False, name="Row"):
+            id, doc_id, title, content = row
+            summary = df_docs.loc["doc_id"==doc_id, "summarised_docs"]
+            contextual_chunk = f"{{title: {title}, summary: {summary}, content: {content}}}"
+            embedding = compute_text_embedding_sync(contextual_chunk, model_instance=EMBED_MODEL_INSTANCE)
             
             # Update the table with the calculated embedding
             conn.execute(text('''
