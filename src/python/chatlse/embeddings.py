@@ -1,5 +1,6 @@
 # This file contains util functions for embeddings
 import os 
+import json
 import openai
 from openai_messages_token_helper import build_messages
 
@@ -62,11 +63,12 @@ def summarise_and_embed_sync(
         model=chat_model, 
         messages=messages, 
         temperature=0, 
-        max_tokens=500, 
+        max_tokens=150, 
         n=1, 
-        stream=False, 
     )
 
-    summarised_message = chat_completion_response.choices[0].message.content
+    resp = chat_completion_response.choices[0].message.content
+    resp = resp.split(":")[0]
+    summarised_message = resp.split(".")[0] + "."
 
     return summarised_message 

@@ -31,6 +31,21 @@ logging.basicConfig(level=logging.INFO)
 
 
 
+# Create a table for document summary 
+with engine.connect() as conn:
+    logging.info("Creating doc_summary table...")
+    conn.execute(text('''
+        CREATE TABLE IF NOT EXISTS doc_summary (
+            doc_id TEXT PRIMARY KEY, 
+            content TEXT,
+            summary TEXT
+        );
+    '''))
+
+    conn.commit()
+    logging.info("Table doc_summary created successfully.")
+
+
 # Check if the 'embedding' column exists
 insp = sqlalchemy.inspect(engine)
 columns = [col['name'] for col in insp.get_columns('lse_doc')]
@@ -59,17 +74,46 @@ with engine.connect() as conn:
 
     df_results = pd.read_sql_query(query, conn) 
 
-    if df_results: 
-        logging.info("Summarising documents...") 
+    if not df_results.empty: 
+        logging.info("Collating full document text...")
         df_docs = df_results.sort_values("id").groupby("doc_id").agg({"content": lambda x: "".join(x)}).reset_index()
-        df_docs["summarised_docs"] = df_docs["content"].apply(lambda doc: summarise_and_embed_sync(doc, chat_model_instant=CHAT_MODEL_INSTANCE, embed_model_instance=EMBED_MODEL_INSTANCE))
 
-        logging.info("Calculating embeddings...")
+        total = len(df_results)
+        count = 0 
         for row in df_results.itertuples(index=False, name="Row"):
-            id, doc_id, title, content = row
-            summary = df_docs.loc["doc_id"==doc_id, "summarised_docs"]
-            contextual_chunk = f"{{title: {title}, summary: {summary}, content: {content}}}"
+            print(f"Embedding chunk {count}/{total}")
+            count += 1
+            id, doc_id, title, chunk_content = row
+
+            logging.info("Summarising document contents...")
+            # Check if the document already exists in the doc_summary
+            summary = conn.execute(
+                text('SELECT summary FROM doc_summary WHERE doc_id = :doc_id'),
+                {'doc_id': doc_id}
+            ).fetchone()
+
+            if not summary: 
+                # Retrieve full document and summarise its content 
+                doc_content = df_docs.loc[df_docs["doc_id"]==doc_id, "content"].iloc[0]
+                summary = summarise_and_embed_sync(doc_content, chat_model_instance=CHAT_MODEL_INSTANCE, embed_model_instance=EMBED_MODEL_INSTANCE)
+                # Insert the document and summary into the table
+                conn.execute(text('''
+                            INSERT INTO doc_summary (doc_id, content, summary)
+                            VALUES (:doc_id, :content, :summary)
+                        '''), {
+                            "doc_id": doc_id,
+                            "content": doc_content,
+                            "summary": summary
+                        })
+                conn.commit()
+            else: 
+                summary = summary[0]
+
+            logging.info("Embedding contextual chunks...")
+            contextual_chunk = f"title: {title}\nsummary: {summary}\ncontent: {chunk_content}"
+            print(f"CONTEXTUAL CHUNK: {contextual_chunk}")
             embedding = compute_text_embedding_sync(contextual_chunk, model_instance=EMBED_MODEL_INSTANCE)
+            print("######################################################################")
             
             # Update the table with the calculated embedding
             conn.execute(text('''
