@@ -578,27 +578,7 @@ class QueryRewriterRAG(AdvancedRAGChat):
     async def build_final_query(self, original_user_query, past_messages, search_query, to_greet, is_farewell, is_relevant, no_answer, vector_search, text_search, top, response_token_limit=1024):
         sources_content, query_text, results = None, None, None 
         
-        if to_greet:
-            print("ENTERED GREETING")
-            messages = build_messages(
-                model=self.chat_model,
-                system_prompt=self.greeting_prompt_template,
-                new_user_content=original_user_query, 
-                max_tokens=self.chat_token_limit - response_token_limit,
-                fallback_to_default=True,
-            )
-
-        elif is_farewell:
-            print("ENTERED FAREWELL")
-            messages = build_messages(
-                model = self.chat_model,
-                system_prompt = self.farewell_prompt_template,
-                new_user_content = original_user_query,
-                max_tokens=self.chat_token_limit - response_token_limit,
-                fallback_to_default=True,
-            )
-
-        elif is_relevant: 
+        if is_relevant: 
             # Retrieve relevant documents from the database with the GPT optimized query
             vector: list[float] = []
             query_text = None 
@@ -628,6 +608,25 @@ class QueryRewriterRAG(AdvancedRAGChat):
                 fallback_to_default=True,
             )
 
+        elif to_greet:
+            print("ENTERED GREETING")
+            messages = build_messages(
+                model=self.chat_model,
+                system_prompt=self.greeting_prompt_template,
+                new_user_content=original_user_query, 
+                max_tokens=self.chat_token_limit - response_token_limit,
+                fallback_to_default=True,
+            )
+
+        elif is_farewell:
+            print("ENTERED FAREWELL")
+            messages = build_messages(
+                model = self.chat_model,
+                system_prompt = self.farewell_prompt_template,
+                new_user_content = original_user_query,
+                max_tokens=self.chat_token_limit - response_token_limit,
+                fallback_to_default=True,
+            )
 
         # If the model decides the query is out of scope 
         else: 
