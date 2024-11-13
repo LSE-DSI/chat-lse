@@ -34,10 +34,10 @@ class PostgresSearcher:
         filter_clause_where, filter_clause_and = self.build_filter_clause(filters)
 
         vector_query = f"""
-            SELECT id, RANK () OVER (ORDER BY embedding <=> :embedding) AS rank
+            SELECT id, RANK () OVER (ORDER BY context_embeddings <=> :context_embeddings) AS rank
                 FROM lse_doc
                 {filter_clause_where}
-                ORDER BY embedding <=> :embedding
+                ORDER BY context_embeddings <=> :context_embeddings
                 LIMIT 20
             """
 
@@ -79,7 +79,7 @@ class PostgresSearcher:
             results = (
                 await session.execute(
                     sql,
-                    {"embedding": to_db(query_vector), "query": query_text, "k": 60},
+                    {"context_embeddings": to_db(query_vector), "query": query_text, "k": 60},
                 )
             ).fetchall()
 
