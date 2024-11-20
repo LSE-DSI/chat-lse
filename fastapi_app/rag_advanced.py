@@ -17,7 +17,8 @@ from openai_messages_token_helper import build_messages, get_token_limit
 from .globals import global_storage
 
 from .api_models import ThoughtStep
-from .postgres_neo4j_searcher import PostgresSearcher
+from .postgres_neo4j_searcher import Postgres_neo4j_Searcher
+from .postgres_searcher import PostgresSearcher
 from chatlse.embeddings import compute_text_embedding
 from chatlse.llm_functions import build_filter_function, build_filter_function_query_rewriter, extract_function_calls, extract_json, extract_json_query_rewriter, build_response_function, build_cypher_query
 
@@ -583,27 +584,7 @@ class QueryRewriterRAG(AdvancedRAGChat):
     async def build_final_query(self, original_user_query, past_messages, search_query, to_greet, is_farewell, is_relevant, no_answer, vector_search, text_search, top, response_token_limit=1024):
         sources_content, query_text, results = None, None, None 
         
-        if to_greet:
-            print("ENTERED GREETING")
-            messages = build_messages(
-                model=self.chat_model,
-                system_prompt=self.greeting_prompt_template,
-                new_user_content=original_user_query, 
-                max_tokens=self.chat_token_limit - response_token_limit,
-                fallback_to_default=True,
-            )
-
-        elif is_farewell:
-            print("ENTERED FAREWELL")
-            messages = build_messages(
-                model = self.chat_model,
-                system_prompt = self.farewell_prompt_template,
-                new_user_content = original_user_query,
-                max_tokens=self.chat_token_limit - response_token_limit,
-                fallback_to_default=True,
-            )
-
-        elif is_relevant: 
+        if is_relevant: 
             # Retrieve relevant documents from the database with the GPT optimized query
             vector: list[float] = []
             query_text = None 
@@ -633,6 +614,25 @@ class QueryRewriterRAG(AdvancedRAGChat):
                 fallback_to_default=True,
             )
 
+        elif to_greet:
+            print("ENTERED GREETING")
+            messages = build_messages(
+                model=self.chat_model,
+                system_prompt=self.greeting_prompt_template,
+                new_user_content=original_user_query, 
+                max_tokens=self.chat_token_limit - response_token_limit,
+                fallback_to_default=True,
+            )
+
+        elif is_farewell:
+            print("ENTERED FAREWELL")
+            messages = build_messages(
+                model = self.chat_model,
+                system_prompt = self.farewell_prompt_template,
+                new_user_content = original_user_query,
+                max_tokens=self.chat_token_limit - response_token_limit,
+                fallback_to_default=True,
+            )
 
         # If the model decides the query is out of scope 
         else: 
@@ -673,29 +673,29 @@ class QueryRewriterRAG(AdvancedRAGChat):
         return messages, sources_content, query_text, results 
 
 
-class GraphRAG(QueryRewriterRAG): 
+class GraphRAG(QueryRewriterRAG):
     def __init__(
         self,
         *,
-        searcher: PostgresSearcher,
+        searcher: Postgres_neo4j_Searcher,
         chat_client: AsyncOpenAI,
         chat_model: str,
         embed_model: str,
         embed_dimensions: int,
         context_window_override: int | None = None,  # Context window size (default to 4000 if None)
-        to_summarise: bool | None = None 
-    ): 
+        to_summarise: bool | None = None,
+    ):
         super().__init__(
             searcher=searcher,
-            chat_client=chat_client, 
-            chat_model=chat_model, 
-            embed_model=embed_model, 
-            embed_dimensions=embed_dimensions, 
-            context_window_override=context_window_override, 
-            to_summarise=to_summarise
+            chat_client=chat_client,
+            chat_model=chat_model,
+            embed_model=embed_model,
+            embed_dimensions=embed_dimensions,
+            context_window_override=context_window_override,
+            to_summarise=to_summarise,
         )
 
-        # Load prompts 
+        # Load prompts
         current_dir = pathlib.Path(__file__).parent
         self.query_prompt_template = open(current_dir / "prompts/query.txt").read()
         self.summarise_prompt_template = open(current_dir / "prompts/summarize.txt").read()
@@ -708,16 +708,89 @@ class GraphRAG(QueryRewriterRAG):
         self.cypher_relationship_prompt_template = open(current_dir / "prompts/cypher_relationship.txt").read()
 
     async def build_final_query(
-        self, original_user_query, past_messages, search_query, to_greet, is_farewell, is_relevant, no_answer, vector_search, text_search, top, response_token_limit=1024
+        self,
+        original_user_query,
+        past_messages,
+        search_query,
+        to_greet,
+        is_farewell,
+        is_relevant,
+        no_answer,
+        vector_search,
+        text_search,
+        top,
+        response_token_limit=1024,
     ):
-        sources_content, query_text, results = None, None, None 
-        
-        if to_greet:
+        sources_content, query_text, results = None, None, None
+
+        if is_relevant:
+            vector = []
+            query_text = search_query if text_search else None
+
+            if vector_search:
+                print(f"Entering vector search with query text: {search_query}")
+                vector = await compute_text_embedding(original_user_query, None, self.embed_model)
+
+            cypher_messages = build_messages(
+                model=self.chat_model,
+                system_prompt=self.cypher_relationship_prompt_template,
+                new_user_content=original_user_query,
+                max_tokens=self.chat_token_limit - 100,
+                fallback_to_default=True,
+            )
+
+            chat_completion_cypher = await self.chat_client.chat.completions.create(
+                model=self.chat_model,
+                messages=cypher_messages,
+                temperature=0,
+                max_tokens=100,
+                n=1,
+            )
+
+            cypher_relationship = chat_completion_cypher.choices[0].message.content.strip()
+            print(cypher_relationship)
+
+            # Extract the name from JSON if present
+            json_start_index = cypher_relationship.find("{")
+            if json_start_index != -1:
+                json_part = cypher_relationship[json_start_index:].strip()
+                try:
+                    json_data = json.loads(json_part)
+                    name = json_data.get("name")
+                    print(f"Extracted name: {name}")
+                    name_embedding = await compute_text_embedding(name, None, self.embed_model)
+                except json.JSONDecodeError:
+                    print("Failed to parse JSON.")
+                    name_embedding = None
+            else:
+                print("No JSON found in the input string.")
+                name_embedding = None
+
+            query_embedding = await compute_text_embedding(
+                query_text if len(past_messages) > 2 else original_user_query, None, self.embed_model
+            )
+
+            results = await self.searcher.search(query_text, vector, top, name_embedding, original_user_query)
+
+            sources_content = [f"[{doc.doc_id}]: {doc.to_str_for_rag()}\n\n" for doc in results]
+            content = "\n".join(sources_content)
+            global_storage.rag_results.append(content)
+
+            messages = build_messages(
+                model=self.chat_model,
+                system_prompt=self.rag_answer_prompt_template,
+                new_user_content=original_user_query + "\n\nUser Context:\n" + global_storage.user_context + "\n\nSources:\n" + content,
+                past_messages=past_messages,
+                max_tokens=self.chat_token_limit - response_token_limit,
+                fallback_to_default=True,
+            )
+
+        elif to_greet:
             print("ENTERED GREETING")
             messages = build_messages(
                 model=self.chat_model,
                 system_prompt=self.greeting_prompt_template,
-                new_user_content=original_user_query, 
+                new_user_content=original_user_query,
                 max_tokens=self.chat_token_limit - response_token_limit,
                 fallback_to_default=True,
             )
@@ -732,115 +805,36 @@ class GraphRAG(QueryRewriterRAG):
                 fallback_to_default=True,
             )
 
-        elif is_relevant:
-            # Retrieve relevant documents from the database with the GPT optimized query
-            vector = []
-            query_text = search_query if text_search else None
-
-            if vector_search:
-                print(f"Entering vector search with query text: {search_query}")
-                vector = await compute_text_embedding(original_user_query, None, self.embed_model)
-
-            # Generate the Cypher query
-            cypher_messages = build_messages(
-                model=self.chat_model,
-                system_prompt=self.cypher_relationship_prompt_template,
-                new_user_content=original_user_query,
-                max_tokens=self.chat_token_limit - 100,
-                fallback_to_default=True,
-            )
-
-            chat_completion_cypher = await self.chat_client.chat.completions.create(
-                model=self.chat_model,
-                messages=cypher_messages,
-                temperature=0,
-                max_tokens=100,
-                n=1
-            )
-
-            cypher_relationship = chat_completion_cypher.choices[0].message.content.strip()
-            print(cypher_relationship)
-
-            # Extract the name from JSON if present
-            json_start_index = cypher_relationship.find('{')
-            if json_start_index != -1:
-                json_part = cypher_relationship[json_start_index:].strip()
-                try:
-                    json_data = json.loads(json_part)
-                    name = json_data.get("name")
-                    print(f'Extracted name: {name}')
-                    name_embedding = await compute_text_embedding(name, None, self.embed_model)
-                except json.JSONDecodeError:
-                    print("Failed to parse JSON.")
-                    name_embedding = None
-            else:
-                print("No JSON found in the input string.")
-                name_embedding = None
-
-            # Embed query or use name embedding if available
-            if len(past_messages) <= 2: 
-                query_embedding = await compute_text_embedding(original_user_query, None, self.embed_model)
-            else:
-                query_embedding = await compute_text_embedding(query_text, None, self.embed_model)
-
-            results = await self.searcher.search(query_text, vector, top, name_embedding, original_user_query)
-
-            # Process results for context
-            sources_content = [f"[{doc.doc_id}]: {doc.to_str_for_rag()}\n\n" for doc in results]
-            content = "\n".join(sources_content)
-            global_storage.rag_results.append(content)
-
-            messages = build_messages(
-                model=self.chat_model,
-                system_prompt=self.rag_answer_prompt_template,
-                new_user_content=original_user_query + "\n\nUser Context:\n" + global_storage.user_context + "\n\nSources:\n" + content,
-                past_messages=past_messages,
-                max_tokens=self.chat_token_limit - response_token_limit,
-                fallback_to_default=True,
-            )
-
-        else:  # If query is out of scope
+        else:
             no_answer = True
             messages = build_messages(
                 model=self.chat_model,
                 system_prompt=self.no_answer_prompt_template,
-                new_user_content=original_user_query, 
+                new_user_content=original_user_query,
                 max_tokens=self.chat_token_limit - response_token_limit,
                 fallback_to_default=True,
             )
-            
-        return messages, sources_content, query_text, results
 
-
-        chat_resp = chat_completion_response.model_dump()
-        chat_resp["choices"][0]["context"] = {
-            "data_points": {"text": None},
-            "thoughts": [
-                ThoughtStep(
-                    title="Whether RAG functionalities are used",
-                    description=to_search,
-                    props={
-                        "RAG": to_search
-                    }
-                ),
-                ThoughtStep(
-                    title="Search query for database",
-                    description=None,
-                ),
-                ThoughtStep(
-                    title="Search results",
-                    description=None,
-                ),
-                ThoughtStep(
-                    title="Prompt to generate answer",
-                    description=[str(message) for message in messages],
-                    props=(
-                        {"model": self.chat_model, "deployment": self.chat_deployment}
-                        if self.chat_deployment
-                        else {"model": self.chat_model}
+        # Construct chat_resp
+        chat_resp = {
+            "choices": [{"messages": messages}],
+            "context": {
+                "data_points": {"text": None},
+                "thoughts": [
+                    ThoughtStep(
+                        title="Whether RAG functionalities are used",
+                        description=vector_search,
+                        props={"RAG": vector_search},
                     ),
-                ),
-            ],
+                    ThoughtStep(title="Search query for database", description=query_text),
+                    ThoughtStep(title="Search results", description=results),
+                    ThoughtStep(
+                        title="Prompt to generate answer",
+                        description=[str(message) for message in messages],
+                        props=({"model": self.chat_model}),
+                    ),
+                ],
+            },
         }
 
         return chat_resp

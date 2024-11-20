@@ -5,18 +5,18 @@ from openai.types.chat import (
     ChatCompletionToolParam
 )
 
-def extract_function_calls(chat_completion: ChatCompletion, key: str): 
-    try: 
+def extract_function_calls(chat_completion: ChatCompletion, key: str):
+    try:
         called_tool = chat_completion.choices[0].message.tool_calls
         if called_tool:
             response_message = chat_completion.choices[0].message.tool_calls[0].function.arguments
-        else: 
+        else:
             response_message = chat_completion.choices[0].message.content
         args = json.loads(response_message)
-        return args[key]
-    except Exception as e: 
-        return e 
-
+        return args.get(key, False)  # Return False if the key is missing
+    except Exception as e:
+        print(f"Error extracting function call for key '{key}': {e}")
+        return False
 
 
 def extract_json(chat_response: ChatCompletion):
@@ -36,8 +36,17 @@ def extract_json_query_rewriter(chat_response: ChatCompletion):
     is_relevant = extract_function_calls(chat_response, "is_relevant") # Judge if the query is relevant to the scope of ChatLSE 
     is_farewell = extract_function_calls(chat_response, "is_farewell") # Judge if the query is a farewell message
 
+    to_greet = parse_type(to_greet)
+    is_relevant = parse_type(is_relevant)
+    is_farewell = parse_type(is_farewell)
+    
     return to_greet, is_relevant, is_farewell
 
+
+def parse_type(obj):
+    if type(obj) != bool:
+        return obj.lower() == "true"
+    return obj
 
 
 def build_filter_function() -> list[ChatCompletionToolParam]:
@@ -127,7 +136,6 @@ def build_response_function() -> list[ChatCompletionToolParam]:
     ]
 
 
-
 def build_filter_function_query_rewriter() -> list[ChatCompletionToolParam]:
     return [
         {
@@ -160,7 +168,7 @@ def build_filter_function_query_rewriter() -> list[ChatCompletionToolParam]:
     }     
 ]
 
-
+#### The section below is the only addition for graph rag compared to QueryRewruterRag
 
 def build_cypher_query() -> list[ChatCompletionToolParam]:
     return [

@@ -5,70 +5,51 @@ from neo4j import GraphDatabase
 from .postgres_models import Doc
 
 
-class PostgresSearcher:
+class Postgres_neo4j_Searcher:
     def __init__(self, engine, neo4j_driver=None):
         # Initialize PostgreSQL session maker
         self.async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
         # Initialize Neo4j driver
         self.neo4j_driver = neo4j_driver
 
-
     def enrich_query_with_graph(self, original_query: str, name_embedding):
         enriched_terms = []
         relevant_doc_ids = []
+
+        if name_embedding is None:
+            print("Name embedding is None. Skipping Neo4j enrichment.")
+            return enriched_terms, relevant_doc_ids
+
         with self.neo4j_driver.session() as neo4j_session:
-            neo4j_query = f"""
-            WITH {name_embedding} AS nameEmbedding
+            neo4j_query = """
+            WITH $name_embedding AS nameEmbedding
             MATCH (n)
             WHERE n.embedding IS NOT NULL
             WITH n, vector.similarity.cosine(n.embedding, nameEmbedding) AS similarity
             ORDER BY similarity DESC
             LIMIT 3
-
-            // Match direct and indirect relationships within the same community
-            WITH n
-            MATCH (n)-[r1]-(m) 
-            WHERE m.community = n.community
-            OPTIONAL MATCH (m)-[r2]-(o)
-            WHERE o.community = n.community
-
-            // Collect document IDs and entity names, ensuring uniqueness
-            WITH COLLECT(DISTINCT n.doc_id) + COLLECT(DISTINCT m.doc_id) + COLLECT(DISTINCT o.doc_id) AS all_doc_ids,
-                COLLECT(DISTINCT n.name) + COLLECT(DISTINCT m.name) + COLLECT(DISTINCT o.name) AS all_names
-
-            RETURN all_names, all_doc_ids;
-
- """ 
-
-            result = neo4j_session.run(neo4j_query, parameters={"query": original_query}).values()
-            print(f"NEO4J RESULT: {result}")
-
-            for record in result:
-                if record[1] is not None:
-                    enriched_terms.extend(record[0])  # Flattening list and extending to avoid nested lists
+            """
+            try:
+                print("Running Neo4j query:", neo4j_query)
+                result = neo4j_session.run(neo4j_query, name_embedding=name_embedding).values()
+                for record in result:
+                    enriched_terms.extend(record[0])
                     relevant_doc_ids.extend(record[1])
-            
-            print(f"ENRICHED TERMS: {enriched_terms}")
-            print(f"RELEVANT DOC IDS: {relevant_doc_ids}")
+            except Exception as e:
+                print(f"Error querying Neo4j: {e}")
+                raise
 
-                #enriched_terms.add(record[0:3]) if record[i] is not None
-                #enriched_terms.update(record[1] if record[1] else [])
-            return enriched_terms, relevant_doc_ids
-    
+        return enriched_terms, relevant_doc_ids
 
     def build_filter_clause(self, filters) -> tuple[str, str]:
-        if filters is None:
+        if not filters:
             return "", ""
-        filter_clauses = []
-        for filter in filters:
-            if isinstance(filter["value"], str):
-                filter["value"] = f"'{filter['value']}'"
-            filter_clauses.append(f"{filter['column']} {filter['comparison_operator']} {filter['value']}")
+        filter_clauses = [
+            f"{filter['column']} {filter['comparison_operator']} {filter['value']!r}"
+            for filter in filters
+        ]
         filter_clause = " OR ".join(filter_clauses)
-        if len(filter_clause) > 0:
-            return f"WHERE {filter_clause}", f"AND {filter_clause}"
-        return "", ""
-
+        return f"WHERE {filter_clause}", f"AND {filter_clause}" if filter_clause else ""
 
     async def search(
         self,
@@ -76,64 +57,41 @@ class PostgresSearcher:
         query_vector: list[float] | list,
         query_top: int = 5,
         name_embedding: str | None = None,
-        orignal_query: str | None = None 
+        original_query: str | None = None,
+        enhanced_results: list | None = None,  # Enhanced results as a list
     ):
         filters = []
-        # Only use graph database when llm_generated_query is passed 
-        if query_vector: 
-            # Enrich the query with graph-based terms
-            enriched_terms= self.enrich_query_with_graph(orignal_query, name_embedding) if query_vector else []
-            relevant_doc_ids = list(set(enriched_terms[1]))
-            enriched_terms = list(set(enriched_terms[0]))
 
-            print("Entered Query Vector")
+        # Add existing enhanced results to filters
+        if enhanced_results:
+            print(f"Using enhanced_results: {enhanced_results}")
+            filters.extend({"column": "doc_id", "comparison_operator": "=", "value": doc_id} for doc_id in enhanced_results)
 
-            print(f"ENRICHED TERMS: {enriched_terms}")
-            print(f"RELEVANT DOC IDS: {relevant_doc_ids}")
+        if query_vector:
+            enriched_terms, relevant_doc_ids = self.enrich_query_with_graph(original_query, name_embedding)
+            enriched_terms = list(set(enriched_terms))
+            relevant_doc_ids = list(set(relevant_doc_ids))
+            enriched_query_text = " OR ".join(str(x) for x in enriched_terms)
+            query_text = f"({query_text}) OR ({enriched_query_text})" if query_text else enriched_query_text
+            filters.extend({"column": "doc_id", "comparison_operator": "=", "value": doc_id} for doc_id in relevant_doc_ids)
 
-
-
-            if enriched_terms:
-                print(f"ENRICHED TERMS: {enriched_terms}")
-                enriched_query_text = " OR ".join(str(x) for x in enriched_terms)
-
-                query_text = f"({query_text}) OR ({enriched_query_text})" if query_text else enriched_query_text
-                for doc_id in relevant_doc_ids:
-                    print(f"DOC ID: {doc_id}")
-                    filters.append({"column": "doc_id", "comparison_operator": "=", "value": doc_id})
-            else:
-                enriched_query_text = query_text
-
-            print(f"ENRICHED QUERY TEXT: {enriched_query_text}")
-            print(f"FILTERS: {filters}")
-        
         filter_clause_where, filter_clause_and = self.build_filter_clause(filters)
 
-        # Add filtering by relevant doc_ids if available
-        if relevant_doc_ids:
-            relevant_doc_ids_list = ', '.join(f"'{doc_id}'" for doc_id in relevant_doc_ids)
-            doc_id_filter = f"AND id IN ({relevant_doc_ids_list})"
-        else:
-            doc_id_filter = ""
-
-
-        # SQL queries for vector, full-text, and hybrid search
+        # SQL Queries (unchanged)
         vector_query = f"""
             SELECT id, RANK () OVER (ORDER BY embedding <=> :embedding) AS rank
-                FROM lse_doc
-                {filter_clause_where} 
-                ORDER BY embedding <=> :embedding
-                LIMIT 20
-            """
-
+            FROM lse_doc
+            {filter_clause_where} 
+            ORDER BY embedding <=> :embedding
+            LIMIT 20
+        """
         fulltext_query = f"""
             SELECT id, RANK () OVER (ORDER BY ts_rank_cd(to_tsvector('english', content), query) DESC)
-                FROM lse_doc, plainto_tsquery('english', :query) query
-                WHERE to_tsvector('english', content) @@ query {filter_clause_and} 
-                ORDER BY ts_rank_cd(to_tsvector('english', content), query) DESC
-                LIMIT 20
-            """
-
+            FROM lse_doc, plainto_tsquery('english', :query) query
+            WHERE to_tsvector('english', content) @@ query {filter_clause_and} 
+            ORDER BY ts_rank_cd(to_tsvector('english', content), query) DESC
+            LIMIT 20
+        """
         hybrid_query = f"""
         WITH vector_search AS (
             {vector_query}
@@ -151,69 +109,51 @@ class PostgresSearcher:
         LIMIT 20
         """
 
-        # Determine which query to run based on the inputs
-        if query_text is not None and len(query_vector) > 0:
-            sql = text(hybrid_query).columns(id=String, score=Float)
-        elif len(query_vector) > 0:
-            sql = text(vector_query).columns(id=String, rank=Integer)
-        elif query_text is not None:
-            sql = text(fulltext_query).columns(id=String, rank=Integer)
-        else:
-            raise ValueError("Both query text and query vector are empty")
-        
-        print(f"SQL: {sql}")
+        sql = (
+            text(hybrid_query).columns(id=String, score=Float)
+            if query_text and query_vector
+            else text(vector_query).columns(id=String, rank=Integer)
+            if query_vector
+            else text(fulltext_query).columns(id=String, rank=Integer)
+        )
 
-        # Execute the SQL query using PostgreSQL
+        docs = []
         async with self.async_session_maker() as session:
-            results = (
-                await session.execute(
-                    sql,
-                    {"embedding": to_db(query_vector), "query": query_text, "k": 60},
-                )
-            ).fetchall()
-
-            # Convert results to Doc models
-            docs = []
-            for id, _ in results[:query_top]:
-                doc = await session.execute(select(Doc).where(Doc.id == id))
+            results = await session.execute(
+                sql,
+                {"embedding": to_db(query_vector), "query": query_text, "k": 60}
+            )
+            for row in results.fetchall()[:query_top]:
+                doc = await session.execute(select(Doc).where(Doc.id == row.id))
                 docs.append(doc.scalar())
 
+        # Use Neo4j to enrich results
+        if enhanced_results is None:
+            enhanced_results = []  # Initialize enhanced_results if not provided
 
-            # return docs (was not in the aksh's branch)
-
-        # Use Neo4j to enrich the results
-        enhanced_results = []
         with self.neo4j_driver.session() as neo4j_session:
             for result in docs:
                 doc_id = result.doc_id
-
-                # Query Neo4j for related entities
                 neo4j_query = f"""
                 MATCH (n)-[r1]->(related)-[r2]->(related_related)
                 WHERE n.doc_id = '{doc_id}'
                 RETURN n, related, type(r1), related_related, type(r2)
                 """
                 related_nodes = neo4j_session.run(neo4j_query).values()
-                formatted_related_nodes = []
+                if not related_nodes:
+                    print(f"No related nodes found for doc_id: {doc_id}")
+                    continue
 
-                for n, related, rel_type_1, related_related, rel_type_2 in related_nodes:
-                    # Extract the relevant properties to make the output more readable
-                    n_name = n.get("name", "Unnamed Node")
-                    related_name = related.get("name", "Unnamed Node")
-                    related_related_name = related_related.get("name", "Unnamed Node")
-
-                    # Format the output as n[RELATION]related[RELATION]related_related
-                    formatted_related_nodes.append(
-                        f"{n_name} [{rel_type_1}] {related_name} [{rel_type_2}] {related_related_name}"
-                    )
-
-                # Append enriched results
+                formatted_related_nodes = [
+                    f"{n.get('name', 'Unnamed Node')} [{rel_type_1}] {related.get('name', 'Unnamed Node')} [{rel_type_2}] {related_related.get('name', 'Unnamed Node')}"
+                    for n, related, rel_type_1, related_related, rel_type_2 in related_nodes
+                ]
                 enhanced_results.append((doc_id, formatted_related_nodes, result))
 
-        # Return the enriched results
         return enhanced_results
-    
-    def close(self):
-        """Close the Neo4j driver connection when done."""
-        self.neo4j_driver.close()
 
+
+    def close(self):
+        """Close the Neo4j driver connection."""
+        if self.neo4j_driver:
+            self.neo4j_driver.close()
