@@ -31,7 +31,7 @@ logging.basicConfig(level=logging.INFO)
 
 
 ### SET EMBEDDING TYPE HERE 
-embedding_type = "title_embeddings"
+embedding_type = "context_embeddings"
 if embedding_type not in ["simple_embeddings", "title_embeddings", "context_embeddings"]: 
     raise ValueError('embedding_type must be in ["simple_embeddings", "title_embeddings", "context_embeddings"]')
 
@@ -57,6 +57,9 @@ columns = [col['name'] for col in insp.get_columns('lse_doc')]
 
 if embedding_type not in columns:
     with engine.connect() as conn:
+        logging.info("Enabling the pgvector extension for Postgres...")
+        conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
+        
         logging.info(f"Adding '{embedding_type}' column to lse_doc table...")
         conn.execute(text(f'''
             ALTER TABLE lse_doc ADD COLUMN {embedding_type} VECTOR(1024);
@@ -82,7 +85,7 @@ with engine.connect() as conn:
     if not df_results.empty: 
         logging.info("Collating full document text...")
         if embedding_type == "context_embeddings": 
-            df_docs = df_results.sort_values("id").groupby("doc_id").agg({"content": lambda x: "".join(x)}).reset_index()
+            df_docs = df_results.sort_values("id").groupby("doc_id").agg({"content": lambda x: " ".join(x)}).reset_index()
 
         total = len(df_results)
         count = 0 
@@ -102,7 +105,18 @@ with engine.connect() as conn:
                 if not summary: 
                     # Retrieve full document and summarise its content 
                     doc_content = df_docs.loc[df_docs["doc_id"]==doc_id, "content"].iloc[0]
-                    summary = summarise_and_embed_sync(doc_content, chat_model_instance=CHAT_MODEL_INSTANCE, embed_model_instance=EMBED_MODEL_INSTANCE)
+                    doc = f"{{title: {title}, content: {doc_content}}}"
+                    
+                    # Manually handle some problems with summary format that can't be solved with prompt engineering
+                    if "CourseGuidesProgrammeRegs" in title: 
+                        summary = f"Course guides and programme regulations for 20{title[25:30]}."
+                    elif "SchoolRegs" in title: 
+                        summary = f"School Regulations for 20{title[10:15]}"
+                    else: 
+                        summary = summarise_and_embed_sync(doc, chat_model_instance=CHAT_MODEL_INSTANCE, embed_model_instance=EMBED_MODEL_INSTANCE)
+                    
+                    summary = summary.split(".")[0] + "." # Manually handle some problems with summary format that can't be solved with prompt engineering
+
                     # Insert the document and summary into the table
                     conn.execute(text('''
                                 INSERT INTO doc_summary (doc_id, content, summary)
@@ -115,14 +129,14 @@ with engine.connect() as conn:
                     conn.commit()
                 else: 
                     summary = summary[0]
+                
+                print(f"TITLE: {title} \n\nSUMMARY: {summary}")
 
                 contextual_chunk = f"title: {title}\nsummary: {summary}\ncontent: {chunk_content}"
             elif embedding_type == "title_embeddings": 
                 contextual_chunk = f"title: {title}\ncontent: {chunk_content}"
             else: 
                 contextual_chunk = chunk_content
-            
-            print(f"CHUNK: {contextual_chunk}")
             
             logging.info("Embedding chunks...")
             embedding = compute_text_embedding_sync(contextual_chunk, model_instance=EMBED_MODEL_INSTANCE)
@@ -141,8 +155,6 @@ with engine.connect() as conn:
 
     logging.info("Embeddings calculated and updated successfully.")
 
-    
 
-conn.close()
 engine.dispose()
 logging.info('PostgreSQL Connection closed')
