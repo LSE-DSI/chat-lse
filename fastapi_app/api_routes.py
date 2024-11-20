@@ -26,6 +26,7 @@ async def chat_handler(chat_request: ChatRequest, chat_class=ChatClass):
         embed_dimensions=global_storage.embed_dimensions,
         context_window_override=global_storage.context_window_override, 
         to_summarise=global_storage.to_summarise, 
+        embedding_type=global_storage.embedding_type, 
     )
 
     messages = [message.model_dump() for message in chat_request.messages]

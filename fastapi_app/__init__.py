@@ -30,6 +30,7 @@ async def lifespan(app: FastAPI):
     #global_storage.chat_model = random.choice(["llama3.1:8b-instruct-q8_0", "mistral-nemo:12b-instruct-2407-q6_K"])
     global_storage.to_summarise = True
     #global_storage.to_summarise = random.choice([True, False])
+    global_storage.to_summarise = os.getenv("EMBEDDING_TYPE", "simple_embeddings")
     
     logger.info(f"Model Selected: {global_storage.chat_model}")
     logger.info(f"Summariser: {global_storage.to_summarise}")
