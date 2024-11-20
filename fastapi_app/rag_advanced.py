@@ -30,7 +30,8 @@ class AdvancedRAGChat:
         embed_model: str,
         embed_dimensions: int,
         context_window_override: int | None, # Context window size (default to 4000 if None)
-        to_summarise: bool | None 
+        to_summarise: bool | None, 
+        embedding_type: str = "simple_embeddings"
     ):
         self.searcher = searcher
         self.chat_client = chat_client
@@ -39,6 +40,7 @@ class AdvancedRAGChat:
         self.embed_dimensions = embed_dimensions
         self.chat_token_limit = context_window_override if context_window_override else get_token_limit(chat_model, default_to_minimum=True)
         self.to_summarise = to_summarise 
+        self.embedding_type = embedding_type
         
         # Load prompts 
         current_dir = pathlib.Path(__file__).parent
@@ -261,7 +263,7 @@ class AdvancedRAGChat:
             if not text_search:
                 query_text = None
 
-            results = await self.searcher.search(query_text, vector, top)
+            results = await self.searcher.search(query_text, vector, top, embedding_type)
 
             sources_content = [f"[{(doc.doc_id)}]: {doc.to_str_for_rag()}\n\n" for doc in results]
             content = "\n".join(sources_content)
@@ -593,7 +595,7 @@ class QueryRewriterRAG(AdvancedRAGChat):
             if not text_search:
                 query_text = None
 
-            results = await self.searcher.search(query_text, vector, top)
+            results = await self.searcher.search(query_text, vector, top, embedding_type)
 
             sources_content = [f"[{(doc.doc_id)}]: {doc.to_str_for_rag()}\n\n" for doc in results]
             content = "\n".join(sources_content)

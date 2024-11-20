@@ -15,6 +15,7 @@ class Global:
         self.requires_clarification = None
         self.chat_class = None 
         self.message_history = []
+        self.embedding_type = None
 
 
 global_storage = Global()

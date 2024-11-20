@@ -29,15 +29,16 @@ class PostgresSearcher:
         query_vector: list[float] | list,
         query_top: int = 5,
         filters: list[dict] | None = None,
+        embedding_type: str = "simple_embeddings",
     ):
 
         filter_clause_where, filter_clause_and = self.build_filter_clause(filters)
 
         vector_query = f"""
-            SELECT id, RANK () OVER (ORDER BY context_embeddings <=> :context_embeddings) AS rank
+            SELECT id, RANK () OVER (ORDER BY {embedding_type} <=> :{embedding_type}) AS rank
                 FROM lse_doc
                 {filter_clause_where}
-                ORDER BY context_embeddings <=> :context_embeddings
+                ORDER BY {embedding_type} <=> :{embedding_type}
                 LIMIT 20
             """
 
@@ -79,7 +80,7 @@ class PostgresSearcher:
             results = (
                 await session.execute(
                     sql,
-                    {"context_embeddings": to_db(query_vector), "query": query_text, "k": 60},
+                    {embedding_type: to_db(query_vector), "query": query_text, "k": 60},
                 )
             ).fetchall()
 
