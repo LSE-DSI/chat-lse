@@ -57,6 +57,7 @@ def summarise_and_embed_sync(
             model=chat_model,
             system_prompt=embed_summarise_prompt,
             new_user_content=doc,
+            max_tokens=3850,
             fallback_to_default=True,
         )
     chat_completion_response = chat_model_instance.chat.completions.create(
@@ -67,8 +68,6 @@ def summarise_and_embed_sync(
         n=1, 
     )
 
-    resp = chat_completion_response.choices[0].message.content
-    resp = resp.split(":")[0]
-    summarised_message = resp.split(".")[0] + "."
+    summarised_message = chat_completion_response.choices[0].message.content
 
     return summarised_message 
