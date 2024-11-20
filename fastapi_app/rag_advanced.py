@@ -263,7 +263,7 @@ class AdvancedRAGChat:
             if not text_search:
                 query_text = None
 
-            results = await self.searcher.search(query_text, vector, top, embedding_type)
+            results = await self.searcher.search(query_text, vector, top, self.embedding_type)
 
             sources_content = [f"[{(doc.doc_id)}]: {doc.to_str_for_rag()}\n\n" for doc in results]
             content = "\n".join(sources_content)
@@ -595,7 +595,7 @@ class QueryRewriterRAG(AdvancedRAGChat):
             if not text_search:
                 query_text = None
 
-            results = await self.searcher.search(query_text, vector, top, embedding_type)
+            results = await self.searcher.search(query_text, vector, top, self.embedding_type)
 
             sources_content = [f"[{(doc.doc_id)}]: {doc.to_str_for_rag()}\n\n" for doc in results]
             content = "\n".join(sources_content)
