@@ -21,6 +21,8 @@ class Doc(Base):
     title: Mapped[str] = mapped_column()
     content: Mapped[str] = mapped_column()
     date_scraped: Mapped[datetime] = mapped_column()
+    simple_embeddings: Mapped[Vector] = mapped_column(Vector(1024)) # GTE-large
+    title_embeddings: Mapped[Vector] = mapped_column(Vector(1024)) # GTE-large
     context_embeddings: Mapped[Vector] = mapped_column(Vector(1024)) # GTE-large
 
     def to_dict(self, include_embedding: bool = False):
@@ -36,6 +38,8 @@ class Doc(Base):
         }
         if include_embedding:
             # assuming embedding is a list or similar structure
+            model_dict["simple_embeddings"] = self.simple_embeddings.tolist()
+            model_dict["title_embeddings"] = self.title_embeddings.tolist()
             model_dict["context_embeddings"] = self.context_embeddings.tolist()
         return model_dict
 
@@ -47,7 +51,23 @@ class Doc(Base):
 
 
 # Define HNSW index to support vector similarity search through the vector_cosine_ops access method (cosine distance).
-index = Index(
+index_simple = Index(
+    "hnsw_index_for_innerproduct_doc_embedding",
+    Doc.simple_embeddings,
+    postgresql_using="hnsw",
+    postgresql_with={"m": 16, "ef_construction": 64},
+    postgresql_ops={"simple_embeddings": "vector_ip_ops"},
+)
+
+index_title = Index(
+    "hnsw_index_for_innerproduct_doc_embedding",
+    Doc.title_embeddings,
+    postgresql_using="hnsw",
+    postgresql_with={"m": 16, "ef_construction": 64},
+    postgresql_ops={"title_embeddings": "vector_ip_ops"},
+)
+
+index_context = Index(
     "hnsw_index_for_innerproduct_doc_embedding",
     Doc.context_embeddings,
     postgresql_using="hnsw",

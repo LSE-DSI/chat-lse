@@ -31,7 +31,8 @@ class AdvancedRAGChat:
         embed_dimensions: int,
         context_window_override: int | None, # Context window size (default to 4000 if None)
         to_summarise: bool | None, 
-        embedding_type: str = "simple_embeddings"
+        embedding_type: str = "simple_embeddings", 
+        with_user_context: bool = False
     ):
         self.searcher = searcher
         self.chat_client = chat_client
@@ -41,6 +42,7 @@ class AdvancedRAGChat:
         self.chat_token_limit = context_window_override if context_window_override else get_token_limit(chat_model, default_to_minimum=True)
         self.to_summarise = to_summarise 
         self.embedding_type = embedding_type
+        self.with_user_context = with_user_context
         
         # Load prompts 
         current_dir = pathlib.Path(__file__).parent
@@ -263,7 +265,7 @@ class AdvancedRAGChat:
             if not text_search:
                 query_text = None
 
-            results = await self.searcher.search(query_text, vector, top, self.embedding_type)
+            results = await self.searcher.search(query_text, vector, top, embedding_type=self.embedding_type)
 
             sources_content = [f"[{(doc.doc_id)}]: {doc.to_str_for_rag()}\n\n" for doc in results]
             content = "\n".join(sources_content)
@@ -403,7 +405,7 @@ class AdvancedRAGChat:
 
 
     async def run(
-        self, messages: list[dict], user_info: dict[str, Any] = {}, overrides: dict[str, Any] = {}
+        self, messages: list[dict], user_info: dict[str, Any] = {}, overrides: dict[str, Any] = {}, 
     ) -> dict[str, Any] | AsyncGenerator[dict[str, Any], None]:
 
         # Generate JSON formatted string for user context information
@@ -476,7 +478,9 @@ class QueryRewriterRAG(AdvancedRAGChat):
         embed_model: str,
         embed_dimensions: int,
         context_window_override: int | None, # Context window size (default to 4000 if None)
-        to_summarise: bool | None 
+        to_summarise: bool | None, 
+        embedding_type: str = "simple_embeddings", 
+        with_user_context: bool = False
     ): 
         super().__init__(
             searcher=searcher,
@@ -485,7 +489,9 @@ class QueryRewriterRAG(AdvancedRAGChat):
             embed_model=embed_model, 
             embed_dimensions=embed_dimensions, 
             context_window_override=context_window_override, 
-            to_summarise=to_summarise
+            to_summarise=to_summarise, 
+            embedding_type=embedding_type, 
+            with_user_context = with_user_context
             ) 
 
         # Load prompts 
@@ -585,6 +591,22 @@ class QueryRewriterRAG(AdvancedRAGChat):
             vector: list[float] = []
             query_text = None 
             if vector_search:
+
+                if self.with_user_context: 
+                    user_context = global_storage.user_context.replace("Master's", "Masters")
+                    user_context = json.loads(user_context.replace("'", '"'))
+                    role = user_context["role"]
+                    affiliation = user_context["department"]
+                    level = user_context["level_of_study"]
+                    context_sentence = "I am "
+                    if level or role: 
+                        context_sentence += f"a(n) {level.rstrip().lower()} {role.rstrip().lower()} "
+                    if affiliation: 
+                        context_sentence += f"from {affiliation.rstrip()}. "
+
+                    if role or affiliation or level: 
+                        search_query = context_sentence+search_query
+                
                 print(f"Entering vector search with query text: {search_query}")
                 vector = await compute_text_embedding(
                     search_query,
@@ -595,7 +617,7 @@ class QueryRewriterRAG(AdvancedRAGChat):
             if not text_search:
                 query_text = None
 
-            results = await self.searcher.search(query_text, vector, top, self.embedding_type)
+            results = await self.searcher.search(query_text, vector, top, embedding_type=self.embedding_type)
 
             sources_content = [f"[{(doc.doc_id)}]: {doc.to_str_for_rag()}\n\n" for doc in results]
             content = "\n".join(sources_content)
