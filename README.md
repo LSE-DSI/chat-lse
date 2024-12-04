@@ -16,9 +16,11 @@ _Total Contributors:_
 ## 💡 About the Project
 The _ChatLSE_ project is a proof of concept of a full data pipeline to index data from LSE websites. In this project, we gathered all public LSE documents and webpages into a database and then develop a chat interface using an LLM. Think of it as a ChatGPT meant to be particularly knowledgeable of LSE documents. Utilising retrieval augmented generation (RAG), the ChatLSE chatbot is capable of answering queries from staff and students by consulting relevant LSE documents and regulations. 
 
-As all parts of this application are completely open-source, this project also aims to serve as a blueprint for a fully open-source RAG solution. The full workflow of the projcet is illlustrated below
+As all parts of this application are completely open-source, this project also aims to serve as a blueprint for a fully open-source RAG solution. The full workflow of the projcet is illlustrated below: 
 
 ![Overall workflow of the project](img/app_workflow.png)
+
+_Overall workflow of the project_
 
 ## 🧑‍💻 The Team
 
