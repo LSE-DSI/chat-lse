@@ -1,6 +1,4 @@
-# Chat LSE development setup guide
-
-**This document is for development setup only. For deployment, refer to deployment instructions.**
+# Contributing to _ChatLSE_
 
 ## Introduction
 
@@ -20,13 +18,13 @@ The overall architecture of the app is shown in the figure:
 
 ![arch](img/arch.png "Architecture of the app")
 
-There are 4 main components, the Frontend APP (FluentUI, React JS), the backend APP (FastAPI), PostgresSQL database and Ollama service. 
+There are 4 main components, the Frontend APP (FluentUI, React JS), the backend APP (FastAPI), PostgreSQL database and Ollama service. 
 
 To run the full app, all four components have to be setup properly either on a local development machine or on a remote server. 
 
-For development purpose, the frontend APP, backend APP and PostgresSQL should always be setup on a local machine. 
+For development purpose, the frontend APP, backend APP should always be setup on a local machine. 
 
-Ollama could be setup locally or use the remote setup on Rizzie. 
+PostgreSQL and Ollama could be setup locally or use a remote setup. 
 
 ## Requirements
 
@@ -36,9 +34,24 @@ Make sure the following software are properly installed on your OS:
 - [Docker](https://docs.docker.com/engine/install/)
 - [npm](https://docs.npmjs.com/downloading-and-installing-node-js-and-npm)
 
-## 1. Setup PostgresSQL locally
+## Table of Content 
+  1. [Setup PostgreSQL locally](#1-setup-postgresql-locally)
+  2. [(Optionally) Setup Ollama locally](#2-optionally-setup-ollama-locally)
+  3. [Setup environment](#3-setup-environment)
+    3.1. [Install Python dependencies](#31-install-python-dependencies)
+    3.2. [Config environment variables](#32-config-environment-variables)
+  4. [Initialise the database](#4-initialise-the-database)
+    4.1. [Run crawler to populate database](#41-run-crawler-to-populate-database)
+    4.2. [Run the embedding script](#42-run-the-embedding-script)
+  5. [Start the FastAPI APP](#5-start-the-fastapi-app)
+  6. [Setup and run Frontend APP](#6-setup-and-run-frontend-app)
+    6.1. [Install npm dependencies](#61-install-npm-dependencies)
+    6.2. [Start the frontend APP](#62-start-the-frontend-app)
+    6.3. [Use the APP](#63-use-the-app)
 
-Run PostrgesSQL using docker container:
+## 1. Setup PostgreSQL locally
+
+Run PostrgeSQL using docker container:
 
 ```bash
 $ docker run -itd --name chatlse-postgres --restart unless-stopped -p 5432:5432 -e POSTGRES_PASSWORD=chatlse -e POSTGRES_USER=chatlse -e POSTGRES_DB=chatlse -d pgvector/pgvector:0.7.1-pg16
@@ -57,7 +70,7 @@ The STATUS of the container shoule be something like "Up 2 seconds".
 
 ## 2. (Optionally) Setup Ollama locally
 
-Download [Ollama](https://ollama.com/download) or pull its docker image using: 
+Download [Ollama](https://ollama.com/download)(recommended) or pull its docker image using: 
 
 CPU only: 
 ```bash
@@ -106,8 +119,8 @@ POSTGRES_HOST=localhost
 ```
 
 ```
-# Rizzie setup, for testing and deployment only
-POSTGRES_HOST=<Rizzie IP address>
+# Remote setup, for testing and deployment only
+POSTGRES_HOST=<Host IP address>
 ```
 
 #### Set Ollama Host
@@ -118,23 +131,13 @@ OLLAMA_ENDPOINT=http://localhost:11434/v1
 ```
 
 ```
-# For Rizzie setup
-OLLAMA_ENDPOINT=http://<Rizzie IP address>:11434/v1
+# For Remote setup
+OLLAMA_ENDPOINT=http://<Host IP address>:11434/v1
 ```
 
 ## 4. Initialise the database
 
-### 4.1 Set up for crawler 
-
-Add the following to your .env file: 
-
-```
-EMBED_CHUNK_SIZE=512 
-EMBED_OVERLAP_SIZE=128
-```
-
-
-### 4.2 Run crawler to populate database 
+### 4.1 Run crawler to populate database 
 
 The following script will take a while for the first time you run it as it crawls through all the files and webpages with lse.ac.uk domain name. Subsequent runs of the crawler should be quicker as it only updates the files and webpages that has changed. 
 
@@ -144,7 +147,16 @@ Run the following code to start the crawler :
 sh scripts/start_crawlers.sh 
 ```
 
-### 4.3 Run the embedding script
+### 4.2 Run the embedding script
+
+Set up embedding type in the **.env** file: 
+
+```
+# Select embedding type from ["simple_embeddings", "title_embeddings", "context_embeddings"]
+EMBEDDING_TYPE=title_embeddings
+```
+
+The default setting is `title_embeddings` as our experiments show that it provides the best results. 
 
 The following script will take a while for the first time you run it as it generates embeddings for all the documents in the database. Subsequent runs of the embedding script should be quicker as it only updates the embeddings for the documents that has changed.
 
