@@ -11,7 +11,7 @@ load_dotenv()
 token = os.getenv('LOGTAIL_TOKEN')
 
 # get logger
-logger = logging.getLogger()
+logger = logging.getLogger("ragapp")
 
 # create formatter 
 

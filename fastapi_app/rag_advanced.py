@@ -67,9 +67,7 @@ class AdvancedRAGChat:
         Assumes that len(past_messages) >= 6, summarises the 4th most recent model response. Writes over past_messages 
         and returns nothing. 
         """
-        print(f"len(past_messages): {len(past_messages)}")
         to_summarise = past_messages[-5]["content"] 
-        print(f"TO SUMMARISE: {to_summarise}")
         response_token_limit = 1024
         messages = build_messages(
             model=self.chat_model,
@@ -89,7 +87,6 @@ class AdvancedRAGChat:
         )
 
         past_messages[-5]["content"] = chat_completion_response.choices[0].message.content
-        print(f"SUMMARISED: {past_messages[-5]['content']}")
 
 
     async def judge_clarification_response(self, original_user_query, past_messages, response_token_limit=500): 
@@ -118,9 +115,7 @@ class AdvancedRAGChat:
             stream=False,
         )
 
-        print(chat_completion_clar_response)
         clarification_response = extract_function_calls(chat_completion_clar_response, "is_response")
-        print(f"clarification_response: {clarification_response}")
 
         return clarification_response
 
@@ -155,19 +150,19 @@ class AdvancedRAGChat:
         # Extract model decision on query classification 
     
         to_greet, is_follow_up, is_reference, is_relevant, requires_clarification, is_farewell = extract_json(chat_completion_resp_filter)
-        print(f"to_greet: {to_greet}, is_follow_up: {is_follow_up}, is_reference: {is_reference}, is_relevant: {is_relevant}, requires_clarification: {requires_clarification}, is_farewell: {is_farewell}")
+        logger.info(f"to_greet: {to_greet}, is_follow_up: {is_follow_up}, is_reference: {is_reference}, is_relevant: {is_relevant}, requires_clarification: {requires_clarification}, is_farewell: {is_farewell}")
 
         to_search = is_relevant and (not requires_clarification) and (not is_follow_up) # whether model uses RAG functionality 
         to_follow_up = is_follow_up and (not requires_clarification) and (not past_messages) # Whether model considers the query a follow up question that requires expanding on revious answer 
         
-        print(f"to_search: {to_search}")
-        print(f"to_follow_up: {to_follow_up}")
-        print(f"global_storage.requires_calrification: {global_storage.requires_clarification}")
+        logger.info(f"to_search: {to_search}")
+        logger.info(f"to_follow_up: {to_follow_up}")
+        logger.info(f"global_storage.requires_calrification: {global_storage.requires_clarification}")
 
 
         # Inserting different system prompts for model based on specific functionalities required 
         if global_storage.requires_clarification:
-            print("ENTERED GLOBAL STORAGE CLARIFICATION")
+            logger.info("ENTERED GLOBAL STORAGE CLARIFICATION")
             clarification_response = await self.judge_clarification_response(original_user_query, past_messages, query_response_token_limit)
             #reset global storage until next requires_clarification occurs.
             global_storage.requires_clarification = False
@@ -197,7 +192,6 @@ class AdvancedRAGChat:
         sources_content, query_text, results = None, None, None 
 
         if to_greet:
-            print("ENTERED GREETING")
             messages = build_messages(
                 model=self.chat_model,
                 system_prompt=self.greeting_prompt_template,
@@ -207,7 +201,6 @@ class AdvancedRAGChat:
             )
 
         elif is_farewell:
-            print("ENTERED FAREWELL")
             messages = build_messages(
                 model = self.chat_model,
                 system_prompt = self.farewell_prompt_template,
@@ -217,8 +210,6 @@ class AdvancedRAGChat:
             )
 
         elif to_follow_up: 
-            print("ENTERED FOLLOW UP OR CLARIFICATION")
-
             content = global_storage.rag_results[-1]
 
             messages = build_messages(
@@ -248,14 +239,14 @@ class AdvancedRAGChat:
             if vector_search:
                 if clarification_response:
                     # TODO: Create a optimised search query instead of just using the previous user query 
-                    print(f"Entering clarification response vector search with query text: {past_messages[-2]['content']}")
+                    logger.info(f"Entering clarification response vector search with query text: {past_messages[-2]['content']}")
                     vector = await compute_text_embedding(
                         past_messages[-2]["content"],
                         None,
                         self.embed_model
                     )
                 elif to_search:
-                    print(f"Entering vector search with query text: {original_user_query}")
+                    logger.info(f"Entering vector search with query text: {original_user_query}")
                     vector = await compute_text_embedding(
                         original_user_query,
                         None,
@@ -410,7 +401,7 @@ class AdvancedRAGChat:
 
         # Generate JSON formatted string for user context information
         global_storage.user_context = str(user_info) 
-        print(f"USER CONTEXT: {global_storage.user_context}")
+        logger.info(f"USER CONTEXT: {global_storage.user_context}")
         
         # Get overrides 
         text_search = overrides.get("retrieval_mode") in ["text", "hybrid", None]
@@ -538,7 +529,7 @@ class QueryRewriterRAG(AdvancedRAGChat):
         # Extract model decision on query classification 
     
         to_greet, is_relevant, is_farewell = extract_json_query_rewriter(chat_completion_resp_filter)
-        print(f"to_greet: {to_greet}, is_relevant: {is_relevant}, is_farewell: {is_farewell}")
+        logger.info(f"to_greet: {to_greet}, is_relevant: {is_relevant}, is_farewell: {is_farewell}")
 
         return to_greet, is_relevant, is_farewell
     
@@ -607,7 +598,7 @@ class QueryRewriterRAG(AdvancedRAGChat):
                     if role or affiliation or level: 
                         search_query = context_sentence+search_query
                 
-                print(f"Entering vector search with query text: {search_query}")
+                logger.info(f"Entering vector search with query text: {search_query}")
                 vector = await compute_text_embedding(
                     search_query,
                     None,
@@ -633,7 +624,6 @@ class QueryRewriterRAG(AdvancedRAGChat):
             )
 
         elif to_greet:
-            print("ENTERED GREETING")
             messages = build_messages(
                 model=self.chat_model,
                 system_prompt=self.greeting_prompt_template,
@@ -643,7 +633,6 @@ class QueryRewriterRAG(AdvancedRAGChat):
             )
 
         elif is_farewell:
-            print("ENTERED FAREWELL")
             messages = build_messages(
                 model = self.chat_model,
                 system_prompt = self.farewell_prompt_template,
@@ -670,7 +659,7 @@ class QueryRewriterRAG(AdvancedRAGChat):
         # Rewrite search query based on chat history to capture follow up questions 
         search_query = await self.rewrite_search_query(original_user_query, past_messages, past_n=1)
 
-        print(f"Rewritten Query: {search_query}")
+        logger.info(f"Rewritten Query: {search_query}")
         
         # Classify user query before deciding how to handle the query (e.g. use RAG)
         to_greet, is_relevant, is_farewell = await self.classify_query(search_query, past_messages, query_response_token_limit)

@@ -1,4 +1,3 @@
-import random
 import fastapi
 
 from .api_models import ChatRequest
@@ -6,13 +5,13 @@ from .globals import global_storage
 from .postgres_searcher import PostgresSearcher
 from .logger import logger, handle_new_message
 
-from .rag_advanced import AdvancedRAGChat, QueryRewriterRAG
+from .rag_advanced import QueryRewriterRAG
 
 
 #ChatClass = random.choice([AdvancedRAGChat, QueryRewriterRAG])
 ChatClass = QueryRewriterRAG
 global_storage.chat_class = ChatClass.__name__
-print(f"ChatClass: {ChatClass.__name__}")
+logger.info(f"ChatClass: {ChatClass.__name__}")
 
 router = fastapi.APIRouter()
 
