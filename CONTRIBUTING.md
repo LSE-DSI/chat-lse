@@ -101,7 +101,9 @@ conda activate chat-lse # or the equivalent for your OS
 which pip
 ```
 
-Install dependencies
+This should output something like `/home/your-username/miniconda3/envs/chat-lse/bin/pip`
+
+Install dependencies 
 
 ```bash
 pip install -r requirements.txt
