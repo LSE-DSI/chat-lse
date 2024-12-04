@@ -89,6 +89,16 @@
         "doc",
         "mentoring"
       ]
+    },
+    {
+      "login": "gaoonline",
+      "name": "Kylin Gao",
+      "avatar_url": "https://avatars.githubusercontent.com/u/83190698?v=4",
+      "profile": "https://github.com/gaoonline",
+      "contributions": [
+        "ideas",
+        "test"
+      ]
     }
   ],
   "contributorsPerLine": 7,
