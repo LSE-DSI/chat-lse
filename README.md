@@ -1,6 +1,6 @@
 # 💬 ChatLSE
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-7-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-8-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 In this project, we will gather all public LSE documents and webpages into a database (LSE Crawler) and then develop a chat interface using an LLM mediated by the [langchain](https://python.langchain.com/v0.2/docs/introduction/) package. Think of it as a ChatGPT meant to be particularly knowledgeable of LSE documents.
@@ -95,6 +95,9 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Mayazure"><img src="https://avatars.githubusercontent.com/u/17568266?v=4?s=100" width="100px;" alt="Jinshuai Ma"/><br /><sub><b>Jinshuai Ma</b></sub></a><br /><a href="https://github.com/jonjoncardoso/chat-lse/commits?author=Mayazure" title="Code">💻</a> <a href="https://github.com/jonjoncardoso/chat-lse/commits?author=Mayazure" title="Documentation">📖</a> <a href="#example-Mayazure" title="Examples">💡</a> <a href="#infra-Mayazure" title="Infrastructure (Hosting, Build-Tools, etc)">🚇</a> <a href="#mentoring-Mayazure" title="Mentoring">🧑‍🏫</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/RiyaChhikara"><img src="https://avatars.githubusercontent.com/u/115228191?v=4?s=100" width="100px;" alt="Riya Chhikara"/><br /><sub><b>Riya Chhikara</b></sub></a><br /><a href="https://github.com/jonjoncardoso/chat-lse/commits?author=RiyaChhikara" title="Code">💻</a> <a href="#data-RiyaChhikara" title="Data">🔣</a> <a href="https://github.com/jonjoncardoso/chat-lse/commits?author=RiyaChhikara" title="Documentation">📖</a> <a href="#mentoring-RiyaChhikara" title="Mentoring">🧑‍🏫</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/gaoonline"><img src="https://avatars.githubusercontent.com/u/83190698?v=4?s=100" width="100px;" alt="Kylin Gao"/><br /><sub><b>Kylin Gao</b></sub></a><br /><a href="#ideas-gaoonline" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/jonjoncardoso/chat-lse/commits?author=gaoonline" title="Tests">⚠️</a></td>
+    </tr>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/aliceandchains"><img src="https://avatars.githubusercontent.com/u/147733005?v=4?s=100" width="100px;" alt="Alexey Burmistrov"/><br /><sub><b>Alexey Burmistrov</b></sub></a><br /><a href="#ideas-aliceandchains" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/jonjoncardoso/chat-lse/commits?author=aliceandchains" title="Tests">⚠️</a></td>
     </tr>
   </tbody>
   <tfoot>
