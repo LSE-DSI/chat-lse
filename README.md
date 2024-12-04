@@ -1,6 +1,6 @@
 # 💬 ChatLSE
 <!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
-[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+[![All Contributors](https://img.shields.io/badge/all_contributors-2-orange.svg?style=flat-square)](#contributors-)
 <!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 In this project, we will gather all public LSE documents and webpages into a database (LSE Crawler) and then develop a chat interface using an LLM mediated by the [langchain](https://python.langchain.com/v0.2/docs/introduction/) package. Think of it as a ChatGPT meant to be particularly knowledgeable of LSE documents.
@@ -89,6 +89,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   <tbody>
     <tr>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/tz1211"><img src="https://avatars.githubusercontent.com/u/114442618?v=4?s=100" width="100px;" alt="Terry Zhou"/><br /><sub><b>Terry Zhou</b></sub></a><br /><a href="https://github.com/jonjoncardoso/chat-lse/issues?q=author%3Atz1211" title="Bug reports">🐛</a> <a href="https://github.com/jonjoncardoso/chat-lse/commits?author=tz1211" title="Code">💻</a> <a href="#data-tz1211" title="Data">🔣</a> <a href="https://github.com/jonjoncardoso/chat-lse/commits?author=tz1211" title="Documentation">📖</a> <a href="#ideas-tz1211" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/jonjoncardoso/chat-lse/pulls?q=is%3Apr+reviewed-by%3Atz1211" title="Reviewed Pull Requests">👀</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/jonjoncardoso"><img src="https://avatars.githubusercontent.com/u/896254?v=4?s=100" width="100px;" alt="Jon Cardoso-Silva"/><br /><sub><b>Jon Cardoso-Silva</b></sub></a><br /><a href="https://github.com/jonjoncardoso/chat-lse/commits?author=jonjoncardoso" title="Code">💻</a> <a href="https://github.com/jonjoncardoso/chat-lse/commits?author=jonjoncardoso" title="Documentation">📖</a> <a href="#ideas-jonjoncardoso" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/jonjoncardoso/chat-lse/pulls?q=is%3Apr+reviewed-by%3Ajonjoncardoso" title="Reviewed Pull Requests">👀</a> <a href="#mentoring-jonjoncardoso" title="Mentoring">🧑‍🏫</a> <a href="#projectManagement-jonjoncardoso" title="Project Management">📆</a></td>
     </tr>
   </tbody>
   <tfoot>
