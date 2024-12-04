@@ -50,6 +50,20 @@
         "ideas",
         "review"
       ]
+    },
+    {
+      "login": "KristinaD1910",
+      "name": "KristinaD1910",
+      "avatar_url": "https://avatars.githubusercontent.com/u/145992208?v=4",
+      "profile": "https://github.com/KristinaD1910",
+      "contributions": [
+        "bug",
+        "code",
+        "data",
+        "doc",
+        "ideas",
+        "review"
+      ]
     }
   ],
   "contributorsPerLine": 7,
