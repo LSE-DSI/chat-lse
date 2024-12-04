@@ -31,7 +31,7 @@ class AdvancedRAGChat:
         embed_dimensions: int,
         context_window_override: int | None, # Context window size (default to 4000 if None)
         to_summarise: bool | None, 
-        embedding_type: str = "simple_embeddings", 
+        embedding_type: str = "title_embeddings", 
         with_user_context: bool = False
     ):
         self.searcher = searcher
@@ -470,7 +470,7 @@ class QueryRewriterRAG(AdvancedRAGChat):
         embed_dimensions: int,
         context_window_override: int | None, # Context window size (default to 4000 if None)
         to_summarise: bool | None, 
-        embedding_type: str = "simple_embeddings", 
+        embedding_type: str = "title_embeddings", 
         with_user_context: bool = False
     ): 
         super().__init__(

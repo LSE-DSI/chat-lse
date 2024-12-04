@@ -27,7 +27,7 @@ async def lifespan(app: FastAPI):
     global_storage.chat_client = chat_client
     global_storage.chat_model = chat_model
     global_storage.to_summarise = True
-    global_storage.embedding_type = os.getenv("EMBEDDING_TYPE", "simple_embeddings")
+    global_storage.embedding_type = os.getenv("EMBEDDING_TYPE", "title_embeddings")
     with_user_context = os.getenv("WITH_USER_CONTEXT", False)
     global_storage.with_user_context = True if with_user_context.lower()=="true" else False 
     

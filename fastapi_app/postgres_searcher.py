@@ -29,7 +29,7 @@ class PostgresSearcher:
         query_vector: list[float] | list,
         query_top: int = 5,
         filters: list[dict] | None = None,
-        embedding_type: str = "simple_embeddings",
+        embedding_type: str = "title_embeddings",
     ):
 
         filter_clause_where, filter_clause_and = self.build_filter_clause(filters)
