@@ -18,9 +18,7 @@ The _ChatLSE_ project is a proof of concept of a full data pipeline to index dat
 
 As all parts of this application are completely open-source, this project also aims to serve as a blueprint for a fully open-source RAG solution. The full workflow of the projcet is illlustrated below
 
-<img width="828" alt="image" src="https://github.com/user-attachments/assets/0616a8b4-9ea7-4ef2-b139-af0b8424e979">
-
-_Overall workflow of the project_
+![Overall workflow of the project](img/app_workflow.png)
 
 ## 🧑‍💻 The Team
 
