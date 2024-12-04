@@ -37,17 +37,17 @@ Make sure the following software are properly installed on your OS:
 ## Table of Content 
   1. [Setup PostgreSQL locally](#1-setup-postgresql-locally)
   2. [(Optionally) Setup Ollama locally](#2-optionally-setup-ollama-locally)
-  3. [Setup environment](#3-setup-environment)
-    3.1. [Install Python dependencies](#31-install-python-dependencies)
-    3.2. [Config environment variables](#32-config-environment-variables)
-  4. [Initialise the database](#4-initialise-the-database)
-    4.1. [Run crawler to populate database](#41-run-crawler-to-populate-database)
-    4.2. [Run the embedding script](#42-run-the-embedding-script)
+  3. [Setup environment](#3-setup-environment)  
+      3.1. [Install Python dependencies](#31-install-python-dependencies)  
+      3.2. [Config environment variables](#32-config-environment-variables)  
+  4. [Initialise the database](#4-initialise-the-database)  
+      4.1. [Run crawler to populate database](#41-run-crawler-to-populate-database)  
+      4.2. [Run the embedding script](#42-run-the-embedding-script)  
   5. [Start the FastAPI APP](#5-start-the-fastapi-app)
-  6. [Setup and run Frontend APP](#6-setup-and-run-frontend-app)
-    6.1. [Install npm dependencies](#61-install-npm-dependencies)
-    6.2. [Start the frontend APP](#62-start-the-frontend-app)
-    6.3. [Use the APP](#63-use-the-app)
+  6. [Setup and run Frontend APP](#6-setup-and-run-frontend-app)  
+      6.1. [Install npm dependencies](#61-install-npm-dependencies)  
+      6.2. [Start the frontend APP](#62-start-the-frontend-app)  
+      6.3. [Use the APP](#63-use-the-app)  
 
 ## 1. Setup PostgreSQL locally
 
@@ -70,7 +70,7 @@ The STATUS of the container shoule be something like "Up 2 seconds".
 
 ## 2. (Optionally) Setup Ollama locally
 
-Download [Ollama](https://ollama.com/download)(recommended) or pull its docker image using: 
+Download [Ollama](https://ollama.com/download) (recommended) or pull its docker image using: 
 
 CPU only: 
 ```bash
