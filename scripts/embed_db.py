@@ -12,6 +12,7 @@ from llama_index.embeddings.huggingface import HuggingFaceEmbedding
 from chatlse.embeddings import compute_text_embedding_sync, summarise_and_embed_sync
 from chatlse.postgres_engine import create_postgres_engine_from_env_sync
 
+logger = logging.getLogger("ragapp")
 
 load_dotenv(override=True)
 
@@ -25,20 +26,21 @@ CHAT_MODEL_INSTANCE = openai.OpenAI(
 EMBED_MODEL_INSTANCE = HuggingFaceEmbedding(EMBED_MODEL)
 
 engine = create_postgres_engine_from_env_sync()
-logging.debug(engine)
+#logging.debug(engine)
 
 logging.basicConfig(level=logging.INFO)
 
 
 ### SET EMBEDDING TYPE HERE 
-embedding_type = "context_embeddings"
-if embedding_type not in ["simple_embeddings", "title_embeddings", "context_embeddings"]: 
+embedding_type = os.getenv("EMBEDDING_TYPE")
+allowed_embedding_types = ["simple_embeddings", "title_embeddings", "context_embeddings"]
+if embedding_type not in allowed_embedding_types: 
     raise ValueError('embedding_type must be in ["simple_embeddings", "title_embeddings", "context_embeddings"]')
 
 
 # Create a table for document summary 
 with engine.connect() as conn:
-    logging.info("Creating doc_summary table...")
+    logger.info("Creating doc_summary table...")
     conn.execute(text('''
         CREATE TABLE IF NOT EXISTS doc_summary (
             doc_id TEXT PRIMARY KEY, 
@@ -48,32 +50,33 @@ with engine.connect() as conn:
     '''))
 
     conn.commit()
-    logging.info("Table doc_summary created successfully.")
+    logger.info("Table doc_summary created successfully.")
 
 
 # Check if the 'embeddings' column exists
 insp = sqlalchemy.inspect(engine)
 columns = [col['name'] for col in insp.get_columns('lse_doc')]
 
-if embedding_type not in columns:
-    with engine.connect() as conn:
-        logging.info("Enabling the pgvector extension for Postgres...")
-        conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
-        
-        logging.info(f"Adding '{embedding_type}' column to lse_doc table...")
-        conn.execute(text(f'''
-            ALTER TABLE lse_doc ADD COLUMN {embedding_type} VECTOR(1024);
-        '''))
+for e_type in allowed_embedding_types: 
+    if e_type not in columns:
+        with engine.connect() as conn:
+            logger.info("Enabling the pgvector extension for Postgres...")
+            conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
+            
+            logger.info(f"Adding '{e_type}' column to lse_doc table...")
+            conn.execute(text(f'''
+                ALTER TABLE lse_doc ADD COLUMN {e_type} VECTOR(1024);
+            '''))
 
-        logging.info(f"'{embedding_type}' column added successfully.")
-        conn.commit() 
-else:
-    logging.info(f"'{embedding_type}' column already exists, no need to add it.")
+            logger.info(f"'{e_type}' column added successfully.")
+            conn.commit() 
+    else:
+        logger.info(f"'{e_type}' column already exists, no need to add it.")
 
 
 # Embed documents where embeddings is NULL
 with engine.connect() as conn:
-    logging.info(f"Fetching data for {embedding_type} calculation...")
+    logger.info(f"Fetching data for {embedding_type} calculation...")
     query = f'''
         SELECT id, doc_id, title, content 
         FROM lse_doc 
@@ -83,19 +86,19 @@ with engine.connect() as conn:
     df_results = pd.read_sql_query(query, conn) 
 
     if not df_results.empty: 
-        logging.info("Collating full document text...")
+        logger.info("Collating full document text...")
         if embedding_type == "context_embeddings": 
             df_docs = df_results.sort_values("id").groupby("doc_id").agg({"content": lambda x: " ".join(x)}).reset_index()
 
         total = len(df_results)
         count = 0 
         for row in df_results.itertuples(index=False, name="Row"):
-            print(f"Embedding chunk {count}/{total}")
+            logger.info(f"Embedding chunk {count}/{total}")
             count += 1
             id, doc_id, title, chunk_content = row
 
             if embedding_type == "context_embeddings": 
-                logging.info("Summarising document contents...")
+                logger.info("Summarising document contents...")
                 # Check if the document already exists in the doc_summary
                 summary = conn.execute(
                     text('SELECT summary FROM doc_summary WHERE doc_id = :doc_id'),
@@ -130,7 +133,7 @@ with engine.connect() as conn:
                 else: 
                     summary = summary[0]
                 
-                print(f"TITLE: {title} \n\nSUMMARY: {summary}")
+                logger.info(f"TITLE: {title} \n\nSUMMARY: {summary}")
 
                 contextual_chunk = f"title: {title}\nsummary: {summary}\ncontent: {chunk_content}"
             elif embedding_type == "title_embeddings": 
@@ -138,9 +141,9 @@ with engine.connect() as conn:
             else: 
                 contextual_chunk = chunk_content
             
-            logging.info("Embedding chunks...")
+            logger.info("Embedding chunks...")
             embedding = compute_text_embedding_sync(contextual_chunk, model_instance=EMBED_MODEL_INSTANCE)
-            print("######################################################################")
+            logger.info("######################################################################")
             
             # Update the table with the calculated embedding
             conn.execute(text(f'''
@@ -149,12 +152,12 @@ with engine.connect() as conn:
 
             conn.commit()
 
-            logging.info(f"Embedding calculated and updated for id: {id}")
+            logger.info(f"Embedding calculated and updated for id: {id}")
     else:
-        logging.info("No rows with NULL embeddings found. No updates needed.")
+        logger.info("No rows with NULL embeddings found. No updates needed.")
 
-    logging.info("Embeddings calculated and updated successfully.")
+    logger.info("Embeddings calculated and updated successfully.")
 
 
 engine.dispose()
-logging.info('PostgreSQL Connection closed')
+logger.info('PostgreSQL Connection closed')
