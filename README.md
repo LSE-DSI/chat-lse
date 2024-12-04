@@ -1,4 +1,7 @@
 # 💬 ChatLSE
+<!-- ALL-CONTRIBUTORS-BADGE:START - Do not remove or modify this section -->
+[![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat-square)](#contributors-)
+<!-- ALL-CONTRIBUTORS-BADGE:END -->
 
 In this project, we will gather all public LSE documents and webpages into a database (LSE Crawler) and then develop a chat interface using an LLM mediated by the [langchain](https://python.langchain.com/v0.2/docs/introduction/) package. Think of it as a ChatGPT meant to be particularly knowledgeable of LSE documents.
 
@@ -74,3 +77,34 @@ scrapy crawl file_downloader
 ```
 
 Note: with the current configuration, the crawler will save the data to `data/output.jl`(JSON Lines format). Read about scrapy's [item exporters](https://docs.scrapy.org/en/latest/topics/exporters.html#using-item-exporters) for more information.
+
+## Contributors ✨
+
+Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/docs/en/emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+<!-- prettier-ignore-start -->
+<!-- markdownlint-disable -->
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="top" width="14.28%"><a href="https://github.com/tz1211"><img src="https://avatars.githubusercontent.com/u/114442618?v=4?s=100" width="100px;" alt="Terry Zhou"/><br /><sub><b>Terry Zhou</b></sub></a><br /><a href="https://github.com/jonjoncardoso/chat-lse/issues?q=author%3Atz1211" title="Bug reports">🐛</a> <a href="https://github.com/jonjoncardoso/chat-lse/commits?author=tz1211" title="Code">💻</a> <a href="#data-tz1211" title="Data">🔣</a> <a href="https://github.com/jonjoncardoso/chat-lse/commits?author=tz1211" title="Documentation">📖</a> <a href="#ideas-tz1211" title="Ideas, Planning, & Feedback">🤔</a> <a href="https://github.com/jonjoncardoso/chat-lse/pulls?q=is%3Apr+reviewed-by%3Atz1211" title="Reviewed Pull Requests">👀</a></td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td align="center" size="13px" colspan="7">
+        <img src="https://raw.githubusercontent.com/all-contributors/all-contributors-cli/1b8533af435da9854653492b1327a23a4dbd0a10/assets/logo-small.svg">
+          <a href="https://all-contributors.js.org/docs/en/bot/usage">Add your contributions</a>
+        </img>
+      </td>
+    </tr>
+  </tfoot>
+</table>
+
+<!-- markdownlint-restore -->
+<!-- prettier-ignore-end -->
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
