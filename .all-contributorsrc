@@ -1,12 +1,12 @@
 {
   "projectName": "chat-lse",
-  "projectOwner": "jonjoncardoso",
+  "projectOwner": "LSE-DSI",
   "repoType": "github",
   "repoHost": "",
   "files": [
     "README.md"
   ],
-  "imageSize": 200,
+  "imageSize": 500,
   "commit": true,
   "commitConvention": "gitmoji",
   "contributors": [
