@@ -102,7 +102,7 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
   </tbody>
   <tfoot>
     <tr>
-      <td align="center" size="13px" colspan="7">
+      <td align="center" size="13px" colspan="4">
         <img src="https://raw.githubusercontent.com/all-contributors/all-contributors-cli/1b8533af435da9854653492b1327a23a4dbd0a10/assets/logo-small.svg">
           <a href="https://all-contributors.js.org/docs/en/bot/usage">Add your contributions</a>
         </img>
