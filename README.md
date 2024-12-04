@@ -34,7 +34,7 @@ Please see the [Contributors Table](#-contributors) for the GitHub profiles of a
 
 ## 🔧 Contributing 
 
-:construction: This repository is always a work in progress and **everyone** is encouraged to help us build something that is useful to the many. :construction:
+_This repository is always a work in progress and **everyone** is encouraged to help us build something that is useful to the many._
 
 Everyone who joins the project should check out our [contributing guidelines](CONTRIBUTING.md) for more information on how to get started.
 
