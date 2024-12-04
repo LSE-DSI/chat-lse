@@ -37,6 +37,19 @@
         "mentoring",
         "projectManagement"
       ]
+    },
+    {
+      "login": "akshsabherwal",
+      "name": "akshsabherwal",
+      "avatar_url": "https://avatars.githubusercontent.com/u/147533587?v=4",
+      "profile": "https://github.com/akshsabherwal",
+      "contributions": [
+        "bug",
+        "code",
+        "doc",
+        "ideas",
+        "review"
+      ]
     }
   ],
   "contributorsPerLine": 7,
