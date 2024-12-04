@@ -79,67 +79,6 @@ Thanks goes to these wonderful people ([emoji key](https://allcontributors.org/d
 
 <!-- markdownlint-restore -->
 <!-- prettier-ignore-end -->
-
-
-# TO BE REMOVED LATER !!! 
-
-## ⚙️ Setup
-
-### Requirements
-
-- [Miniconda](https://docs.conda.io/en/latest/miniconda.html)
-- [VSCode](https://code.visualstudio.com/)
-- [Git](https://git-scm.com/)
-- [Jupyter Extension](https://marketplace.visualstudio.com/items?itemName=ms-toolsai.jupyter) extension for VSCode
-- [GitHub Pull Requests and Issues](https://marketplace.visualstudio.com/items?itemName=GitHub.vscode-pull-request-github) extension for VSCode
-
-### VS Code setup
-
-1. Git clone the repository to your `~/Workspace` folder
-
-2. Open a fresh new VSCode window (to avoid conflicts with other projects). You can do this by clicking on 'File' -> 'New Window'.
-
-3. Now click on 'File' -> 'Add Folder to Workspace' and select the folder you just cloned.
-
-4. Open the terminal in VSCode by clicking on 'Terminal' -> 'New Terminal' and run the following commands to create a conda environment:
-
-```bash
-conda create -n chat-lse python=3.11 ipython
-conda activate chat-lse # or the equivalent for your OS
-```
-
-5. (Important) Ensure that `pip` refers to the pip inside the conda environment we just created:
-
-```bash
-which pip
-```
-
- this should output something like `/home/your-username/miniconda3/envs/chat-lse/bin/pip`
-
-6. Assuming you've fixed the `pip` path, install the required packages:
-
-```bash
-pip install -r requirements.txt
-```
-
-## Running the crawler
-
-1. First, ensure you have activated the `chat-lse` conda environment.
-
-2. Run the following command from the root of the project to save the scraped data to a JSON file:
-
-```bash
-scrapy crawl lse_crawler
-```
-
-3. Run the following command from the root of the project to download all the documents:
-
-```bash
-scrapy crawl file_downloader
-```
-
-Note: with the current configuration, the crawler will save the data to `data/output.jl`(JSON Lines format). Read about scrapy's [item exporters](https://docs.scrapy.org/en/latest/topics/exporters.html#using-item-exporters) for more information.
-
 <!-- ALL-CONTRIBUTORS-LIST:END -->
 
 This project follows the [all-contributors](https://github.com/all-contributors/all-contributors) specification. Contributions of any kind welcome!
